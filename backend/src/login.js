@@ -37,8 +37,6 @@ exports.login = async (req, res) => {
   }
 };
 
-// use the check function from the Authenticated Book example:
-// https://drive.google.com/drive/folders/1KPV7JHbq962bX3rnnD-xbUXthnyWJ-ki
 exports.check = async (req, res, next) => {
   const authHeader = req.headers.authorization;
   const token = authHeader.split(' ')[1];
