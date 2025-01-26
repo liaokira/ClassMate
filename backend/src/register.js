@@ -39,5 +39,5 @@ exports.register = async (req, res) => {
       expiresIn: '1440m',
       algorithm: 'HS256',
   });
-  res.status(200).json({name: rows[0].data.name, accessToken: accessToken});
+  res.status(201).json({name: rows[0].data.name, accessToken: accessToken});
 };
