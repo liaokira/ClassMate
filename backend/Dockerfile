@@ -35,4 +35,4 @@ COPY . .
 EXPOSE 3010
 
 # Run the application.
-CMD node server.js
+CMD node src/server.js
