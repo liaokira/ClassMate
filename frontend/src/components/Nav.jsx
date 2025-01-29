@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link } from "react-router-dom";
 import logo from '../assets/react.svg';
 import styled from "styled-components"
+import { useLocation } from 'react-router-dom';
 
 const Navbar = styled.div`
   width: 100vw;
@@ -48,6 +49,7 @@ const Text = styled.div`
 `;
 
 function Nav() {
+  const path = useLocation().pathname
   return (
     <Navbar>
       <InnerNav>
@@ -58,10 +60,15 @@ function Nav() {
           </Link>
         </Left>
         <Right>
-          <Text>Already have an account?</Text>
-          <Link to="/login">
-            <button>Log In</button>
-          </Link>
+          {["/login"].includes(path) ? null : 
+          <>
+            <Text>Already have an account?</Text>
+            <Link to="/login">
+              <button>Log In</button>
+            </Link>  
+          </>
+          }
+      
         </Right>
       </InnerNav>
     </Navbar>
