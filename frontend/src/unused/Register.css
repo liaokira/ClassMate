@@ -1,0 +1,29 @@
+/* body{
+    display:flex;
+    align-items: center;
+    justify-content: center;
+    height:100vh;
+} */
+
+#registerBox{
+    text-align: center;
+    width:20rem;
+    background-color: var(--primary);
+    border: 3px solid var(--tertiary);
+    border-radius: 2rem;
+    padding-right:2rem;
+    padding-left:2rem;
+    padding-bottom:2rem;
+}
+
+#registerForm{
+    width:100%;
+}
+
+#registerForm > input {
+    margin-bottom:.8rem;
+}
+
+#submitButton{
+    margin-top:1rem;
+}
