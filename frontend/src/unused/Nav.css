@@ -1,0 +1,38 @@
+#navbar{
+    width:100vw;
+    background-color: var(--primary);
+    border-bottom: 3px solid var(--tertiary);
+    position:fixed;
+    height:6rem;
+    top:0px;
+    left:0px;
+}
+
+#innernav{
+    display:flex;
+    justify-content: space-between;
+    align-items:center;
+    padding-left:1em;
+    padding-right:1em;
+}
+
+#left{
+    display:flex;
+    align-items: center;
+    height:100%
+}
+
+#right{
+    display:flex;
+    align-items: center;
+    height:100%
+}
+
+#left > * {
+    padding-left:.5em;
+}
+
+#right > div{
+    padding-right:.5em;
+}
+
