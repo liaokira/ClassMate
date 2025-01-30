@@ -26,6 +26,7 @@ services:
       db:
         condition: service_healthy
   db:
+    container_name: ClassMate_db
     image: postgres:15.10
     restart: always
     user: postgres
