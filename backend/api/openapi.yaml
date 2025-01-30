@@ -1,0 +1,102 @@
+#
+# CSE186 Assignment 8 Backend
+#
+
+openapi: '3.0.3'
+
+info:
+  description: CSE186 Assignment 8 Backend
+  version: 0.1.0
+  title: CSE186 Assignment 8 Backend
+
+servers:
+  - url: http://localhost:3010/v0
+
+paths:
+
+  /register:
+    post:
+      description: register
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Credentials'
+      responses:
+        201:
+          description: 'Successful registration'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        400:
+          description: 'User already exists'
+
+  /login:
+    post:
+      description: login
+      requestBody:
+        description: Request Body
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Credentials'
+      responses:
+        200:
+          description: Credentials correct
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        401:
+          description: Invalid credentials
+        default:
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnexpectedError'
+
+components:
+  schemas:
+    UnexpectedError:
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+
+    Credentials:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+      required:
+        - email
+        - password
+
+    User:
+      type: object
+      properties:
+        name:
+          type: string
+        accessToken:
+          type: string
+      required:
+        - name
+        - accessToken
+      
+  securitySchemes:
+    bearerAuth:            # arbitrary name for the security scheme
+      type: http
+      scheme: bearer
+      bearerFormat: JWT    # optional, arbitrary value for documentation purposes
