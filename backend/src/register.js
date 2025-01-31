@@ -23,6 +23,7 @@ exports.register = async (req, res) => {
 
   if (rows.length) {
     res.status(401).send('User already exists');
+    return;
   }
 
   const password_hash = await bcrypt.hash(password, 10);
@@ -35,13 +36,12 @@ exports.register = async (req, res) => {
     values: [userData],
   };
   const newUserQueryResult = await pool.query(newUserQuery);
-  const userEmail = newUserQueryResult.rows[1].data.email;
 
   const accessToken = jwt.sign(
-    {email: userEmail},
+    {email: email},
     secrets.accessToken, {
       expiresIn: '1440m',
       algorithm: 'HS256',
   });
-  res.status(201).json({name: rows[0].data.name, accessToken: accessToken});
+  res.status(201).json({name: newUserQueryResult.rows[0].id, accessToken: accessToken});
 };
