@@ -18,9 +18,7 @@ const BelowBanner = styled.div`
   align-items: center;
   align-text: center;
   justify-content: space-between;
-  padding-top: 2em;
-  padding-left: 3em;
-  padding-right: 3em;
+  padding: 2em 3em 0;
 `;
 
 const Inner = styled.div`
@@ -81,7 +79,7 @@ const FeatureBox = styled.div`
   width: 25%;
   align-items: center;
   text-align: center;
-  background-color: var(--primary);
+  background-color: var(--secondary);
   border: 3px solid var(--tertiary);
   border-radius: 2rem;
   padding: 0rem 1rem 1.5rem;
