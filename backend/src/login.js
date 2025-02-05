@@ -5,16 +5,16 @@ const secrets = require('./secrets');
 
 const {Pool} = require('pg');
 const pool = new Pool({
-  host: 'localhost',
-  port: 5432,
-  database: process.env.POSTGRES_DB,
-  user: process.env.POSTGRES_USER,
-  password: process.env.POSTGRES_PASSWORD,
+  host: 'db',
+  port: '5432',
+  database: 'example',
+  user: 'postgres',
+  password: 'test',
 });
 
 exports.login = async (req, res) => {
   const {email, password} = req.body;
-  const userSelect = `SELECT * FROM user WHERE data->>'email' = $1`;
+  const userSelect = `SELECT * FROM member WHERE data->>'email' = $1`;
   const userQuery = {
     text: userSelect,
     values: [`${email}`],

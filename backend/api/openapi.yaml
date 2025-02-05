@@ -22,7 +22,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Credentials'
+              $ref: '#/components/schemas/loginCredentials'
       responses:
         201:
           description: 'Successful registration'
@@ -71,7 +71,6 @@ components:
           format: int32
         message:
           type: string
-
     Credentials:
       type: object
       properties:
@@ -83,6 +82,20 @@ components:
       required:
         - email
         - password
+    loginCredentials:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+        name:
+          type: string
+      required:
+        - email
+        - password
+        - name
 
     User:
       type: object

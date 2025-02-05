@@ -32,7 +32,7 @@ const login = require('./login');
 const register = require('./register');
 
 app.post('/v0/login', login.login);
-app.post('/v0/login', register.register);
+app.post('/v0/register', register.register);
 
 app.use((err, req, res, next) => {
   res.status(err.status).json({

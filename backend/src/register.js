@@ -5,16 +5,16 @@ const secrets = require('./secrets');
 
 const {Pool} = require('pg');
 const pool = new Pool({
-  host: 'localhost',
-  port: 5432,
-  database: process.env.POSTGRES_DB,
-  user: process.env.POSTGRES_USER,
-  password: process.env.POSTGRES_PASSWORD,
+  host: 'db',
+  port: '5432',
+  database: 'example',
+  user: 'postgres',
+  password: 'test',
 });
 
 exports.register = async (req, res) => {
-  const {email, password} = req.body;
-  const userSelect = `SELECT * FROM user WHERE data->>'email' = $1`;
+  const {email, password, name} = req.body;
+  const userSelect = `SELECT * FROM member WHERE data->>'email' = $1`;
   const userQuery = {
     text: userSelect,
     values: [`${email}`],
@@ -23,21 +23,26 @@ exports.register = async (req, res) => {
 
   if (rows.length) {
     res.status(401).send('User already exists');
+    return;
   }
 
   const password_hash = await bcrypt.hash(password, 10);
+  const userData = {
+    email: email,
+    password: password_hash,
+    name: name
+  };
   const newUserQuery = {
-    text: `INSERT INTO member (email, password) VALUES ($1, $2) RETURNING id`,
-    values: [`${email}`, `${password_hash}`],
+    text: `INSERT INTO member (data) VALUES ($1) RETURNING id`,
+    values: [userData],
   };
   const newUserQueryResult = await pool.query(newUserQuery);
-  const userEmail = newUserQueryResult.rows[1].data.email;
 
   const accessToken = jwt.sign(
-    {email: userEmail},
+    {email: email},
     secrets.accessToken, {
       expiresIn: '1440m',
       algorithm: 'HS256',
   });
-  res.status(201).json({name: rows[0].data.name, accessToken: accessToken});
+  res.status(201).json({name: newUserQueryResult.rows[0].id, accessToken: accessToken});
 };
