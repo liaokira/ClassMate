@@ -14,7 +14,6 @@ const pool = new Pool({
 
 exports.login = async (req, res) => {
   const {email, password} = req.body;
-  console.log("email", email, "password", password);
   const userSelect = `SELECT * FROM member WHERE data->>'email' = $1`;
   const userQuery = {
     text: userSelect,

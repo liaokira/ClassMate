@@ -13,7 +13,7 @@ const pool = new Pool({
 });
 
 exports.register = async (req, res) => {
-  const {email, password} = req.body;
+  const {email, password, name} = req.body;
   const userSelect = `SELECT * FROM member WHERE data->>'email' = $1`;
   const userQuery = {
     text: userSelect,
@@ -30,6 +30,7 @@ exports.register = async (req, res) => {
   const userData = {
     email: email,
     password: password_hash,
+    name: name
   };
   const newUserQuery = {
     text: `INSERT INTO member (data) VALUES ($1) RETURNING id`,
