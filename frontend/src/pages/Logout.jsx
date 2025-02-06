@@ -12,7 +12,7 @@ function Logout({ setIsAuthenticated }) {
     // Redirect to login
     setTimeout(() => {
         navigate("/"); // Ensures state has updated before navigating
-      }, 1);
+      }, 100);
   }, [setIsAuthenticated, navigate]);
 
   return null; // This component doesn't render anything
