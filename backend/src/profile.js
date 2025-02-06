@@ -12,28 +12,31 @@ const pool = new Pool({
   password: 'test',
 });
 
-exports.login = async (req, res) => {
-  const {email, password} = req.body;
-  const userSelect = `SELECT * FROM member WHERE data->>'email' = $1`;
+//NO IDEA HOW TO USER AUTHENTICATE
+exports.getProfile = async (req, res) => {
+  const {id} = req.body;
+  const userSelect = `SELECT (bio_data, full_name) FROM member_profiles WHERE id = $1`;
   const userQuery = {
     text: userSelect,
-    values: [`${email}`],
+    values: [`${id}`],
   };
   const {rows} = await pool.query(userQuery);
   if (rows.length) {
-    if (bcrypt.compareSync(password, rows[0].data.password)) {
-      const accessToken = jwt.sign(
-        {email: rows[0].data.email},
-        secrets.accessToken, {
-          expiresIn: '300m',
-          algorithm: 'HS256',
-        });
-      res.status(200).json({name: rows[0].id, accessToken: accessToken});
-    } else {
+      res.status(200).json({bio: rows[0].bio_data, full_name: rows[0].full_name});
+  }
+  else {
+    const userSelect2 = `SELECT (id) FROM member WHERE id = $1`;
+    const userQuery2 = {
+      text: userSelect2,
+      values: [`${id}`],
+    };
+    const {rows2} = await pool.query(userQuery2);
+    if (rows2.length){
+      res.status(200).json({bio: '', full_name: ''});
+    }
+    else{
       res.status(401).send('Invalid credentials');
     }
-  } else {
-    res.status(401).send('Invalid credentials');
   }
 };
 
