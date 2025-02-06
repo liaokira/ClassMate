@@ -4,7 +4,7 @@ import AppRoutes from './routes/AppRoutes';
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(true); // Track login state
 
-  return <AppRoutes isAuthenticated={isAuthenticated} />;
+  return <AppRoutes isAuthenticated={isAuthenticated} setIsAuthenticated={setIsAuthenticated}/>;
 }
 
 export default App
