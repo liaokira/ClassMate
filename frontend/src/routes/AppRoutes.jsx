@@ -5,6 +5,7 @@ import Profile from "../pages/Profile";
 import Nav from "../components/Nav";
 import ProtectedRoute from "../routes/ProtectedRoute";
 import Login from "../pages/Login";
+import MyGroups from "../pages/MyGroups";
 
 const AppRoutes = ({ isAuthenticated }) => {
     return (
@@ -15,6 +16,8 @@ const AppRoutes = ({ isAuthenticated }) => {
             <Route path="/" element={<Landing />} />
             <Route path="/register" element={<Register />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/groups" element={<MyGroups />} />
+            
             <Route
                 path="/profile"
                 element={
