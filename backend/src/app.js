@@ -9,36 +9,37 @@ const OpenApiValidator = require('express-openapi-validator');
 const app = express();
 app.use(cors());
 app.use(express.json());
-app.use(express.urlencoded({extended: false}));
+app.use(express.urlencoded({ extended: false }));
 
 const apiSpec = path.join(__dirname, '../api/openapi.yaml');
 const apidoc = yaml.load(fs.readFileSync(apiSpec, 'utf8'));
 
-app.use(
-  '/v0/api-docs',
-  swaggerUi.serve,
-  swaggerUi.setup(apidoc),
-);
+app.use('/v0/api-docs', swaggerUi.serve, swaggerUi.setup(apidoc));
 
 app.use(
   OpenApiValidator.middleware({
     apiSpec: apiSpec,
     validateRequests: true,
     validateResponses: true,
-  }),
+  })
 );
 
+// Routes
 const login = require('./login');
 const register = require('./register');
+const profile = require('./profile');
 
 app.post('/v0/login', login.login);
 app.post('/v0/register', register.register);
+app.get('/v0/profile', profile.getProfile);
 
+// Error handler
 app.use((err, req, res, next) => {
-  res.status(err.status).json({
+  console.error(err);
+  return res.status(err.status || 500).json({
     message: err.message,
     errors: err.errors,
-    status: err.status,
+    status: err.status
   });
 });
 

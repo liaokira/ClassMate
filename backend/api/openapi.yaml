@@ -16,13 +16,13 @@ paths:
 
   /register:
     post:
-      description: register
+      description: Register a new user
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/loginCredentials'
+              $ref: '#/components/schemas/registerCredentials'
       responses:
         201:
           description: 'Successful registration'
@@ -35,9 +35,8 @@ paths:
 
   /login:
     post:
-      description: login
+      description: Log in an existing user
       requestBody:
-        description: Request Body
         required: true
         content:
           application/json:
@@ -45,32 +44,37 @@ paths:
               $ref: '#/components/schemas/Credentials'
       responses:
         200:
-          description: Credentials correct
+          description: Login successful
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/User'
         401:
           description: Invalid credentials
-        default:
-          description: Unexpected Error
+
+  /profile:
+    get:
+      description: Get user profile
+      parameters:
+        - name: userId
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Profile found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UnexpectedError'
+                $ref: '#/components/schemas/Profile'
+        404:
+          description: Profile not found
+        500:
+          description: Server error
 
 components:
   schemas:
-    UnexpectedError:
-      required:
-        - code
-        - message
-      properties:
-        code:
-          type: integer
-          format: int32
-        message:
-          type: string
     Credentials:
       type: object
       properties:
@@ -82,7 +86,8 @@ components:
       required:
         - email
         - password
-    loginCredentials:
+
+    registerCredentials:
       type: object
       properties:
         email:
@@ -107,9 +112,15 @@ components:
       required:
         - name
         - accessToken
-      
-  securitySchemes:
-    bearerAuth:            # arbitrary name for the security scheme
-      type: http
-      scheme: bearer
-      bearerFormat: JWT    # optional, arbitrary value for documentation purposes
+
+    Profile:
+      type: object
+      properties:
+        name:
+          type: string
+        bio_data:
+          type: string
+        classes:
+          type: array
+          items:
+            type: string

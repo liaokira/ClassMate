@@ -1,54 +1,67 @@
-# Comments are provided throughout this file to help you get started.
-# If you need more help, visit the Docker Compose reference guide at
-# https://docs.docker.com/go/compose-spec-reference/
+# Docker Compose v2 example
+# Remove or rename this file to "docker-compose.yml" if you're using older docker-compose v1.x
 
-# Here the instructions define your application as a service called "server".
-# This service is built from the Dockerfile in the current directory.
-# You can add other services your application may depend on here, such as a
-# database or a cache. For examples, see the Awesome Compose repository:
-# https://github.com/docker/awesome-compose
 services:
-  server:
-    build:
-      context: .
-    environment:
-      NODE_ENV: production
-    ports:
-      - 3010:3010
-
-# The commented out section below is an example of how to define a PostgreSQL
-# database that your application can use. `depends_on` tells Docker Compose to
-# start the database before your application. The `db-data` volume persists the
-# database data between container restarts. The `db-password` secret is used
-# to set the database password. You must create `db/password.txt` and add
-# a password of your choosing to it before running `docker-compose up`.
-    depends_on:
-      db:
-        condition: service_healthy
   db:
     container_name: ClassMate_db
     image: postgres:15.10
     restart: always
     user: postgres
-    secrets:
-      - db-password
+    
+    # This environment sets up user/pass & DB name
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: test
+      POSTGRES_DB: example
+
+    # Persist DB data across container restarts
     volumes:
       - db-data:/var/lib/postgresql/data
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_DB=example
-      - POSTGRES_PASSWORD=test
+
+    # Expose port to host
     ports:
       - "5432:5432"
+
+    # Postgres health check
     healthcheck:
-      test: [ "CMD", "pg_isready" ]
+      test: ["CMD", "pg_isready", "-U", "postgres"]
       interval: 10s
       timeout: 5s
       retries: 5
+
+  migrations:
+    # Use the same Dockerfile as your Node server, which now has `psql` installed
+    build:
+      context: .
+    # Wait until the db service is healthy, i.e. passing pg_isready
+    depends_on:
+      db:
+        condition: service_healthy
+
+    # Provide the DB password for psql
+    environment:
+      PGPASSWORD: "test"
+
+    # We run a custom command (init_db.sh) to apply schema & data
+    command: ["sh", "/usr/src/app/init_db.sh"]
+
+    # Do not restart the migration container once done
+    restart: "no"
+
+  server:
+    build:
+      context: .
+    # Wait for migrations to finish successfully before starting the server
+    depends_on:
+      migrations:
+        condition: service_completed_successfully
+
+    environment:
+      NODE_ENV: production
+
+    # Expose port to host
+    ports:
+      - "3010:3010"
+
 volumes:
   db-data:
-secrets:
-  db-password:
-    file: sql/password.txt
-
-

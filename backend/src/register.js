@@ -1,9 +1,8 @@
-const jwt = require('jsonwebtoken');
+const { Pool } = require('pg');
 const bcrypt = require('bcrypt');
-
+const jwt = require('jsonwebtoken');
 const secrets = require('./secrets');
 
-const {Pool} = require('pg');
 const pool = new Pool({
   host: 'db',
   port: '5432',
@@ -13,36 +12,38 @@ const pool = new Pool({
 });
 
 exports.register = async (req, res) => {
-  const {email, password, name} = req.body;
-  const userSelect = `SELECT * FROM member WHERE data->>'email' = $1`;
-  const userQuery = {
-    text: userSelect,
-    values: [`${email}`],
-  };
-  const {rows} = await pool.query(userQuery);
+  try {
+    const { email, password, name } = req.body;
 
-  if (rows.length) {
-    res.status(401).send('User already exists');
-    return;
-  }
+    // Check if user already exists
+    const userSelect = 'SELECT id FROM member WHERE email = $1';
+    const { rows } = await pool.query(userSelect, [email]);
+    if (rows.length > 0) {
+      return res.status(400).send('User already exists');
+    }
 
-  const password_hash = await bcrypt.hash(password, 10);
-  const userData = {
-    email: email,
-    password: password_hash,
-    name: name
-  };
-  const newUserQuery = {
-    text: `INSERT INTO member (data) VALUES ($1) RETURNING id`,
-    values: [userData],
-  };
-  const newUserQueryResult = await pool.query(newUserQuery);
+    // Hash the password
+    const passwordHash = await bcrypt.hash(password, 10);
 
-  const accessToken = jwt.sign(
-    {email: email},
-    secrets.accessToken, {
+    // Insert the new user
+    const newUserQuery = {
+      text: 'INSERT INTO member (email, password, name) VALUES ($1, $2, $3) RETURNING id',
+      values: [email, passwordHash, name],
+    };
+    const newUserResult = await pool.query(newUserQuery);
+
+    // Create a JWT token for the newly registered user
+    const accessToken = jwt.sign({ email }, secrets.accessToken, {
       expiresIn: '1440m',
       algorithm: 'HS256',
-  });
-  res.status(201).json({name: newUserQueryResult.rows[0].id, accessToken: accessToken});
+    });
+
+    return res.status(201).json({ 
+      name: newUserResult.rows[0].id, 
+      accessToken 
+    });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).send('Server error');
+  }
 };
