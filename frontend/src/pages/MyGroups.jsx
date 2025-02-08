@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 import logo from '../assets/react.svg';
 import styled from "styled-components";
 
+
+
 const Body = styled.div`
   background-color: var(--secondary);
   position: relative;
@@ -81,15 +83,16 @@ const GroupsUnder = styled.div`
 `;
 
 const Group = styled.div`
-  height: 15rem;
-  width: 15rem;
+  height: 20rem;
+  width: 20rem;
   border: 3px solid var(--tertiary);
   border-radius: 20px;
   background-color: var(--secondary);
+  text-align: center;
 `;
 
 const ImageHolder = styled.div`
-  height: 12rem;
+  height: 75%;
   width: relative;
   background-color: black;
   border: 3px solid var(--tertiary);
@@ -100,17 +103,19 @@ const ImageHolder = styled.div`
   align-items: center;
 `;
 
-const GroupName = styled.div`
+const GroupName = styled.h2`
   height: relative;
   width: relative;
   background-color: var(--secondary);
+  border-bottom-left-radius: 20px;
+  border-bottom-right-radius: 20px;
 `;
 
 function PlaceHolder() {
   return (
     <Group>
         <ImageHolder><img src={logo} alt="Logo" /></ImageHolder>
-        <GroupName></GroupName>
+        <GroupName>Placeholder Name</GroupName>
     </Group>
   );
 }
@@ -123,9 +128,11 @@ function MyGroups() {
             <TabSelect>
                 <h2>Groups</h2>
             </TabSelect>
-            <Tab>
-                <h2>Discover</h2>
-            </Tab>
+            <Link to="/discover">
+              <Tab>
+                  <h2>Discover</h2>
+              </Tab>
+            </Link>
         </TabRow>
         <GroupBlock>
             <GroupRow>
