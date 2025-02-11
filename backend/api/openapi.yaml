@@ -86,6 +86,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UnexpectedError'
+  /profile:
     post:
       description: setprofile
       requestBody: 
