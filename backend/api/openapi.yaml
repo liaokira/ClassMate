@@ -59,6 +59,74 @@ paths:
               schema:
                 $ref: '#/components/schemas/UnexpectedError'
 
+  /group:
+    post:
+      description: create a study group
+      requestBody:
+        description: specifics of the study group (name, time, etc.)
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GroupPostPut'
+      responses:
+        201:
+          description: study group created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ID'
+        404:
+          description: Error
+        default:
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnexpectedError'
+
+  /group/{id}:
+    get:
+      description: get information about a study group
+      parameters:
+        - name: id
+          in : path
+          required: true
+          description: ID of the study group
+          schema:
+            type: string
+            format: uuid
+      responses:
+        200:
+          description: Study group found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GroupData'
+        404:
+          description: No study group with ID found
+    put:
+      description: update information of a study group
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID of the study group
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GroupPostPut'
+      responses:
+        200:
+          description: study group successfully updated
+        404:
+          description: No study group with ID found
+
 components:
   schemas:
     UnexpectedError:
@@ -107,6 +175,36 @@ components:
       required:
         - name
         - accessToken
+
+    ID:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+      required:
+        - id
+
+    # does not include ID compared to GroupData
+    GroupPostPut:
+      type: object
+      properties:
+        group_name:
+          type: string
+      required:
+        - group_name
+
+    GroupData:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        group_name:
+          type: string
+      required:
+        - id
+        - group_name
       
   securitySchemes:
     bearerAuth:            # arbitrary name for the security scheme

@@ -30,9 +30,13 @@ app.use(
 
 const login = require('./login');
 const register = require('./register');
+const study_group = require('./study_group');
 
 app.post('/v0/login', login.login);
 app.post('/v0/register', register.register);
+app.get('/v0/group/:id', study_group.getGroup);
+app.post('/v0/group', study_group.createGroup);
+app.put('/v0/group/:id', study_group.updateGroup);
 
 app.use((err, req, res, next) => {
   res.status(err.status).json({

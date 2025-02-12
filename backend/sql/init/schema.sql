@@ -27,3 +27,9 @@ CREATE TABLE member(
 --     bio_data VARCHAR(365),
 --     full_name VARCHAR(30)
 -- );
+
+DROP TABLE IF EXISTS study_groups CASCADE;
+CREATE TABLE study_groups(
+    id UUID UNIQUE PRIMARY KEY DEFAULT gen_random_uuid(),
+    group_name VARCHAR(18) NOT NULL
+);
