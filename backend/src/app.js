@@ -28,11 +28,23 @@ app.use(
   }),
 );
 
+/* 
+Endpoints for registering and logging in
+(sprint 1)
+*/
 const login = require('./login');
 const register = require('./register');
 
 app.post('/v0/login', login.login);
 app.post('/v0/register', register.register);
+
+/* 
+Endpoints for profile data
+(sprint 2)
+*/
+const profile = require('./profile');
+app.get('/v0/profile/:id', profile.getProfile);
+app.post('/v0/profile', profile.setProfile);
 
 app.use((err, req, res, next) => {
   res.status(err.status).json({
