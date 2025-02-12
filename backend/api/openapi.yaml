@@ -1,0 +1,213 @@
+#
+# CSE186 Assignment 8 Backend
+#
+
+openapi: '3.0.3'
+
+info:
+  description: CSE186 Assignment 8 Backend
+  version: 0.1.0
+  title: CSE186 Assignment 8 Backend
+
+servers:
+  - url: http://localhost:3010/v0
+
+paths:
+
+  /register:
+    post:
+      description: register
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/loginCredentials'
+      responses:
+        201:
+          description: 'Successful registration'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        400:
+          description: 'User already exists'
+
+  /login:
+    post:
+      description: login
+      requestBody:
+        description: Request Body
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Credentials'
+      responses:
+        200:
+          description: Credentials correct
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        401:
+          description: Invalid credentials
+        default:
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnexpectedError'
+
+  /group:
+    post:
+      description: create a study group
+      requestBody:
+        description: specifics of the study group (name, time, etc.)
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GroupPostPut'
+      responses:
+        201:
+          description: study group created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ID'
+        404:
+          description: Error
+        default:
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnexpectedError'
+
+  /group/{id}:
+    get:
+      description: get information about a study group
+      parameters:
+        - name: id
+          in : path
+          required: true
+          description: ID of the study group
+          schema:
+            type: string
+            format: uuid
+      responses:
+        200:
+          description: Study group found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GroupData'
+        404:
+          description: No study group with ID found
+    put:
+      description: update information of a study group
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID of the study group
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GroupPostPut'
+      responses:
+        200:
+          description: study group successfully updated
+        404:
+          description: No study group with ID found
+
+components:
+  schemas:
+    UnexpectedError:
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+    Credentials:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+      required:
+        - email
+        - password
+    loginCredentials:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+        name:
+          type: string
+      required:
+        - email
+        - password
+        - name
+
+    User:
+      type: object
+      properties:
+        name:
+          type: string
+        accessToken:
+          type: string
+      required:
+        - name
+        - accessToken
+
+    ID:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+      required:
+        - id
+
+    # does not include ID compared to GroupData
+    GroupPostPut:
+      type: object
+      properties:
+        group_name:
+          type: string
+      required:
+        - group_name
+
+    GroupData:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        group_name:
+          type: string
+      required:
+        - id
+        - group_name
+      
+  securitySchemes:
+    bearerAuth:            # arbitrary name for the security scheme
+      type: http
+      scheme: bearer
+      bearerFormat: JWT    # optional, arbitrary value for documentation purposes
