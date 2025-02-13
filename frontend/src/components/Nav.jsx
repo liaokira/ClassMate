@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link } from "react-router-dom";
 import logo from '../assets/react.svg';
+import Dropdown from '../components/Dropdown';
 import styled from "styled-components"
 import { useLocation } from 'react-router-dom';
 
@@ -48,7 +49,7 @@ const Text = styled.div`
   color: var(--text-2);
 `;
 
-function Nav() {
+function Nav({ isAuthenticated }) {
   const path = useLocation().pathname
   return (
     <Navbar>
@@ -60,15 +61,19 @@ function Nav() {
           </Link>
         </Left>
         <Right>
-          {["/login"].includes(path) ? null : 
-          <>
-            <Text>Already have an account?</Text>
-            <Link to="/login">
-              <button>Log In</button>
-            </Link>  
-          </>
-          }
-      
+        {!isAuthenticated && !["/login"].includes(path) && (
+  <>
+    <Text>Already have an account?</Text>
+    <Link to="/login">
+      <button>Log In</button>
+    </Link>
+  </>
+)} 
+        {isAuthenticated && (
+  <>
+      <Dropdown/>
+  </>
+)} 
         </Right>
       </InnerNav>
     </Navbar>

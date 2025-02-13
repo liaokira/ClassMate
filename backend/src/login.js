@@ -28,7 +28,7 @@ exports.login = async (req, res) => {
           expiresIn: '300m',
           algorithm: 'HS256',
         });
-      res.status(200).json({name: rows[0].data.name, accessToken: accessToken});
+      res.status(200).json({name: rows[0].id, accessToken: accessToken});
     } else {
       res.status(401).send('Invalid credentials');
     }

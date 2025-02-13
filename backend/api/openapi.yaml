@@ -59,6 +59,64 @@ paths:
               schema:
                 $ref: '#/components/schemas/UnexpectedError'
 
+  /profile/{id}:
+    get:
+      summary: Get user profile by ID
+      description: Retrieves user profile details based on the provided ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the user profile to retrieve.
+          schema:
+            type: string
+            format: uuid
+      responses:
+        200:
+          description: Profile Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProfileData'
+        404:
+          description: Not Found
+        default:
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnexpectedError'
+  /profile:
+    post:
+      description: setprofile
+      requestBody: 
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProfileData'
+      responses:
+        200:
+          description: Profile Updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ID'
+        201:
+          description: Profile Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ID'
+        404:
+          description: Not Found
+        default:
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnexpectedError'
+
 components:
   schemas:
     UnexpectedError:
@@ -96,7 +154,6 @@ components:
         - email
         - password
         - name
-
     User:
       type: object
       properties:
@@ -107,6 +164,27 @@ components:
       required:
         - name
         - accessToken
+    ID:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+      required:
+        - id
+    ProfileData:
+      type: object
+      properties:
+        id:
+          type: string
+        bio:
+          type: string
+        full_name:
+          type: string
+      required:
+        - id
+        - bio
+        - full_name
       
   securitySchemes:
     bearerAuth:            # arbitrary name for the security scheme

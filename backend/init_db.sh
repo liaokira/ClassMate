@@ -1,4 +1,3 @@
-
 CONTAINER_NAME="ClassMate_db"
 DB_USER="postgres"                 
 DB_NAME="example"               
