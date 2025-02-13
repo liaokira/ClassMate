@@ -17,7 +17,6 @@ const AppRoutes = ({ isAuthenticated }) => {
             <Route path="/register" element={<Register />} />
             <Route path="/login" element={<Login />} />
             <Route path="/groups" element={<MyGroups />} />
-            <Route path="/discover" element={<MyGroups />} />
             
             <Route
                 path="/profile"

@@ -29,7 +29,7 @@ const Tab = styled.div`
   width: 10rem;
   background-color: var(--secondary);
   border: 3px solid var(--tertiary);
-  border-top-left-radius: 10px;
+  border-top-left-radius: 20px;
   border-top-right-radius: 20px;
   display: flex;
   text-align: center;
@@ -46,7 +46,7 @@ const TabSelect = styled.div`
   border-right: 3px solid var(--tertiary);
   border-bottom: 3px solid var(--secondary);
   border-top-left-radius: 20px;
-  border-top-right-radius: 10px;
+  border-top-right-radius: 20px;
   display: flex;
   text-align: center;
   align-items: center;
@@ -121,31 +121,61 @@ function PlaceHolder() {
 }
 
 function MyGroups() {
+  const [myGroups, setmyGroups] = useState(true);
+
+  function toggleGroups() {
+    setmyGroups(!myGroups)
+  }
+  function GroupsTab() {
+    return (
+      myGroups ? <TabSelect style={{ userSelect: "none"}}><h2>Groups</h2></TabSelect> : <Tab onClick={toggleGroups} style={{ userSelect: "none"}}><h2>Groups</h2></Tab>
+    );
+  }
+  function DiscoverTab() {
+    return (
+      myGroups ? <Tab onClick={toggleGroups} style={{ userSelect: "none"}}><h2>Discover</h2></Tab> : <TabSelect style={{ userSelect: "none"}}><h2>Discover</h2></TabSelect>
+    );
+  }
+  function OwnedGroups() {
+    return (
+      <GroupBlock>
+      <GroupRow>
+        <PlaceHolder/>
+        <PlaceHolder/>
+      </GroupRow>
+    </GroupBlock>
+    );
+  }
+  function OtherGroups() {
+    return (
+      <GroupBlock>
+        <GroupRow>
+          <PlaceHolder/>
+          <PlaceHolder/>
+          <PlaceHolder/>
+        </GroupRow>
+        <GroupRow>
+          <PlaceHolder/>
+          <PlaceHolder/>
+          <PlaceHolder/>
+        </GroupRow>
+      </GroupBlock>
+    );
+  }
+  function Groups() {
+    return (
+      myGroups ? OwnedGroups() : OtherGroups()
+    );
+  }
+
   return (
     <Body>
       <Banner>
         <TabRow>
-            <TabSelect>
-                <h2>Groups</h2>
-            </TabSelect>
-            <Link to="/discover">
-              <Tab>
-                  <h2>Discover</h2>
-              </Tab>
-            </Link>
+            <GroupsTab/>
+            <DiscoverTab/>
         </TabRow>
-        <GroupBlock>
-            <GroupRow>
-                <PlaceHolder/>
-                <PlaceHolder/>
-                <PlaceHolder/>
-            </GroupRow>
-            <GroupRow>
-                <PlaceHolder/>
-                <PlaceHolder/>
-                <PlaceHolder/>
-            </GroupRow>
-        </GroupBlock>
+        <Groups/>
       </Banner>
     </Body>
   );
