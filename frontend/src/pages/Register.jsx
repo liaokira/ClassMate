@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom';
 import styled from "styled-components";
 
 const BodyStyle = styled.body`
@@ -31,16 +32,50 @@ const SubmitButton = styled.button`
 `;
 
 function Register() {
+  const [formData, setFormData] = useState({ name: '', email: '', password: '' });
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
+
+  const handleChange = (e) => {
+    const { id, value } = e.target;
+    setFormData((prev) => ({ ...prev, [id]: value }));
+  };
+
+  const handleSubmit = async () => {
+    setError('');
+    try {
+      const response = await fetch('http://localhost:3010/v0/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+
+      if (response.status === 201) {
+        const data = await response.json();
+        console.log('Registration successful:', data);
+        navigate('/login'); // Redirect to login after successful registration
+      } else if (response.status === 400) {
+        setError('User already exists');
+      } else {
+        setError('Unexpected error occurred');
+      }
+    } catch (err) {
+      console.error(err);
+      setError('Failed to register');
+    }
+  };
+
   return (
     <BodyStyle>
       <RegisterBox>
         <h2>Register</h2>
         <RegisterForm>
-          <input id="user" placeholder="Username" />
-          <input id="password" placeholder="Password" />
-          <input id="schoolemail" placeholder="School Email" />
+          <input id="name" placeholder="Username" onChange={handleChange} />
+          <input id="password" placeholder="Password" type="password" onChange={handleChange} />
+          <input id="email" placeholder="School Email" onChange={handleChange} />
         </RegisterForm>
-        <SubmitButton>Submit</SubmitButton>
+        {error && <p style={{ color: 'red' }}>{error}</p>}
+        <SubmitButton onClick={handleSubmit}>Submit</SubmitButton>
       </RegisterBox>
     </BodyStyle>
   );
