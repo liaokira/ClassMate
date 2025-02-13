@@ -34,6 +34,7 @@ const study_group = require('./study_group');
 
 app.post('/v0/login', login.login);
 app.post('/v0/register', register.register);
+app.get('/v0/group/search', study_group.searchGroups); // define /search before /{id} in order to prioritize matching by search query, then by UUID
 app.get('/v0/group/:id', study_group.getGroup);
 app.post('/v0/group', study_group.createGroup);
 app.put('/v0/group/:id', study_group.updateGroup);

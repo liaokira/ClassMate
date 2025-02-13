@@ -1,13 +1,9 @@
-#
-# CSE186 Assignment 8 Backend
-#
-
 openapi: '3.0.3'
 
 info:
-  description: CSE186 Assignment 8 Backend
+  description: ClassMate Backend
   version: 0.1.0
-  title: CSE186 Assignment 8 Backend
+  title: ClassMate Backend
 
 servers:
   - url: http://localhost:3010/v0
@@ -68,7 +64,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/GroupPostPut'
+              $ref: '#/components/schemas/GroupData'
       responses:
         201:
           description: study group created
@@ -76,8 +72,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ID'
-        404:
-          description: Error
+        400:
+          description: Bad request. Invalid data provided
         default:
           description: Unexpected Error
           content:
@@ -102,7 +98,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GroupData'
+                $ref: '#/components/schemas/GroupFullData'
         404:
           description: No study group with ID found
     put:
@@ -120,12 +116,33 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/GroupPostPut'
+              $ref: '#/components/schemas/GroupData'
       responses:
         200:
           description: study group successfully updated
         404:
           description: No study group with ID found
+
+  /group/search:
+    get:
+      description: search for message groups by name
+      parameters:
+        - name: searchFor
+          in: query
+          required: true
+          description: name to search for
+          schema:
+            type: string
+      responses:
+        200:
+          description: study groups found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GroupArray'
+        404:
+          description: no study groups found
+
 
 components:
   schemas:
@@ -185,8 +202,8 @@ components:
       required:
         - id
 
-    # does not include ID compared to GroupData
-    GroupPostPut:
+    # does not include ID compared to GroupFullData
+    GroupData:
       type: object
       properties:
         group_name:
@@ -194,7 +211,7 @@ components:
       required:
         - group_name
 
-    GroupData:
+    GroupFullData:
       type: object
       properties:
         id:
@@ -205,6 +222,12 @@ components:
       required:
         - id
         - group_name
+
+    # an array of matched groups
+    GroupArray:
+      type: array
+      items:
+        $ref: '#/components/schemas/GroupData'
       
   securitySchemes:
     bearerAuth:            # arbitrary name for the security scheme

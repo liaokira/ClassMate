@@ -13,6 +13,7 @@ const pool = new Pool({
 });
 
 exports.getGroup = async (req, res) => {
+  console.log("getGroup");
   const id = req.params.id;
   const groupSelect = `SELECT * FROM study_groups WHERE id = $1`;
   const groupQuery = {
@@ -75,5 +76,22 @@ exports.updateGroup = async (req, res) => {
   }
   else {
     res.status(404).send('No study group found');
+  }
+};
+
+exports.searchGroups = async (req, res) => {
+  console.log("correct");
+  const searchFor = req.query.searchFor;
+  const groupSearchSelect = `SELECT * FROM study_groups WHERE group_name ILIKE $1`;
+  const groupSearchQuery = {
+    text: groupSearchSelect,
+    values: [`%${searchFor}%`],
+  };
+  const {rows} = await pool.query(groupSearchQuery);
+  if (rows.length) {
+    res.status(200).send(rows);
+  }
+  else {
+    res.status(404).send();
   }
 };
