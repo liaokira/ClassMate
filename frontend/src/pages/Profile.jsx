@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import styled from "styled-components";
 
 const PageContainer = styled.body`
@@ -21,11 +22,11 @@ const Biography = styled.div`
   padding-left:calc(8vw + 26vh);
 
   h1 {
-    font-size: 4vh+4vw;
+    font-size: calc(3vh + 2vw);
   }
 
   h3 {
-    font-size: 4vh;
+    font-size: calc(1.5vh + 1vw);
   }
 `;
 
@@ -69,13 +70,13 @@ const TabButton = styled.button`
   background: ${props => props.$active ? 'var(--secondary)' : 'var(--primary)'};
   border: 2px solid var(--tertiary);
   border-radius: 0 0.75rem 0.75rem 0;
-  font-size: 4vh;
+  font-size: calc(1vh + 1.25vw);
   transition: all 0.2s;
 
   &:hover {
     background: var(--tertiary);
   }
-`
+`;
 
 const Content = styled.div`
   flex: 1;
@@ -84,14 +85,56 @@ const Content = styled.div`
 `;
 
 function Profile() {
+  const { userId } = useParams();
+  const [profileData, setProfileData] = useState({ name: '', bio: ''});
+  const [error, setError] = useState('');
   const [activeTab, setActivateTab] = useState('friends');
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const response = await fetch(`http://localhost:3010/v0/profile/${userID}`, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (response.status === 200) {
+          const data = await response.json();
+          setProfileData(data);
+        } else if (response.status === 404) {
+          setError('Profile not found');
+        } else {
+          setError('Unexpected error');
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    fetchProfile();
+  }, [userId]);
+
+  const decodeToken = (token) => {
+    const payload = token.split('.')[1];
+    const decode = atob(payload);
+    return JSON.parse(decode);
+  }
+
+  const token = localStorage.getItem('accessToken');
+  const decodeId = decodeToken(token);
+  const loggedId = decodeId?.id;
 
   const tabs = [
     { id: 'friends', label: 'Friends List', content: 'friends' },
     { id: 'groups', label: 'Study Groups', content: 'groups' },
     { id: 'schedule', label: 'Class Schedule', content: 'schedule' },
-    { id: 'posts', label: 'Forum Posts', content: 'posts' },
   ];
+
+if (loggedId === userId) {
+  tabs.unshift({ id: 'edit', label: 'Edit Profile', content: 'editor'});
+}
 
   return (
     <PageContainer>
@@ -101,8 +144,8 @@ function Profile() {
           Profile Pic
         </ProfPic>
         <Biography>
-          <h1> Student Name </h1>
-          <h3> Biography details </h3>
+          <h1> {profileData.name} </h1>
+          <h3> {profileData.bio} </h3>
         </Biography>
       </Head>
 

@@ -23,7 +23,7 @@ exports.login = async (req, res) => {
   if (rows.length) {
     if (bcrypt.compareSync(password, rows[0].data.password)) {
       const accessToken = jwt.sign(
-        {email: rows[0].data.email},
+        {id: rows[0].id, email: rows[0].data.email},
         secrets.accessToken, {
           expiresIn: '300m',
           algorithm: 'HS256',

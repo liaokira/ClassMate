@@ -24,6 +24,6 @@ CREATE TABLE member_classes (
 DROP TABLE IF EXISTS member_profiles CASCADE;
 CREATE TABLE member_profiles (
     id UUID PRIMARY KEY REFERENCES member(id) ON DELETE CASCADE, 
-    bio_data VARCHAR(365) NOT NULL DEFAULT '',
+    bio_data VARCHAR(365) NOT NULL DEFAULT 'Add a bio...',
     full_name VARCHAR(30) NOT NULL DEFAULT ''
 );

@@ -37,9 +37,19 @@ exports.register = async (req, res) => {
     values: [userData],
   };
   const newUserQueryResult = await pool.query(newUserQuery);
+  const userId = newUserQueryResult.rows[0].id;
+
+  const insertProfileQuery = {
+    text: `
+      INSERT INTO member_profiles (id, full_name, bio_data)
+      VALUE ($1, $2, $3)
+    `,
+    values: [userId, name, 'Add a bio...'],
+  };
+  await pool.query(insertProfileQuery);
 
   const accessToken = jwt.sign(
-    {email: email},
+    {id: userId, email: email},
     secrets.accessToken, {
       expiresIn: '1440m',
       algorithm: 'HS256',
