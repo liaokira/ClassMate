@@ -23,12 +23,12 @@ exports.login = async (req, res) => {
   if (rows.length) {
     if (bcrypt.compareSync(password, rows[0].data.password)) {
       const accessToken = jwt.sign(
-        {email: rows[0].data.email},
+        {id: rows[0].id, email: rows[0].data.email},
         secrets.accessToken, {
           expiresIn: '300m',
           algorithm: 'HS256',
         });
-      res.status(200).json({name: rows[0].data.name, accessToken: accessToken});
+      res.status(200).json({name: rows[0].id, accessToken: accessToken});
     } else {
       res.status(401).send('Invalid credentials');
     }

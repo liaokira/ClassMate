@@ -1,6 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Landing from "../pages/Landing";
-import Groups from "../pages/Groups";
 import Logout from "../pages/Logout";
 import Register from "../pages/Register";
 import Profile from "../pages/Profile";
@@ -8,6 +7,7 @@ import Nav from "../components/Nav";
 import ProtectedRoute from "../routes/ProtectedRoute";
 import PostLoginRoutes from "../routes/PostLoginRoutes";
 import Login from "../pages/Login";
+import GroupsPage from "../pages/Groups";
 
 const AppRoutes = ({ isAuthenticated, setIsAuthenticated }) => {
     return (
@@ -40,7 +40,7 @@ const AppRoutes = ({ isAuthenticated, setIsAuthenticated }) => {
                 }
             />
             <Route
-                path="/profile"
+                path="/profile/:userId"
                 element={
                 <ProtectedRoute isAuthenticated={isAuthenticated}>
                     <Profile />
@@ -51,7 +51,7 @@ const AppRoutes = ({ isAuthenticated, setIsAuthenticated }) => {
                 path="/groups"
                 element={
                 <ProtectedRoute isAuthenticated={isAuthenticated}>
-                    <Groups />
+                    <GroupsPage />
                 </ProtectedRoute>
                 }
             />

@@ -28,12 +28,22 @@ const DropdownItem = styled.div`
   }
 `;
 
+const decodeToken = (token) => {
+  const payload = token.split('.')[1];
+  const decode = atob(payload);
+  return JSON.parse(decode);
+}
+
 export default function Dropdown() {
   const [isVisible, setIsVisible] = useState(false);
 
   const toggleMenu = () => {
     setIsVisible((prev) => !prev);
   };
+
+  const token = localStorage.getItem('accessToken');
+  const decodeId = decodeToken(token);
+  const userId = decodeId?.id;
 
   return (
     <DropdownContainer>
@@ -44,7 +54,7 @@ export default function Dropdown() {
         <Link to="/groups">
             <DropdownItem onClick={toggleMenu}>Groups</DropdownItem>
         </Link>
-        <Link to="/profile">
+        <Link to={`/profile/${userId}`}>
             <DropdownItem onClick={toggleMenu}>My Profile</DropdownItem>
         </Link>
         <Link to="/logout">

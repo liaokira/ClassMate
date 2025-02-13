@@ -28,6 +28,10 @@ app.use(
   }),
 );
 
+/* 
+Endpoints for registering and logging in
+(sprint 1)
+*/
 const login = require('./login');
 const register = require('./register');
 const study_group = require('./study_group');
@@ -38,6 +42,14 @@ app.get('/v0/group/search', study_group.searchGroups); // define /search before 
 app.get('/v0/group/:id', study_group.getGroup);
 app.post('/v0/group', study_group.createGroup);
 app.put('/v0/group/:id', study_group.updateGroup);
+
+/* 
+Endpoints for profile data
+(sprint 2)
+*/
+const profile = require('./profile');
+app.get('/v0/profile/:id', profile.getProfile);
+app.post('/v0/profile/:id', profile.setProfile);
 
 app.use((err, req, res, next) => {
   res.status(err.status).json({
