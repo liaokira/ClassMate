@@ -57,7 +57,6 @@ exports.setProfile = async (req, res) => {
   };
   const {rows} = await pool.query(userQuery);
   if (rows.length) {
-    
     if(rows[0].xmax === 0){
       res.status(200).json({id});
     }
@@ -68,7 +67,6 @@ exports.setProfile = async (req, res) => {
 
       console.log("bio data", rows[0].bio_data);
       console.log("name data", rows[0].full_name);
-    res.status(200).json({id});
   }
   else {
     res.status(404).send('Error: No Profile for User Found');
