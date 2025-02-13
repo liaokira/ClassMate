@@ -44,7 +44,8 @@ exports.getProfile = async (req, res) => {
 };
 
 exports.setProfile = async (req, res) => {
-  const {id, full_name, bio} = req.body;
+  const id = req.params.id;
+  const {full_name, bio} = req.body;
   const userINSERT = `INSERT INTO member_profiles(id, bio_data, full_name) 
                       VALUES ($1, $2, $3) 
                       ON CONFLICT (id) DO UPDATE SET 
