@@ -21,6 +21,12 @@ CREATE TABLE member_classes (
     FOREIGN KEY (class_id) REFERENCES classes(id) ON DELETE CASCADE
 );
 
+DROP TABLE IF EXISTS study_groups CASCADE;
+CREATE TABLE study_groups(
+    id UUID UNIQUE PRIMARY KEY DEFAULT gen_random_uuid(),
+    group_name VARCHAR(18) NOT NULL
+);
+
 DROP TABLE IF EXISTS member_profiles CASCADE;
 CREATE TABLE member_profiles (
     id UUID PRIMARY KEY REFERENCES member(id) ON DELETE CASCADE, 

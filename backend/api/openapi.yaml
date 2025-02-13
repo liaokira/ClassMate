@@ -1,13 +1,9 @@
-#
-# CSE186 Assignment 8 Backend
-#
-
 openapi: '3.0.3'
 
 info:
-  description: CSE186 Assignment 8 Backend
+  description: ClassMate Backend
   version: 0.1.0
-  title: CSE186 Assignment 8 Backend
+  title: ClassMate Backend
 
 servers:
   - url: http://localhost:3010/v0
@@ -58,6 +54,94 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UnexpectedError'
+
+  /group:
+    post:
+      description: create a study group
+      requestBody:
+        description: specifics of the study group (name, time, etc.)
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GroupData'
+      responses:
+        201:
+          description: study group created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ID'
+        400:
+          description: Bad request. Invalid data provided
+        default:
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnexpectedError'
+
+  /group/{id}:
+    get:
+      description: get information about a study group
+      parameters:
+        - name: id
+          in : path
+          required: true
+          description: ID of the study group
+          schema:
+            type: string
+            format: uuid
+      responses:
+        200:
+          description: Study group found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GroupFullData'
+        404:
+          description: No study group with ID found
+    put:
+      description: update information of a study group
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID of the study group
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GroupData'
+      responses:
+        200:
+          description: study group successfully updated
+        404:
+          description: No study group with ID found
+
+  /group/search:
+    get:
+      description: search for message groups by name
+      parameters:
+        - name: searchFor
+          in: query
+          required: true
+          description: name to search for
+          schema:
+            type: string
+      responses:
+        200:
+          description: study groups found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GroupArray'
+        404:
+          description: no study groups found
 
   /profile/{id}:
     get:
@@ -185,6 +269,32 @@ components:
         - id
         - bio
         - full_name
+        
+    GroupData:
+      type: object
+      properties:
+        group_name:
+          type: string
+      required:
+        - group_name
+
+    GroupFullData:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        group_name:
+          type: string
+      required:
+        - id
+        - group_name
+
+    # an array of matched groups
+    GroupArray:
+      type: array
+      items:
+        $ref: '#/components/schemas/GroupData'
       
   securitySchemes:
     bearerAuth:            # arbitrary name for the security scheme
