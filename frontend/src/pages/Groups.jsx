@@ -120,7 +120,7 @@ function PlaceHolder() {
   );
 }
 
-function MyGroups() {
+function GroupsPage() {
   const [myGroups, setmyGroups] = useState(true);
 
   function toggleGroups() {
@@ -181,4 +181,4 @@ function MyGroups() {
   );
 }
 
-export default MyGroups;
+export default GroupsPage;
