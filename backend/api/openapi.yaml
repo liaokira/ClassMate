@@ -170,9 +170,16 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UnexpectedError'
-  /profile:
-    post:
+    put:
       description: setprofile
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the user profile to retrieve.
+          schema:
+            type: string
+            format: uuid
       requestBody: 
         required: true
         content:
