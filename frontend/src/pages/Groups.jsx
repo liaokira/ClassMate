@@ -36,6 +36,7 @@ const Tab = styled.div`
   text-align: center;
   align-items: center;
   justify-content: center;
+  cursor: pointer;
 `;
 
 const TabSelect = styled.div`
@@ -52,6 +53,7 @@ const TabSelect = styled.div`
   text-align: center;
   align-items: center;
   justify-content: center;
+  cursor: pointer;
 `;
 
 const GroupBlock = styled.div`
