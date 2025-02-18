@@ -207,6 +207,87 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UnexpectedError'
+  /profile/{id}/classes:
+    get:
+      summary: Get all classes for a user
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The user's UUID
+          schema:
+            type: string
+            format: uuid
+      responses:
+        200:
+          description: A list of classes the user is enrolled in.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Class'
+    post:
+      summary: Add a class to a user's profile
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The user's UUID
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                class_name:
+                  type: string
+              required:
+                - class_name
+      responses:
+        201:
+          description: Class added successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Class'
+        400:
+          description: Bad Request
+
+  /profile/{id}/classes/{classId}:
+    delete:
+      summary: Remove a class from a user's profile
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The user's UUID
+          schema:
+            type: string
+            format: uuid
+        - name: classId
+          in: path
+          required: true
+          description: The class UUID to remove
+          schema:
+            type: string
+            format: uuid
+      responses:
+        200:
+          description: Class removed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        404:
+          description: Class not found for user
 
 components:
   schemas:
@@ -302,7 +383,19 @@ components:
       type: array
       items:
         $ref: '#/components/schemas/GroupData'
-      
+
+    Class:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        class_name:
+          type: string
+      required:
+        - id
+        - class_name  
+        
   securitySchemes:
     bearerAuth:            # arbitrary name for the security scheme
       type: http

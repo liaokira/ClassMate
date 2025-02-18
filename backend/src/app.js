@@ -51,6 +51,16 @@ const profile = require('./profile');
 app.get('/v0/profile/:id', profile.getProfile);
 app.put('/v0/profile/:id', profile.setProfile);
 
+/* 
+Endpoints for classes 
+(sprint 3)
+*/
+const classes = require('./classes');
+app.get('/v0/profile/:id/classes', classes.getClasses);
+app.post('/v0/profile/:id/classes', classes.addClass);
+app.delete('/v0/profile/:id/classes/:classId', classes.removeClass);
+
+
 app.use((err, req, res, next) => {
   res.status(err.status).json({
     message: err.message,
