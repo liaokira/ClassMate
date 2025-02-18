@@ -37,6 +37,10 @@ const Tab = styled.div`
   align-items: center;
   justify-content: center;
   cursor: pointer;
+
+  &:hover {
+    background-color: var(--secondary-hover, #f0f0f0);
+  }
 `;
 
 const TabSelect = styled.div`
@@ -54,6 +58,10 @@ const TabSelect = styled.div`
   align-items: center;
   justify-content: center;
   cursor: pointer;
+
+  &:hover {
+    background-color: var(--primary-hover, #dcdcdc);
+  }
 `;
 
 const GroupBlock = styled.div`
