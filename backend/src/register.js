@@ -42,7 +42,7 @@ exports.register = async (req, res) => {
   const insertProfileQuery = {
     text: `
       INSERT INTO member_profiles (id, full_name, bio_data)
-      VALUE ($1, $2, $3)
+      VALUES ($1, $2, $3)
     `,
     values: [userId, name, 'Add a bio...'],
   };
