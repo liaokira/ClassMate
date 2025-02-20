@@ -1,6 +1,15 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import styled from "styled-components";
+import ClassManager from "../components/ClassManager";
+
+const Container = styled.div`
+  margin: auto;
+  padding: 20px;
+  border: 3px solid var(--tertiary);
+  border-radius: 1rem;
+`;
+
 
 const PageContainer = styled.body`
   display: flex;
@@ -13,9 +22,15 @@ const Head = styled.div`
   align-items: center;
   justify-content: left;
   height: 32vh;
-  border-bottom: 2px solid var(--tertiary); 
-  box-shadow: 0 4px 6px -2px rgba(0, 0, 0, 0.2);
+  border-bottom: 3px solid var(--tertiary); 
   z-index: 3;
+`;
+
+const EditContainer = styled.div`
+  display:flex;
+  align-items:flex-start;
+  flex:wrap: wrap;
+  column-gap:10px;
 `;
 
 const Biography = styled.div`
@@ -27,15 +42,6 @@ const Biography = styled.div`
   
   padding-left:calc(8vw + 26vh);
 
-  h1 {
-    font-size: calc(3vh + 2vw);
-    white-space: nowrap;
-  }
-
-  h3 {
-    font-size: calc(1.5vh + 1vw);
-    max-width: 100%;
-  }
 `;
 
 const ProfPic = styled.div`
@@ -59,7 +65,7 @@ const TabDisplay = styled.div`
 
 const Tabs = styled.div`
   background-color: var(--primary);
-  width: 20vw;
+  width: 16vw;
   display: flex;
   flex-direction: column;
   height:calc(100vh - 6rem);
@@ -68,16 +74,17 @@ const Tabs = styled.div`
 
 const TabsFill = styled.div`
   background-color: var(--primary);
-  width: 19.8vw;
-  border: 2px solid var(--tertiary);
-  border-radius: 0 0.75rem 0.75rem 0;
+  width: 15.9+7vw;
+  border: 3px solid var(--tertiary);
+  border-top:none;
   height: 100vh
 `;
 
 const TabButton = styled.button`
   background: ${props => props.$active ? 'var(--secondary)' : 'var(--primary)'};
-  border: 2px solid var(--tertiary);
-  border-radius: 0 0.75rem 0.75rem 0;
+  border: 3px solid var(--tertiary);
+  border-top:none;
+  border-radius: 0;
   font-size: calc(1vh + 1.25vw);
   transition: all 0.2s;
 
@@ -85,6 +92,11 @@ const TabButton = styled.button`
     background: var(--tertiary);
   }
 `;
+
+const Label = styled.div`
+  margin-bottom: 5px;
+  margin-top:10px;
+`
 
 const Content = styled.div`
   display: flex;
@@ -156,9 +168,12 @@ const Edit = ({ profileData, setProfileData, setUpdateTrigger }) => {
   };
 
   return (
+    <EditContainer>
+    <Container>
+    <h3>Edit Profile</h3>
     <form onSubmit={handleSubmit}>
       <div>
-        <h3>Username:</h3>
+        <Label>Username:</Label>
       </div>
       <div>
         <input
@@ -169,10 +184,10 @@ const Edit = ({ profileData, setProfileData, setUpdateTrigger }) => {
         />
       </div>
       <div>
-        <h3>Bio:</h3>
+        <Label>Bio:</Label>
       </div>
       <div>
-        <input
+        <textarea
           id="bio"
           value={formData.bio}
           onChange={handleChange}
@@ -186,6 +201,9 @@ const Edit = ({ profileData, setProfileData, setUpdateTrigger }) => {
         {success && <p style={{ color: 'green' }}>{success}</p>}
       </div>
     </form>
+    </Container>
+    <ClassManager  userId={formData.id}/>
+    </EditContainer>
   );
 };
 
@@ -236,7 +254,7 @@ function Profile() {
   const tabs = [
     { id: 'friends', label: 'Friends List', content: 'friends' },
     { id: 'groups', label: 'Study Groups', content: 'groups' },
-    { id: 'schedule', label: 'Class Schedule', content: 'schedule' },
+    { id: 'schedule', label: 'Schedule', content: 'schedule' },
   ];
 
 if (loggedId === userId) {

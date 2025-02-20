@@ -116,6 +116,39 @@ input::placeholder{
   text-align: left;
 }
 
+
+textarea{
+  /* all:unset; */
+  text-align: left;
+  background-color: var(--primary);
+  border: 3px solid var(--tertiary);
+  border-radius: 1rem;
+  height: 2rem;
+  width:fit-content;
+  max-width:500px;
+  padding:1rem;
+  font-size: 1rem;
+  font-family: Lato, sans-serif;
+}
+textarea:focus{
+  /* all:unset; */
+  text-align: left;
+  background-color: var(--secondary);
+  border: 3px solid var(--tertiary);
+  border-radius: 1rem;
+  height: 2rem;
+  width:fit-content;
+  max-width:500px;
+  padding:1rem;
+  font-size: 1rem;
+  font-family: Lato, sans-serif;
+}
+
+textarea::placeholder{
+  color:var(--tertiary);
+  text-align: left;
+}
+
 /* @media (prefers-color-scheme: light) {
   :root {
     color: #213547;
