@@ -19,14 +19,22 @@ const Head = styled.div`
 `;
 
 const Biography = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  height: 100%;
+  gap: 4rem;
+  
   padding-left:calc(8vw + 26vh);
 
   h1 {
     font-size: calc(3vh + 2vw);
+    white-space: nowrap;
   }
 
   h3 {
     font-size: calc(1.5vh + 1vw);
+    max-width: 100%;
   }
 `;
 
@@ -79,21 +87,119 @@ const TabButton = styled.button`
 `;
 
 const Content = styled.div`
-  flex: 1;
+  display: flex;
+  flex-direction: column;
   background-color: var(--primary);
   padding: 2rem;
 `;
 
+const Friends = () => (
+  <div>
+    <p>This is where the friends list will display</p>
+  </div>
+);
+
+const Groups = () => (
+  <div>
+    <p>This is where the study groups will display</p>
+  </div>
+);
+
+const Schedule = () => (
+  <div>
+    <p>This is where the class schedule will display</p>
+  </div>
+);
+
+const Edit = ({ profileData, setProfileData, setUpdateTrigger }) => {
+  const [formData, setFormData] = useState({id: profileData.id, full_name: profileData.full_name, bio: profileData.bio});
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+
+  const handleChange = (e) => {
+    const { id, value } = e.target;
+    setFormData( (prev) => ({...prev, [id]: value }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError('');
+    setSuccess('');
+
+    try {
+      const response = await fetch (`http://localhost:3010/v0/profile/${profileData.id}`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (response.status === 200) {
+        setUpdateTrigger((prev) => prev + 1);
+        setProfileData((prev) => ({...prev, full_name: formData.full_name, bio: formData.bio}));
+        setSuccess('Profile updated');
+        setError('');
+      } else if (response.status === 400) {
+        setError('Invalid data');
+        setSuccess('');
+      } else {
+        setError('Unexpected error');
+        setSuccess('');
+      }
+    } catch (err) {
+      console.error(err);
+      setError('Failed to update profile');
+      setSuccess('');
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <div>
+        <h3>Username:</h3>
+      </div>
+      <div>
+        <input
+          id="full_name"
+          type="text"
+          value={formData.full_name}
+          onChange={handleChange}
+        />
+      </div>
+      <div>
+        <h3>Bio:</h3>
+      </div>
+      <div>
+        <input
+          id="bio"
+          value={formData.bio}
+          onChange={handleChange}
+        />
+      </div>
+      <div>
+        <br></br>
+        <br></br>
+        <button type="submit">Save Changes</button>
+        {error && <p style={{ color: 'red' }}>{error}</p>}
+        {success && <p style={{ color: 'green' }}>{success}</p>}
+      </div>
+    </form>
+  );
+};
+
 function Profile() {
   const { userId } = useParams();
-  const [profileData, setProfileData] = useState({ name: '', bio: ''});
+  const [profileData, setProfileData] = useState({id: userId, name: '', bio: ''});
   const [error, setError] = useState('');
   const [activeTab, setActivateTab] = useState('friends');
+  const [updateTrigger, setUpdateTrigger] = useState(0);
 
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const response = await fetch(`http://localhost:3010/v0/profile/${userID}`, {
+        const response = await fetch(`http://localhost:3010/v0/profile/${userId}`, {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
@@ -103,7 +209,7 @@ function Profile() {
 
         if (response.status === 200) {
           const data = await response.json();
-          setProfileData(data);
+          setProfileData({ id: userId, full_name: data.full_name, bio: data.bio });
         } else if (response.status === 404) {
           setError('Profile not found');
         } else {
@@ -111,10 +217,11 @@ function Profile() {
         }
       } catch (err) {
         console.error(err);
+        setError('Failed to fetch profile data');
       }
     };
     fetchProfile();
-  }, [userId]);
+  }, [userId, updateTrigger]);
 
   const decodeToken = (token) => {
     const payload = token.split('.')[1];
@@ -144,8 +251,8 @@ if (loggedId === userId) {
           Profile Pic
         </ProfPic>
         <Biography>
-          <h1> {profileData.name} </h1>
-          <h3> {profileData.bio} </h3>
+            <h1> {profileData.full_name} </h1>
+            <h3> {profileData.bio} </h3>            
         </Biography>
       </Head>
 
@@ -164,7 +271,20 @@ if (loggedId === userId) {
         </Tabs>
 
         <Content>
-          {tabs.find(tab => tab.id === activeTab)?.content}
+          {(() => {
+            switch (activeTab) {
+              case 'friends':
+                return <Friends />;
+              case 'groups':
+                return <Groups />;
+              case 'schedule':
+                return <Schedule />;
+              case 'edit':
+                return <Edit profileData={profileData} setProfileData={setProfileData} setUpdateTrigger={setUpdateTrigger}/>;
+              default:
+                return <Friends />;
+            }
+          })()}
         </Content>
       </TabDisplay>
 
