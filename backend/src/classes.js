@@ -31,7 +31,6 @@ exports.addClass = async (req, res, next) => {
     if (result.rows.length > 0) {
       classRecord = result.rows[0];
     } else {
-      // Let the database generate the UUID automatically
       const insertQuery = 'INSERT INTO classes (class_name) VALUES ($1) RETURNING *';
       result = await pool.query(insertQuery, [normalizedClassName]);
       classRecord = result.rows[0];
