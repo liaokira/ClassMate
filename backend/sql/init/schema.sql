@@ -30,6 +30,6 @@ CREATE TABLE study_groups(
 DROP TABLE IF EXISTS member_profiles CASCADE;
 CREATE TABLE member_profiles (
     id UUID PRIMARY KEY REFERENCES member(id) ON DELETE CASCADE, 
-    bio_data VARCHAR(365) NOT NULL DEFAULT 'Add a bio...',
+    bio_data VARCHAR(365) NOT NULL DEFAULT 'Add a biography...',
     full_name VARCHAR(30) NOT NULL DEFAULT ''
 );

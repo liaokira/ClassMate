@@ -41,10 +41,10 @@ exports.register = async (req, res) => {
 
   const insertProfileQuery = {
     text: `
-      INSERT INTO member_profiles (id, full_name, bio_data)
-      VALUES ($1, $2, $3)
+      INSERT INTO member_profiles (id, full_name)
+      VALUES ($1, $2)
     `,
-    values: [userId, name, 'Add a bio...'],
+    values: [userId, name],
   };
   await pool.query(insertProfileQuery);
 
