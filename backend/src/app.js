@@ -51,6 +51,8 @@ const profile = require('./profile');
 app.get('/v0/profile/:id', profile.getProfile);
 app.post('/v0/profile/:id', profile.setProfile);
 
+app.get('/v0/messages/:id/', study_group.getMessages);
+
 app.use((err, req, res, next) => {
   res.status(err.status).json({
     message: err.message,

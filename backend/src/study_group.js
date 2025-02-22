@@ -95,3 +95,19 @@ exports.searchGroups = async (req, res) => {
     res.status(404).send();
   }
 };
+
+exports.getMessages = async (req, res) => {
+  const group_id = req.params.id;
+  const groupSearchQuery = {
+    text: `SELECT sender_id, group_id, message FROM messages WHERE group_id = $1 ORDER BY timestamp DESC`,
+    values: [`${group_id}`],
+  };
+  const {rows} = await pool.query(groupSearchQuery);
+  console.log(rows);
+  if (rows.length) {
+    res.status(200).send(rows);
+  }
+  else {
+    res.status(404).send();
+  }
+};

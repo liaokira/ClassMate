@@ -200,6 +200,31 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UnexpectedError'
+  /messages/{id}:
+    get:
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: The ID of the group to retrieve messages from
+        schema:
+          type: string
+          format: uuid
+      responses:
+        200:
+          description: Messages Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageArray'
+        404:
+          description: Not Found
+        default:
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnexpectedError'
 
 components:
   schemas:
@@ -295,6 +320,27 @@ components:
       type: array
       items:
         $ref: '#/components/schemas/GroupData'
+
+    MessageData:
+      type: object
+      properties:
+        sender_id:
+          type: string
+          format: uuid
+        group_id:
+          type: string
+          format: uuid
+        message:
+          type: string
+      required:
+        - sender_id
+        - group_id
+        - message
+    
+    MessageArray:
+      type: array
+      items:
+        $ref: '#/components/schemas/MessageData'
       
   securitySchemes:
     bearerAuth:            # arbitrary name for the security scheme
