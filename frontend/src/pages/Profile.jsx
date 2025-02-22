@@ -39,9 +39,7 @@ const Biography = styled.div`
   justify-content: flex-start;
   height: 100%;
   gap: 4rem;
-  
   padding-left:calc(8vw + 26vh);
-
 `;
 
 const ProfPic = styled.div`
@@ -96,20 +94,129 @@ const TabButton = styled.button`
 const Label = styled.div`
   margin-bottom: 5px;
   margin-top:10px;
-`
+`;
 
 const Content = styled.div`
   display: flex;
   flex-direction: column;
   background-color: var(--primary);
   padding: 2rem;
+  flex-grow: 1;
+  align-items: flex-start;
+  justify-content: flex-start;
 `;
 
-const Friends = () => (
-  <div>
-    <p>This is where the friends list will display</p>
-  </div>
-);
+const Friends = ({userId}) => {
+  const [email, setEmail] = useState('');
+  const [search, setSearch] = useState(null);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+
+  const handleSearch = async() => {
+    setError('');
+    setSuccess('');
+    setSearch(null);
+
+    try {
+      const friends = await fetch(`http://localhost:3010/v0/users/searchFriend?userId=${userId}&email=${email}`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (friends.status === 200) {
+        const fData = await friends.json();
+        if (fData) {
+          setError('User is already a friend');
+        } else {
+          setError('Server error');
+        }
+        return;
+      }
+
+      const response = await fetch(`http://localhost:3010/v0/users/search?email=${email}`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.status === 200) {
+        const data = await response.json();
+        setSearch(data.user);
+        setError('');
+      } else if (response.status === 404) {
+        setError('User not found');
+        setSearch(null);
+      } else {
+        setError('Server error');
+        setSearch(null);
+      }
+    } catch (err) {
+      console.error(err);
+      setError('Failed to search for user');
+      setSearch(null);
+    }
+  };
+
+  const handleAdd = async () => {
+    if (!search) return
+
+    setError('');
+    setSuccess('');
+    try {
+      const response = await fetch(`http://localhost:3010/v0/users/addFriend`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({userId: userId, id: search.id, full_name: search.full_name, email: search.email})
+      });
+
+      if (response.status === 201) {
+        setSuccess(`${search.id} added!`);
+        setError('');
+        setSearch(null);
+      } else {
+        setError('Server error');
+        setSuccess('');
+      }
+    } catch (err) {
+      console.error(err);
+      setError('Failed to add');
+    }
+  };
+
+  return (
+    <div>
+    <Container>
+      <Label>Search by Email:</Label>
+      <input 
+        type="email"
+        placeholder="Enter email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+      />
+      <button onClick={handleSearch}>Search</button>
+    </Container>
+    <br></br>
+    <div>
+      {search && (
+        <div>
+          <p>User found: {search.full_name}</p>
+          <button onClick={handleAdd}>Add Friend</button>
+        </div>
+      )}
+    </div>
+    {error && <p style={{color: 'red'}}>{error}</p>}
+    {success && <p style={{color: 'green'}}>{success}</p>}
+    </div>
+  );
+};
 
 const Groups = () => (
   <div>
@@ -194,7 +301,6 @@ const Edit = ({ profileData, setProfileData, setUpdateTrigger }) => {
         />
       </div>
       <div>
-        <br></br>
         <br></br>
         <button type="submit">Save Changes</button>
         {error && <p style={{ color: 'red' }}>{error}</p>}
@@ -292,7 +398,7 @@ if (loggedId === userId) {
           {(() => {
             switch (activeTab) {
               case 'friends':
-                return <Friends />;
+                return <Friends userId={userId}/>;
               case 'groups':
                 return <Groups />;
               case 'schedule':
@@ -300,7 +406,7 @@ if (loggedId === userId) {
               case 'edit':
                 return <Edit profileData={profileData} setProfileData={setProfileData} setUpdateTrigger={setUpdateTrigger}/>;
               default:
-                return <Friends />;
+                return <Friends userId={userId}/>;
             }
           })()}
         </Content>
