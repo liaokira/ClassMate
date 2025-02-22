@@ -22,7 +22,7 @@ exports.register = async (req, res) => {
   const {rows} = await pool.query(userQuery);
 
   if (rows.length) {
-    res.status(401).send('User already exists');
+    res.status(400).send('User already exists');
     return;
   }
 
