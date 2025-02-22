@@ -88,3 +88,14 @@ exports.removeClass = async(req, res, next) => {
   }
 };
 
+exports.getAllClasses = async (req, res, next) => {
+  try {
+    const query = 'SELECT id, class_name FROM classes';
+    const result = await pool.query(query);
+    return res.status(200).json(result.rows);
+  } catch (error) {
+    console.error('Error in getAllClasses:', error);
+    next(error);
+  }
+};
+

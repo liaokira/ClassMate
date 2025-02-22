@@ -57,6 +57,7 @@ Endpoints for classes
 */
 const classes = require('./classes');
 app.get('/v0/profile/:id/classes', classes.getClasses);
+app.get('/v0/classes', classes.getAllClasses);
 app.post('/v0/profile/:id/classes', classes.addClass);
 app.delete('/v0/profile/:id/classes/:classId', classes.removeClass);
 

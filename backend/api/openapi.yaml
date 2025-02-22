@@ -9,7 +9,6 @@ servers:
   - url: http://localhost:3010/v0
 
 paths:
-
   /register:
     post:
       description: register
@@ -28,7 +27,6 @@ paths:
                 $ref: '#/components/schemas/User'
         400:
           description: 'User already exists'
-
   /login:
     post:
       description: login
@@ -54,7 +52,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UnexpectedError'
-
   /group:
     post:
       description: create a study group
@@ -80,13 +77,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UnexpectedError'
-
   /group/{id}:
     get:
       description: get information about a study group
       parameters:
         - name: id
-          in : path
+          in: path
           required: true
           description: ID of the study group
           schema:
@@ -122,7 +118,6 @@ paths:
           description: study group successfully updated
         404:
           description: No study group with ID found
-
   /group/search:
     get:
       description: search for message groups by name
@@ -142,7 +137,6 @@ paths:
                 $ref: '#/components/schemas/GroupArray'
         404:
           description: no study groups found
-
   /profile/{id}:
     get:
       summary: Get user profile by ID
@@ -180,7 +174,7 @@ paths:
           schema:
             type: string
             format: uuid
-      requestBody: 
+      requestBody:
         required: true
         content:
           application/json:
@@ -257,7 +251,6 @@ paths:
                 $ref: '#/components/schemas/Class'
         400:
           description: Bad Request
-
   /profile/{id}/classes/{classId}:
     delete:
       summary: Remove a class from a user's profile
@@ -288,6 +281,25 @@ paths:
                     type: string
         404:
           description: Class not found for user
+  /classes:
+    get:
+      summary: Get all classes
+      description: Returns a list of all classes stored in the database.
+      responses:
+        200:
+          description: A list of all classes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Class'
+        default:
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnexpectedError'
 
 components:
   schemas:
@@ -357,7 +369,6 @@ components:
         - id
         - bio
         - full_name
-        
     GroupData:
       type: object
       properties:
@@ -365,7 +376,6 @@ components:
           type: string
       required:
         - group_name
-
     GroupFullData:
       type: object
       properties:
@@ -377,13 +387,10 @@ components:
       required:
         - id
         - group_name
-
-    # an array of matched groups
     GroupArray:
       type: array
       items:
         $ref: '#/components/schemas/GroupData'
-
     Class:
       type: object
       properties:
@@ -394,10 +401,9 @@ components:
           type: string
       required:
         - id
-        - class_name  
-        
+        - class_name
   securitySchemes:
-    bearerAuth:            # arbitrary name for the security scheme
+    bearerAuth:
       type: http
       scheme: bearer
-      bearerFormat: JWT    # optional, arbitrary value for documentation purposes
+      bearerFormat: JWT
