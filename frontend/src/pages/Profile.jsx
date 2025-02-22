@@ -2,6 +2,13 @@ import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import styled from "styled-components";
 import ClassManager from "../components/ClassManager";
+import Friends from '../components/Friends';
+import Groups from '../components/Groups';
+import Schedule from '../components/Schedule';
+import Edit from '../components/Edit';
+
+
+
 
 const Container = styled.div`
   margin: auto;
@@ -9,7 +16,6 @@ const Container = styled.div`
   border: 3px solid var(--tertiary);
   border-radius: 1rem;
 `;
-
 
 const PageContainer = styled.body`
   display: flex;
@@ -39,9 +45,7 @@ const Biography = styled.div`
   justify-content: flex-start;
   height: 100%;
   gap: 4rem;
-  
   padding-left:calc(8vw + 26vh);
-
 `;
 
 const ProfPic = styled.div`
@@ -96,116 +100,17 @@ const TabButton = styled.button`
 const Label = styled.div`
   margin-bottom: 5px;
   margin-top:10px;
-`
+`;
 
 const Content = styled.div`
   display: flex;
   flex-direction: column;
   background-color: var(--primary);
   padding: 2rem;
+  flex-grow: 1;
+  align-items: flex-start;
+  justify-content: flex-start;
 `;
-
-const Friends = () => (
-  <div>
-    <p>This is where the friends list will display</p>
-  </div>
-);
-
-const Groups = () => (
-  <div>
-    <p>This is where the study groups will display</p>
-  </div>
-);
-
-const Schedule = () => (
-  <div>
-    <p>This is where the class schedule will display</p>
-  </div>
-);
-
-const Edit = ({ profileData, setProfileData, setUpdateTrigger }) => {
-  const [formData, setFormData] = useState({id: profileData.id, full_name: profileData.full_name, bio: profileData.bio});
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
-
-  const handleChange = (e) => {
-    const { id, value } = e.target;
-    setFormData( (prev) => ({...prev, [id]: value }));
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError('');
-    setSuccess('');
-
-    try {
-      const response = await fetch (`http://localhost:3010/v0/profile/${profileData.id}`, {
-        method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
-
-      if (response.status === 200) {
-        setUpdateTrigger((prev) => prev + 1);
-        setProfileData((prev) => ({...prev, full_name: formData.full_name, bio: formData.bio}));
-        setSuccess('Profile updated');
-        setError('');
-      } else if (response.status === 400) {
-        setError('Invalid data');
-        setSuccess('');
-      } else {
-        setError('Unexpected error');
-        setSuccess('');
-      }
-    } catch (err) {
-      console.error(err);
-      setError('Failed to update profile');
-      setSuccess('');
-    }
-  };
-
-  return (
-    <EditContainer>
-    <Container>
-    <h3>Edit Profile</h3>
-    <form onSubmit={handleSubmit}>
-      <div>
-        <Label>Username:</Label>
-      </div>
-      <div>
-        <input
-          id="full_name"
-          type="text"
-          value={formData.full_name}
-          onChange={handleChange}
-        />
-      </div>
-      <div>
-        <Label>Bio:</Label>
-      </div>
-      <div>
-        <textarea
-          id="bio"
-          value={formData.bio}
-          onChange={handleChange}
-        />
-      </div>
-      <div>
-        <br></br>
-        <br></br>
-        <button type="submit">Save Changes</button>
-        {error && <p style={{ color: 'red' }}>{error}</p>}
-        {success && <p style={{ color: 'green' }}>{success}</p>}
-      </div>
-    </form>
-    </Container>
-    <ClassManager  userId={formData.id}/>
-    </EditContainer>
-  );
-};
 
 function Profile() {
   const { userId } = useParams();
@@ -292,7 +197,7 @@ if (loggedId === userId) {
           {(() => {
             switch (activeTab) {
               case 'friends':
-                return <Friends />;
+                return <Friends userId={userId}/>;
               case 'groups':
                 return <Groups />;
               case 'schedule':
@@ -300,7 +205,7 @@ if (loggedId === userId) {
               case 'edit':
                 return <Edit profileData={profileData} setProfileData={setProfileData} setUpdateTrigger={setUpdateTrigger}/>;
               default:
-                return <Friends />;
+                return <Friends userId={userId}/>;
             }
           })()}
         </Content>
