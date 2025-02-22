@@ -1,4 +1,4 @@
-openapi: '3.0.3'
+openapi: "3.0.3"
 
 info:
   description: ClassMate Backend
@@ -11,24 +11,27 @@ servers:
 paths:
   /register:
     post:
+      # No security -> public
       description: register
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/loginCredentials'
+              $ref: "#/components/schemas/loginCredentials"
       responses:
         201:
-          description: 'Successful registration'
+          description: "Successful registration"
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
+                $ref: "#/components/schemas/User"
         400:
-          description: 'User already exists'
+          description: "User already exists"
+
   /login:
     post:
+      # No security -> public
       description: login
       requestBody:
         description: Request Body
@@ -36,14 +39,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Credentials'
+              $ref: "#/components/schemas/Credentials"
       responses:
         200:
           description: Credentials correct
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
+                $ref: "#/components/schemas/User"
         401:
           description: Invalid credentials
         default:
@@ -51,9 +54,12 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UnexpectedError'
+                $ref: "#/components/schemas/UnexpectedError"
+
   /group:
     post:
+      security:
+        - bearerAuth: []
       description: create a study group
       requestBody:
         description: specifics of the study group (name, time, etc.)
@@ -61,14 +67,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/GroupData'
+              $ref: "#/components/schemas/GroupData"
       responses:
         201:
           description: study group created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ID'
+                $ref: "#/components/schemas/ID"
         400:
           description: Bad request. Invalid data provided
         default:
@@ -76,9 +82,12 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UnexpectedError'
+                $ref: "#/components/schemas/UnexpectedError"
+
   /group/{id}:
     get:
+      security:
+        - bearerAuth: []
       description: get information about a study group
       parameters:
         - name: id
@@ -94,10 +103,12 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GroupFullData'
+                $ref: "#/components/schemas/GroupFullData"
         404:
           description: No study group with ID found
     put:
+      security:
+        - bearerAuth: []
       description: update information of a study group
       parameters:
         - name: id
@@ -112,14 +123,17 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/GroupData'
+              $ref: "#/components/schemas/GroupData"
       responses:
         200:
           description: study group successfully updated
         404:
           description: No study group with ID found
+
   /group/search:
     get:
+      security:
+        - bearerAuth: []
       description: search for message groups by name
       parameters:
         - name: searchFor
@@ -134,11 +148,14 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GroupArray'
+                $ref: "#/components/schemas/GroupArray"
         404:
           description: no study groups found
+
   /profile/{id}:
     get:
+      security:
+        - bearerAuth: []
       summary: Get user profile by ID
       description: Retrieves user profile details based on the provided ID.
       parameters:
@@ -155,7 +172,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ProfileData'
+                $ref: "#/components/schemas/ProfileData"
         404:
           description: Not Found
         default:
@@ -163,8 +180,10 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UnexpectedError'
+                $ref: "#/components/schemas/UnexpectedError"
     put:
+      security:
+        - bearerAuth: []
       description: setprofile
       parameters:
         - name: id
@@ -179,20 +198,20 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ProfileData'
+              $ref: "#/components/schemas/ProfileData"
       responses:
         200:
           description: Profile Updated
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ID'
+                $ref: "#/components/schemas/ID"
         201:
           description: Profile Created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ID'
+                $ref: "#/components/schemas/ID"
         404:
           description: Not Found
         default:
@@ -200,9 +219,12 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UnexpectedError'
+                $ref: "#/components/schemas/UnexpectedError"
+
   /profile/{id}/classes:
     get:
+      security:
+        - bearerAuth: []
       summary: Get all classes for a user
       parameters:
         - name: id
@@ -220,8 +242,10 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Class'
+                  $ref: "#/components/schemas/Class"
     post:
+      security:
+        - bearerAuth: []
       summary: Add a class to a user's profile
       parameters:
         - name: id
@@ -248,11 +272,14 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Class'
+                $ref: "#/components/schemas/Class"
         400:
           description: Bad Request
+
   /profile/{id}/classes/{classId}:
     delete:
+      security:
+        - bearerAuth: []
       summary: Remove a class from a user's profile
       parameters:
         - name: id
@@ -281,8 +308,11 @@ paths:
                     type: string
         404:
           description: Class not found for user
+
   /classes:
     get:
+      security:
+        - bearerAuth: []
       summary: Get all classes
       description: Returns a list of all classes stored in the database.
       responses:
@@ -293,15 +323,21 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Class'
+                  $ref: "#/components/schemas/Class"
         default:
           description: Unexpected Error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UnexpectedError'
+                $ref: "#/components/schemas/UnexpectedError"
 
 components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
   schemas:
     UnexpectedError:
       required:
@@ -390,7 +426,7 @@ components:
     GroupArray:
       type: array
       items:
-        $ref: '#/components/schemas/GroupData'
+        $ref: "#/components/schemas/GroupData"
     Class:
       type: object
       properties:
@@ -402,8 +438,3 @@ components:
       required:
         - id
         - class_name
-  securitySchemes:
-    bearerAuth:
-      type: http
-      scheme: bearer
-      bearerFormat: JWT
