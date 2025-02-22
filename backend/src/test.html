@@ -7,43 +7,50 @@
 </head>
 <body>
     <h2>WebSocket Chat</h2>
-    <input type="text" id="nameInput" placeholder="Enter your name...">
-    <button onclick="setName()">Set Name</button>
-    <br><br>
     <input type="text" id="messageInput" placeholder="Type a message...">
     <button onclick="sendMessage()">Send</button>
     <ul id="messages"></ul>
 
     <script>
-        const ws = new WebSocket("ws://localhost:3010"); 
-        let userName = "Guest";
+        const socket = new WebSocket("ws://localhost:3010"); 
 
-        ws.onopen = () => {
-            console.log("Connected to WebSocket Server");
+        socket.onopen = () => {
+            console.log("Connected to WebSocket server");
+            socket.send(JSON.stringify({ type: "join", userId: "40be182e-74d4-470b-a446-c3292739807b", groupId: "40be182e-74d4-470b-a446-c3292730647a" }));
         };
 
-        ws.onmessage = (event) => {
-            const messageList = document.getElementById("messages");
-            const newMessage = document.createElement("li");
-            newMessage.textContent = event.data;
-            messageList.appendChild(newMessage);
-        };
-
-        function setName() {
-            const input = document.getElementById("nameInput");
-            userName = input.value.trim() || "Guest";
-            ws.send(`/name ${userName}`); 
-            input.value = "";
-        }
-
-        function sendMessage() {
-            const input = document.getElementById("messageInput");
-            const message = input.value.trim();
+        // Send a message to the group
+        const sendMessage = () => {
+            const messageInput = document.getElementById("messageInput");
+            const message = messageInput.value.trim();
             if (message) {
-                ws.send(message);
-                input.value = "";
+                socket.send(JSON.stringify({
+                    type: "message",
+                    senderId: "40be182e-74d4-470b-a446-c3292739807b",
+                    groupId: "40be182e-74d4-470b-a446-c3292730647a",
+                    message: message
+                }));
+                messageInput.value = "";
+            } else {
+                console.log("Message is empty, not sending.");
             }
-        }
+        };
+
+        socket.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+            if (data.type === "message") {
+                console.log("New group message:", data.message);
+
+                const messageList = document.getElementById("messages");
+                const listItem = document.createElement("li");
+                listItem.textContent = `${data.message.sender_id}: ${data.message.message}`;
+                messageList.appendChild(listItem);
+            }
+        };
+
+        socket.onclose = () => {
+            console.log("Disconnected from WebSocket server");
+        };
     </script>
 </body>
 </html>

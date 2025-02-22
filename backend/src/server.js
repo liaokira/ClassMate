@@ -2,6 +2,16 @@ require('dotenv').config();
 const http = require('http');
 const app = require('./app.js');
 const WebSocket = require('ws');
+const { Pool } = require('pg');
+
+const pool = new Pool({
+    host: 'db',
+    port: '5432',
+    database: 'example',
+    user: 'postgres',
+    password: 'test',
+});
+
 
 const server = http.createServer(app);
 const wss = new WebSocket.Server({ server });
@@ -9,42 +19,47 @@ const wss = new WebSocket.Server({ server });
 const clients = new Map(); // Stores connected clients and their names
 
 wss.on('connection', (ws) => {
-    const clientId = `User-${Math.floor(Math.random() * 1000)}`; // Default user ID
-    clients.set(ws, clientId);
-    console.log(`New client connected: ${clientId}`);
+    console.log('New client connected');
 
-    // Send welcome message with default name
-    ws.send(`Welcome, ${clientId}! Type /name newName to change your name.`);
+    // Handle client messages
+    ws.on('message', async (message) => {
+        try {
+            const data = JSON.parse(message);
+            if (data.type === 'join') {
+                // Store user in the group
+                clients.set(ws, { userId: data.userId, groupId: data.groupId });
+                console.log(`User ${data.userId} joined group ${data.groupId}`);
+            } else if (data.type === 'message') {
+                // Save message to the database
+                const result = await pool.query(
+                    `INSERT INTO messages (sender_id, group_id, message) VALUES ($1, $2, $3) RETURNING *;`,
+                    [data.senderId, data.groupId, data.message]
+                );
 
-    ws.on('message', (message) => {
-        message = message.toString().trim(); // Convert Buffer to String and trim whitespace
+                const savedMessage = result.rows[0];
 
-        if (message.startsWith("/name ")) {
-            const newName = message.split(" ")[1];
-            if (newName) {
-                clients.set(ws, newName); // Update the user's name
-                ws.send(`Your name is now ${newName}`);
-                console.log(`Client renamed to: ${newName}`);
-                return;
+                // Broadcast message to all users in the same group
+                broadcastToGroup(data.groupId, savedMessage);
             }
+        } catch (error) {
+            console.error('Error handling message:', error);
         }
-
-        // Broadcast message with sender's name
-        const senderName = clients.get(ws);
-        console.log(`[${senderName}] Sent: ${message}`);
-
-        wss.clients.forEach(client => {
-            if (client.readyState === WebSocket.OPEN) {
-                client.send(`[${senderName}]: ${message}`);
-            }
-        });
     });
 
+    // Handle client disconnect
     ws.on('close', () => {
-        console.log(`Client disconnected: ${clients.get(ws)}`);
+        console.log('Client disconnected');
         clients.delete(ws);
     });
 });
+
+function broadcastToGroup(groupId, message) {
+    clients.forEach((clientData, clientWs) => {
+        if (clientData.groupId === groupId && clientWs.readyState === WebSocket.OPEN) {
+            clientWs.send(JSON.stringify({ type: 'message', message }));
+        }
+    });
+}
 
 server.listen(3010, () => {
     console.log(`Server Running on port 3010`);
