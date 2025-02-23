@@ -132,6 +132,7 @@ const Friends = ({userId}) => {
   return (
     <ParentContainer>
       <Container>
+        <h3>Add a friend</h3>
         <Label>Search by Email:</Label>
         <input 
           type="email"

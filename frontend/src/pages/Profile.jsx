@@ -7,9 +7,6 @@ import Groups from '../components/Groups';
 import Schedule from '../components/Schedule';
 import Edit from '../components/Edit';
 
-
-
-
 const Container = styled.div`
   margin: auto;
   padding: 20px;
