@@ -52,10 +52,6 @@ const Friends = ({userId}) => {
 
     try {
       const encode = encodeURIComponent(email);
-      console.log('Id:', userId);
-      console.log('email:', encode);
-      const token = localStorage.getItem('accessToken');
-      console.log('token:', token);
       const friends = await fetch(`http://localhost:3010/v0/users/searchFriend?userId=${userId}&email=${encode}`, {
         method: 'GET',
         headers: {
@@ -68,9 +64,15 @@ const Friends = ({userId}) => {
         const fData = await friends.json();
         if (fData) {
           setError('User is already a friend');
+          setSuccess('');
         } else {
           setError('Server error');
+          setSuccess('');
         }
+        return;
+      } else if (friends.status === 404) {
+        setError('Cannot add yourself');
+        setSuccess('');
         return;
       }
 
