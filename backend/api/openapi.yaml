@@ -28,6 +28,10 @@ paths:
                 $ref: "#/components/schemas/User"
         400:
           description: "User already exists"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
 
   /login:
     post:
@@ -49,6 +53,10 @@ paths:
                 $ref: "#/components/schemas/User"
         401:
           description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         default:
           description: Unexpected Error
           content:
@@ -77,6 +85,10 @@ paths:
                 $ref: "#/components/schemas/ID"
         400:
           description: Bad request. Invalid data provided
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         default:
           description: Unexpected Error
           content:
@@ -106,6 +118,10 @@ paths:
                 $ref: "#/components/schemas/GroupFullData"
         404:
           description: No study group with ID found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
     put:
       security:
         - bearerAuth: []
@@ -129,6 +145,10 @@ paths:
           description: study group successfully updated
         404:
           description: No study group with ID found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
 
   /group/search:
     get:
@@ -151,6 +171,10 @@ paths:
                 $ref: "#/components/schemas/GroupArray"
         404:
           description: no study groups found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
 
   /profile/{id}:
     get:
@@ -175,6 +199,10 @@ paths:
                 $ref: "#/components/schemas/ProfileData"
         404:
           description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         default:
           description: Unexpected Error
           content:
@@ -214,6 +242,10 @@ paths:
                 $ref: "#/components/schemas/ID"
         404:
           description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         default:
           description: Unexpected Error
           content:
@@ -243,6 +275,12 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/Class"
+        404:
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
     post:
       security:
         - bearerAuth: []
@@ -275,6 +313,10 @@ paths:
                 $ref: "#/components/schemas/Class"
         400:
           description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
 
   /profile/{id}/classes/{classId}:
     delete:
@@ -308,6 +350,10 @@ paths:
                     type: string
         404:
           description: Class not found for user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
 
   /classes:
     get:
@@ -324,12 +370,152 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/Class"
+        404:
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         default:
           description: Unexpected Error
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/UnexpectedError"
+
+  /users/searchFriend:
+    get:
+      security:
+        - bearerAuth: []
+      summary: Check if given user/email combination is already friends
+      description: Checks if the user with `userId` is already friends with the user who has `email`.
+      parameters:
+        - name: userId
+          in: query
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: email
+          in: query
+          required: true
+          schema:
+            type: string
+            format: email
+      responses:
+        200:
+          description: They are already friends
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SimpleUser"
+        400:
+          description: Missing userId or email
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        404:
+          description: Not friends or user not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        500:
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /users/search:
+    get:
+      security:
+        - bearerAuth: []
+      summary: Search for a user by email
+      description: Looks up a user in the member table by email
+      parameters:
+        - name: email
+          in: query
+          required: true
+          schema:
+            type: string
+            format: email
+      responses:
+        200:
+          description: User found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user:
+                    $ref: "#/components/schemas/SimpleUser"
+        400:
+          description: Missing email
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        404:
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        500:
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /users/addFriend:
+    put:
+      security:
+        - bearerAuth: []
+      summary: Add a user to the friend list
+      description: Inserts a single record in the friend table.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AddFriendRequest"
+      responses:
+        201:
+          description: Friend added
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        400:
+          description: Missing userId or friend id
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        404:
+          description: One or both users do not exist
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        409:
+          description: Already friends
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        500:
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
 
 components:
   securitySchemes:
@@ -339,6 +525,12 @@ components:
       bearerFormat: JWT
 
   schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+
     UnexpectedError:
       required:
         - code
@@ -349,6 +541,7 @@ components:
           format: int32
         message:
           type: string
+
     Credentials:
       type: object
       properties:
@@ -360,6 +553,7 @@ components:
       required:
         - email
         - password
+
     loginCredentials:
       type: object
       properties:
@@ -374,6 +568,7 @@ components:
         - email
         - password
         - name
+
     User:
       type: object
       properties:
@@ -384,6 +579,7 @@ components:
       required:
         - name
         - accessToken
+
     ID:
       type: object
       properties:
@@ -392,6 +588,7 @@ components:
           format: uuid
       required:
         - id
+
     ProfileData:
       type: object
       properties:
@@ -405,6 +602,7 @@ components:
         - id
         - bio
         - full_name
+
     GroupData:
       type: object
       properties:
@@ -412,6 +610,7 @@ components:
           type: string
       required:
         - group_name
+
     GroupFullData:
       type: object
       properties:
@@ -423,10 +622,12 @@ components:
       required:
         - id
         - group_name
+
     GroupArray:
       type: array
       items:
         $ref: "#/components/schemas/GroupData"
+
     Class:
       type: object
       properties:
@@ -438,3 +639,33 @@ components:
       required:
         - id
         - class_name
+
+    SimpleUser:
+      description: Basic user info
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        full_name:
+          type: string
+        email:
+          type: string
+
+    AddFriendRequest:
+      description: Body to add a friend
+      type: object
+      properties:
+        userId:
+          type: string
+          format: uuid
+        id:
+          type: string
+          format: uuid
+        full_name:
+          type: string
+        email:
+          type: string
+      required:
+        - userId
+        - id

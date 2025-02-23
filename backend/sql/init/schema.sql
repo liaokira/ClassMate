@@ -33,3 +33,13 @@ CREATE TABLE member_profiles (
     bio_data VARCHAR(365) NOT NULL DEFAULT 'Add a biography...',
     full_name VARCHAR(30) NOT NULL DEFAULT ''
 );
+
+DROP TABLE IF EXISTS member_friends CASCADE;
+CREATE TABLE member_friends (
+    member_id UUID NOT NULL,
+    friend_id UUID NOT NULL,
+    CHECK (member_id < friend_id),
+    PRIMARY KEY (member_id, friend_id),
+    FOREIGN KEY (member_id) REFERENCES member(id) ON DELETE CASCADE,
+    FOREIGN KEY (friend_id) REFERENCES member(id) ON DELETE CASCADE
+);

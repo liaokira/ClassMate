@@ -12,8 +12,8 @@ const register = require('./register');
 const study_group = require('./study_group');
 const profile = require('./profile');
 const classes = require('./classes');
+const friends = require('./friends');
 
-// NEW: Import your auth middleware
 const { checkAuth } = require('./auth'); 
 
 const app = express();
@@ -21,7 +21,6 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({extended: false}));
 
-// load your OpenAPI spec
 const apiSpec = path.join(__dirname, '../api/openapi.yaml');
 const apidoc = yaml.load(fs.readFileSync(apiSpec, 'utf8'));
 
@@ -52,6 +51,11 @@ app.get('/v0/profile/:id/classes', classes.getClasses);
 app.get('/v0/classes', classes.getAllClasses);
 app.post('/v0/profile/:id/classes', classes.addClass);
 app.delete('/v0/profile/:id/classes/:classId', classes.removeClass);
+
+app.get('/v0/users/searchFriend', friends.searchFriend);
+app.get('/v0/users/search', friends.searchUser);
+app.put('/v0/users/addFriend', friends.addFriend);
+
 
 // ---------- Error Handling ----------
 app.use((err, req, res, next) => {
