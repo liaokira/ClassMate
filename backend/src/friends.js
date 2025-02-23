@@ -14,9 +14,10 @@ const pool = new Pool({
 // --------------------
 exports.searchFriend = async (req, res) => {
   try {
-    const { userId, email } = req.query;
+    const userId = req.query.userId;
+    const email = decodeURIComponent(req.query.email);
     if (!userId || !email) {
-      return res.status(400).json({ error: 'Missing userId or email' });
+      return res.status(400).json({ error: `Missing userId or email`, });
     }
 
     const userSelect = `
@@ -63,7 +64,7 @@ exports.searchFriend = async (req, res) => {
 // --------------------
 exports.searchUser = async (req, res) => {
   try {
-    const { email } = req.query;
+    const email = decodeURIComponent(req.query.email);
     if (!email) {
       return res.status(400).json({ error: 'Missing email' });
     }

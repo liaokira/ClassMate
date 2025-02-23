@@ -175,7 +175,7 @@ if (loggedId === userId) {
         </ProfPic>
         <Biography>
             <h1> {profileData.full_name} </h1>
-            <h3> {profileData.bio} </h3>            
+            <h2> {profileData.bio} </h2>            
         </Biography>
       </Head>
 

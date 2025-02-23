@@ -1,10 +1,19 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import styled from "styled-components";
 
 
 const Label = styled.div`
   margin-bottom: 5px;
   margin-top:10px;
+`;
+
+const Button = styled.button`
+  margin-left: 10px;
+`;
+
+const ParentContainer = styled.div`
+  display: flex;
+  gap: 20px;
 `;
 
 const Container = styled.div`
@@ -14,11 +23,27 @@ const Container = styled.div`
   border-radius: 1rem;
 `;
 
+const Results = styled.div`
+  margin: auto;
+  padding: 20px;
+  border: ${(props) => (props.$fill ? '3px solid var(--tertiary)' : 'none')};
+  border-radius: 1rem;
+`;
+
 const Friends = ({userId}) => {
   const [email, setEmail] = useState('');
   const [search, setSearch] = useState(null);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [fill, setFill] = useState(false);
+
+  useEffect(() => {
+    if (search || error || success) {
+      setFill(true);
+    } else {
+      setFill(false);
+    }
+  }, [search, error, success]);
 
   const handleSearch = async() => {
     setError('');
@@ -26,7 +51,12 @@ const Friends = ({userId}) => {
     setSearch(null);
 
     try {
-      const friends = await fetch(`http://localhost:3010/v0/users/searchFriend?userId=${userId}&email=${email}`, {
+      const encode = encodeURIComponent(email);
+      console.log('Id:', userId);
+      console.log('email:', encode);
+      const token = localStorage.getItem('accessToken');
+      console.log('token:', token);
+      const friends = await fetch(`http://localhost:3010/v0/users/searchFriend?userId=${userId}&email=${encode}`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
@@ -44,7 +74,7 @@ const Friends = ({userId}) => {
         return;
       }
 
-      const response = await fetch(`http://localhost:3010/v0/users/search?email=${email}`, {
+      const response = await fetch(`http://localhost:3010/v0/users/search?email=${encode}`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
@@ -86,7 +116,7 @@ const Friends = ({userId}) => {
       });
 
       if (response.status === 201) {
-        setSuccess(`${search.id} added!`);
+        setSuccess(`${search.full_name} added!`);
         setError('');
         setSearch(null);
       } else {
@@ -100,30 +130,30 @@ const Friends = ({userId}) => {
   };
 
   return (
-    <div>
-    <Container>
-      <Label>Search by Email:</Label>
-      <input 
-        type="email"
-        placeholder="Enter email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-      />
-      <button onClick={handleSearch}>Search</button>
-    </Container>
-    <br></br>
-    <div>
-      {search && (
-        <div>
-          <p>User found: {search.full_name}</p>
-          <button onClick={handleAdd}>Add Friend</button>
-        </div>
-      )}
-    </div>
-    {error && <p style={{color: 'red'}}>{error}</p>}
-    {success && <p style={{color: 'green'}}>{success}</p>}
-    </div>
+    <ParentContainer>
+      <Container>
+        <Label>Search by Email:</Label>
+        <input 
+          type="email"
+          placeholder="Enter email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+        <Button onClick={handleSearch}>Search</Button>
+      </Container>
+
+      <Results $fill={fill}>
+        {search && (
+          <div>
+            <h3>User found: {search.full_name}</h3>
+            <button onClick={handleAdd}>Add Friend</button>
+          </div>
+        )}
+        {error && <p style={{color: 'red'}}>{error}</p>}
+        {success && <p style={{color: 'green'}}>{success}</p>}
+      </Results>
+    </ParentContainer>
   );
 };
 
-export default Friends;
+export default Friends

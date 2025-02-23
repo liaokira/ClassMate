@@ -104,4 +104,4 @@ const Edit = ({ profileData, setProfileData, setUpdateTrigger }) => {
   );
 };
 
-export default Edit;
+export default Edit

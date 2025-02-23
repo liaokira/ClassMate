@@ -6,3 +6,5 @@ const Groups = () => (
     <p>This is where the study groups will display</p>
   </div>
 );
+
+export default Groups

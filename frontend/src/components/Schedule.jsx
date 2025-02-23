@@ -6,3 +6,5 @@ const Schedule = () => (
     <p>This is where the class schedule will display</p>
   </div>
 );
+
+export default Schedule
