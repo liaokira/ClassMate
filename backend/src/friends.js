@@ -34,7 +34,7 @@ exports.searchFriend = async (req, res) => {
     const sorted = [userId, friendId].sort();
 
     if (sorted[0] === sorted[1]) {
-      return res.status(404).json({ error: 'Cannot friend yourself' });
+      return res.status(405).json({ error: 'Cannot friend yourself' });
     }
 
     const friendCheckQuery = `
@@ -134,6 +134,42 @@ exports.addFriend = async (req, res) => {
 
   } catch (err) {
     console.error('Error in addFriend:', err);
+    return res.status(500).json({ error: 'Server error' });
+  }
+};
+
+// --------------------
+// GET /v0/users/getFriends?userID=XYZ
+// --------------------
+exports.getFriends = async (req, res) => {
+  try {
+    const userId = req.query.userId;
+    if (!userId) {
+      return res.status(400).json({ error: 'Missing userId'});
+    }
+
+    const friendsQuery = `
+      SELECT
+        friends.friend_id AS id,
+        member.data->>'name' AS full_name,
+        member.data->>'email' AS email
+      FROM (
+        SELECT
+          CASE 
+            WHEN member_id = $1 THEN friend_id
+            ELSE member_id 
+          END AS friend_id
+        FROM member_friends
+        WHERE member_id = $1 OR friend_id = $1
+      ) AS friends
+      JOIN member ON member.id = friends.friend_id;
+    `;
+
+    const { rows } = await pool.query(friendsQuery, [userId]);
+
+    return res.status(200).json({ friends: rows });
+  } catch (err) {
+    console.error('Error in getFriends:', err);
     return res.status(500).json({ error: 'Server error' });
   }
 };

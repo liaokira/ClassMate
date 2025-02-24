@@ -55,6 +55,7 @@ app.delete('/v0/profile/:id/classes/:classId', classes.removeClass);
 app.get('/v0/users/searchFriend', friends.searchFriend);
 app.get('/v0/users/search', friends.searchUser);
 app.put('/v0/users/addFriend', friends.addFriend);
+app.get('/v0/users/getFriends', friends.getFriends);
 
 
 // ---------- Error Handling ----------
