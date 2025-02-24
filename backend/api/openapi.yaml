@@ -421,6 +421,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
+        405:
+          description: User is self
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         500:
           description: Server error
           content:
@@ -506,6 +512,45 @@ paths:
                 $ref: "#/components/schemas/ErrorResponse"
         409:
           description: Already friends
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        500:
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /users/getFriends:
+    get:
+      security:
+        - bearerAuth: []
+      summary: Gets friends of the logged in user
+      description: Retrieves list of friends from userId
+      parameters:
+        - name: userId
+          in: query
+          required: true
+          description: The ID of the logged in user
+          schema:
+            type: string
+            format: uuid
+      responses:
+        200:
+          description: List of friends sent
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  friends:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/SimpleUser"
+        400:
+          description: Missing userId
           content:
             application/json:
               schema:
