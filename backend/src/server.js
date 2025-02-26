@@ -27,13 +27,13 @@ wss.on('connection', (ws) => {
             const data = JSON.parse(message);
             if (data.type === 'join') {
                 // Store user in the group
-                clients.set(ws, { userId: data.userId, groupId: data.groupId });
-                console.log(`User ${data.userId} joined group ${data.groupId}`);
+                clients.set(ws, { userId: data.userId, groupId: data.groupId, sender_name: data.sender_name});
+                console.log(`User ${data.sender_name} joined group ${data.groupId}`);
             } else if (data.type === 'message') {
                 // Save message to the database
                 const result = await pool.query(
-                    `INSERT INTO messages (sender_id, group_id, message) VALUES ($1, $2, $3) RETURNING *;`,
-                    [data.senderId, data.groupId, data.message]
+                    `INSERT INTO messages (sender_id, sender_name, group_id, message) VALUES ($1, $2, $3, $4) RETURNING *;`,
+                    [data.senderId, data.sender_name, data.groupId, data.message]
                 );
 
                 const savedMessage = result.rows[0];

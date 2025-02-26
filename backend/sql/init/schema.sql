@@ -45,8 +45,9 @@ CREATE TABLE group_members (
 DROP TABLE IF EXISTS messages CASCADE;
 CREATE TABLE messages (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    sender_id UUID REFERENCES member(id) ON DELETE CASCADE,
-    group_id UUID REFERENCES study_groups(id) ON DELETE CASCADE,
+    sender_id UUID NOT NULL REFERENCES member(id) ON DELETE CASCADE,
+    sender_name VARCHAR(40) NOT NULL,
+    group_id UUID NOT NULL REFERENCES study_groups(id) ON DELETE CASCADE,
     message TEXT NOT NULL,
     timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

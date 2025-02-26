@@ -327,6 +327,8 @@ components:
         sender_id:
           type: string
           format: uuid
+        sender_name:
+          type: string
         group_id:
           type: string
           format: uuid
