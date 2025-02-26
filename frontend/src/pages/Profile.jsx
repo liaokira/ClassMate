@@ -5,13 +5,6 @@ import Friends from '../components/Friends';
 import Schedule from '../components/Schedule';
 import Edit from '../components/Edit';
 
-const Container = styled.div`
-  margin: auto;
-  padding: 20px;
-  border: 3px solid var(--tertiary);
-  border-radius: 1rem;
-`;
-
 const PageContainer = styled.body`
   display: flex;
   flex-direction: column;
@@ -25,13 +18,6 @@ const Head = styled.div`
   height: 32vh;
   border-bottom: 3px solid var(--tertiary); 
   z-index: 3;
-`;
-
-const EditContainer = styled.div`
-  display:flex;
-  align-items:flex-start;
-  flex:wrap: wrap;
-  column-gap:10px;
 `;
 
 const Biography = styled.div`
