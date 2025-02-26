@@ -7,7 +7,7 @@ const BodyStyle = styled.body`
   display: flex;
   align-items: center;
   justify-content: center;
-  height:calc(100vh - 6rem);
+  height:calc(100vh - 12vh);
 `;
 
 const RegisterBox = styled.div`

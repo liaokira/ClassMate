@@ -1,188 +1,83 @@
-
 import { useState } from 'react'
 import { Link } from "react-router-dom";
 import logo from '../assets/react.svg';
 import styled from "styled-components";
-
-
+import GroupCard from '../components/GroupCard';
 
 const Body = styled.div`
+display:flex;
+flex-direction:column;
   background-color: var(--secondary);
-  height: 100vh;
   text-align: center;
   align-items: center;
+  height:calc(100vh - 12vh);
+  justify-content:center;
 `;
 
-const Banner = styled.div`
-  height: relative;
-  width: 81%;
-  background-color: var(--secondary);
-  margin: auto;
-  overflow-y: auto;
-  scrollbar-width: none;
-`;
-
-const TabRow = styled.div`
-  display: flex;
-  padding-top: 11vh;
-  margin: auto;
-`;
-
-const Tab = styled.div`
-  height: 6vh;
-  width: 30%;
-  margin: auto;
-  background-color: var(--secondary);
-  border-top: 3px solid var(--tertiary);
-  border-left: 3px solid var(--tertiary);
-  border-right: 3px solid var(--tertiary);
-  border-bottom: 0px;
-  border-top-left-radius: 20px;
-  border-top-right-radius: 20px;
-  display: flex;
+const View = styled.div`
+  display:flex;
+  width:65vw;
   text-align: center;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  overflow: hidden;
-
-  &:hover {
-    background-color: var(--secondary-hover, #f0f0f0);
-  }
-`;
-
-const TabSelect = styled.div`
-  height: 6vh;
-  width: 30%;
-  margin: auto;
   background-color: var(--primary);
-  border-top: 3px solid var(--tertiary);
-  border-left: 3px solid var(--tertiary);
-  border-right: 3px solid var(--tertiary);
-  border-bottom: 0px;
-  border-top-left-radius: 20px;
-  border-top-right-radius: 20px;
-  display: flex;
-  text-align: center;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  overflow: hidden;
-
-  &:hover {
-    background-color: var(--primary-hover, #dcdcdc);
-  }
-`;
-
-const GroupBlock = styled.div`
-  background-color: var(--primary);
-  height: 40vh;
-  max-height: 40vh;
-  overflow-y: auto;
-  scrollbar-width: none;
-  width: relative;
-  margin: auto;
-  padding-top: 5vh;
-  padding-bottom: 11vh;
   border: 3px solid var(--tertiary);
-  border-radius: 20px;
-  justify-content: space-between;
-  text-align: center;
-`;
-
-const GroupRow = styled.div`
-  display: flex;
+  border-radius: 0 1vw 1vw 1vw;
+  padding: 0 2rem 2rem;
+  gap:1vw;
+  padding-top:1vw;
   flex-wrap: wrap;
-  margin-top: 6vh;
-  justify-content: space-evenly;
+  overflow-y:scroll;
+  height:60vh;
 `;
 
-const Group = styled.div`
-  height: 11vh;
-  width: 35vh;
-  margin: 2vh 4vh;
+const TabHolder = styled.div`
+position:relative;
+width:69vw;
+height:8vh;
+`;
+
+const TabHolder2 = styled.div`
+position:absolute;
+bottom:-3px;
+left:-2px;
+padding-bottom:-3px;
+  padding:0px;
+  display:flex;
+  justify-content:start;
+`
+const Button = styled.div`
+position:absolute;
+right:0px;
+top: 0vh;
+z-index:50;
+`
+const Tab = styled.div`
+  background: ${(props) => (props.active ? "var(--primary)" : "var(--secondary)")};
+  padding: 5px 15px;
+  font-size: 14px;
+  font-weight: bold;
+  border-radius: 1vw 1vw 0 0;
   border: 3px solid var(--tertiary);
-  border-radius: 20px;
-  background-color: var(--secondary);
-  text-align: center;
-  vertical-align: middle;
-  overflow: hidden;
+  border-bottom: ${(props) => (props.active ? "4px solid var(--primary)" : "3px solid var(--tertiary)")};
   cursor: pointer;
 
   &:hover {
-    background-color: var(--secondary-hover, #f0f0f0);
+    background: var(--primary);
+    border-bottom: 4px solid var(--primary);
   }
 `;
 
-const GroupClicked = styled.div`
-  height: relative;
-  width: 35vh;
-  margin: 2vh 4vh;
-  border: 3px solid var(--tertiary);
-  border-radius: 20px;
-  background-color: var(--secondary);
-  text-align: center;
-  vertical-align: middle;
-  overflow-y: auto;
-  cursor: pointer;
-
-  &:hover {
-    background-color: var(--secondary-hover, #f0f0f0);
-  }
+const SearchSection = styled.div`
+  display:flex;
+  justify-content:center;
+  width:60vw;
+  align-items:center;
+  align-content:center;
+  gap:1vw;
+  height:10vh;
 `;
-
-const ImageHolder = styled.div`
-  height: 75%;
-  width: relative;
-  background-color: black;
-  border: 3px solid var(--tertiary);
-  border-top-left-radius: 20px;
-  border-top-right-radius: 20px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`;
-
-const GroupDescription = styled.h3`
-  margin-left: 1vw;
-  margin-right: 1vw;
-`;
-
-const GroupButton = styled.button`
-  margin-bottom: 2vh;
-`;
-
-const SearchBarBox = styled.input`
-  margin: auto;
-  margin-right: 2vw;
-  width: relative;
-`;
-
-function GroupTemplate({ name = "ClassName", description = "This is a class.", chat = "/groups" }) {
-  const [clicked, setClicked] = useState(false);
-
-  function handleClick() {
-    setClicked(!clicked)
-  }
-
-  return (
-    clicked ? 
-      <GroupClicked onClick={handleClick}>
-        <h2>{name}</h2>
-        <GroupDescription>{description}</GroupDescription>
-        <Link to={chat}>
-          <GroupButton>Chat</GroupButton>
-        </Link>
-      </GroupClicked>
-    :
-      <Group onClick={handleClick}>
-          <h2>{name}</h2>
-      </Group>
-  );
-}
 
 function GroupsPage() {
-  const [myGroups, setmyGroups] = useState(true);
+  const [activeTab, setActiveTab] = useState('myGroups');
   const [query, setQuery] = useState (""); 
   const [results, setResults] = useState ([]);
 
@@ -203,63 +98,50 @@ function GroupsPage() {
     )
   }
 
-  function toggleGroups() {
-    setmyGroups(!myGroups)
-  }
-  function GroupsTab() {
-    return (
-      myGroups ? <TabSelect style={{ userSelect: "none"}}><h2>Groups</h2></TabSelect> : <Tab onClick={toggleGroups} style={{ userSelect: "none"}}><h2>Groups</h2></Tab>
-    );
-  }
-  function DiscoverTab() {
-    return (
-      myGroups ? <Tab onClick={toggleGroups} style={{ userSelect: "none"}}><h2>Discover</h2></Tab> : <TabSelect style={{ userSelect: "none"}}><h2>Discover</h2></TabSelect>
-    );
-  }
-  function OwnedGroups() {
-    return (
-      <GroupBlock>
-        <GroupRow>
-          <GroupTemplate/>
-          <GroupTemplate description="This is a different class. By the way, this class has different content. Just so you know."/>
-          <GroupTemplate/>
-          <GroupTemplate/>
-        </GroupRow>
-      </GroupBlock>
-    );
-  }
-  function OtherGroups() {
-    return (
-      <GroupBlock>
-        <SearchBar/>
-        <button>Search</button>
-        <GroupRow>
-          <GroupTemplate/>
-          <GroupTemplate/>
-          <GroupTemplate/>
-          <GroupTemplate/>
-          <GroupTemplate/>
-          <GroupTemplate/>
-        </GroupRow>
-      </GroupBlock>
-    );
-  }
-  function Groups() {
-    return (
-      myGroups ? OwnedGroups() : OtherGroups()
-    );
-  }
 
   return (
     <Body>
-      <Banner>
-        <TabRow>
-            <GroupsTab/>
-            <DiscoverTab/>
-            <Tab style={{ userSelect: "none"}}><h2>Create +</h2></Tab>
-        </TabRow>
-        <Groups/>
-      </Banner>
+      <TabHolder>
+        <TabHolder2>
+          <Tab active={activeTab === "myGroups"} onClick={() => setActiveTab("myGroups")}>
+            <h3>My Groups</h3>
+          </Tab>
+          <Tab active={activeTab === "explore"} onClick={() => setActiveTab("explore")}>
+            <h3>Explore</h3>
+          </Tab>
+        </TabHolder2>
+        <Link to='/creategroup'>
+        <Button>
+          <button>+ Create</button>
+        </Button>
+        </Link>
+      </TabHolder>
+
+      <View>
+        {activeTab === "myGroups" ? (
+          // My groups
+          <>
+            <GroupCard name={"The awesome group"} groupclass={'Class'} description={'Description'} link={'Link'} color={"red"} />
+            <GroupCard name={"My epic group"} groupclass={'cse186'} description={'Blah Blah Blah Yap Yap Yap'} link={'Link'} color={"green"} />
+          </>
+        ) : (
+          // Explore page
+          <>
+          <SearchSection>
+          <input
+          placeholder='Search for a group'/>
+          <button>Search</button>
+          </SearchSection>
+
+            <GroupCard name={"Whatever"} groupclass={'cse186'} description={'Blah Blah Blah Yap Yap Yap'} link={'Link'} color={"blue"} />
+            <GroupCard name={"Whatever"} groupclass={'cse186'} description={'Blah Blah Blah Yap Yap Yap'} link={'Link'} color={"yellow"} />
+            <GroupCard name={"Whatever"} groupclass={'cse186'} description={'Blah Blah Blah Yap Yap Yap'} link={'Link'} color={"purple"} />
+            <GroupCard name={"Whatever"} groupclass={'cse186'} description={'Blah Blah Blah Yap Yap Yap'} link={'Link'} color={"purple"} />
+            <GroupCard name={"Whatever"} groupclass={'cse186'} description={'Blah Blah Blah Yap Yap Yap'} link={'Link'} color={"purple"} />
+            <GroupCard name={"Whatever"} groupclass={'cse186'} description={'Blah Blah Blah Yap Yap Yap'} link={'Link'} color={"purple"} />
+          </>
+        )}
+      </View>
     </Body>
   );
 }

@@ -17,6 +17,7 @@
   --text-2: #987661;
 
   font-family: Lato, serif;;
+  font-size: 2vh;
 
   /* line-height: 1.5;
   font-weight: 400; */
@@ -44,20 +45,26 @@ body {
   /* display: flex;
   min-width: 320px;
   min-height: 100vh; */
-  margin-top:6rem;
 }
 
 h1 {
-  font-size: 3.2rem;
+  font-size: 3vw;
   line-height: 1.1;
   font-family: Gloock, serif;
 }
 
 h2 {
-  font-size: 2.2rem;
+  font-size: 2.2vw;
   line-height: 1.1;
   font-family: Gloock, serif;
 }
+
+h3 {
+  font-size: 1.5vw;
+  line-height: 0;
+  font-family: Gloock, serif;
+}
+
 
 .text-2{
   color:var(--text-2);
