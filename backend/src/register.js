@@ -22,7 +22,7 @@ exports.register = async (req, res) => {
   const {rows} = await pool.query(userQuery);
 
   if (rows.length) {
-    res.status(400).send('User already exists');
+    res.status(401).send('User already exists');
     return;
   }
 
@@ -41,10 +41,10 @@ exports.register = async (req, res) => {
 
   const insertProfileQuery = {
     text: `
-      INSERT INTO member_profiles (id, full_name)
-      VALUES ($1, $2)
+      INSERT INTO member_profiles (id, full_name, bio_data)
+      VALUES ($1, $2, $3)
     `,
-    values: [userId, name],
+    values: [userId, name, 'Add a bio...'],
   };
   await pool.query(insertProfileQuery);
 

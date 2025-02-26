@@ -24,25 +24,30 @@ app.use(express.urlencoded({extended: false}));
 const apiSpec = path.join(__dirname, '../api/openapi.yaml');
 const apidoc = yaml.load(fs.readFileSync(apiSpec, 'utf8'));
 
-app.use('/v0/api-docs', swaggerUi.serve, swaggerUi.setup(apidoc));
-app.use(OpenApiValidator.middleware({ 
-  apiSpec, 
-  validateRequests: true, 
-  validateResponses: true 
-}));
+app.use(
+  '/v0/api-docs',
+  swaggerUi.serve,
+  swaggerUi.setup(apidoc),
+);
+
+app.use(
+  OpenApiValidator.middleware({
+    apiSpec: apiSpec,
+    validateRequests: true,
+    validateResponses: true,
+  }),
+);
+
+/* 
+Endpoints for registering and logging in
+(sprint 1)
+*/
+const login = require('./login');
+const register = require('./register');
 
 // ---------- Public Endpoints ----------
 app.post('/v0/login', login.login);
 app.post('/v0/register', register.register);
-
-
-app.use(checkAuth);
-
-// ---------- Authenticated Endpoints ----------
-app.get('/v0/group/search', study_group.searchGroups);
-app.get('/v0/group/:id', study_group.getGroup);
-app.post('/v0/group', study_group.createGroup);
-app.put('/v0/group/:id', study_group.updateGroup);
 
 app.get('/v0/profile/:id', profile.getProfile);
 app.put('/v0/profile/:id', profile.setProfile);
@@ -56,6 +61,18 @@ app.get('/v0/users/searchFriend', friends.searchFriend);
 app.get('/v0/users/search', friends.searchUser);
 app.put('/v0/users/addFriend', friends.addFriend);
 app.get('/v0/users/getFriends', friends.getFriends);
+
+/*
+Endpoints for study groups
+(sprint 2 / 3)
+*/
+const study_group = require('./study_group');
+app.get('/v0/group/search', login.check, study_group.searchGroups); // define /search before /{id} in order to prioritize matching by search query, then by UUID
+app.get('/v0/group/:id', login.check, study_group.getGroup);
+app.post('/v0/group', login.check, study_group.createGroup);
+app.put('/v0/group/:id', login.check, study_group.updateGroup);
+app.post('/v0/group/:id/join', login.check, study_group.joinGroup);
+app.delete('/v0/group/:id/leave', login.check, study_group.leaveGroup);
 
 app.get('/v0/messages/:id/', study_group.getMessages);
 
