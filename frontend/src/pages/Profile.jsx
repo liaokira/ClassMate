@@ -1,6 +1,16 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import styled from "styled-components";
+import Friends from '../components/Friends';
+import Schedule from '../components/Schedule';
+import Edit from '../components/Edit';
+
+const Container = styled.div`
+  margin: auto;
+  padding: 20px;
+  border: 3px solid var(--tertiary);
+  border-radius: 1rem;
+`;
 
 const PageContainer = styled.body`
   display: flex;
@@ -13,21 +23,24 @@ const Head = styled.div`
   align-items: center;
   justify-content: left;
   height: 32vh;
-  border-bottom: 2px solid var(--tertiary); 
-  box-shadow: 0 4px 6px -2px rgba(0, 0, 0, 0.2);
+  border-bottom: 3px solid var(--tertiary); 
   z-index: 3;
 `;
 
+const EditContainer = styled.div`
+  display:flex;
+  align-items:flex-start;
+  flex:wrap: wrap;
+  column-gap:10px;
+`;
+
 const Biography = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  height: 100%;
+  gap: 4rem;
   padding-left:calc(8vw + 26vh);
-
-  h1 {
-    font-size: calc(3vh + 2vw);
-  }
-
-  h3 {
-    font-size: calc(1.5vh + 1vw);
-  }
 `;
 
 const ProfPic = styled.div`
@@ -51,7 +64,7 @@ const TabDisplay = styled.div`
 
 const Tabs = styled.div`
   background-color: var(--primary);
-  width: 20vw;
+  width: 16vw;
   display: flex;
   flex-direction: column;
   height:calc(100vh - 6rem);
@@ -60,16 +73,17 @@ const Tabs = styled.div`
 
 const TabsFill = styled.div`
   background-color: var(--primary);
-  width: 19.8vw;
-  border: 2px solid var(--tertiary);
-  border-radius: 0 0.75rem 0.75rem 0;
+  width: 15.9+7vw;
+  border: 3px solid var(--tertiary);
+  border-top:none;
   height: 100vh
 `;
 
 const TabButton = styled.button`
   background: ${props => props.$active ? 'var(--secondary)' : 'var(--primary)'};
-  border: 2px solid var(--tertiary);
-  border-radius: 0 0.75rem 0.75rem 0;
+  border: 3px solid var(--tertiary);
+  border-top:none;
+  border-radius: 0;
   font-size: calc(1vh + 1.25vw);
   transition: all 0.2s;
 
@@ -78,22 +92,32 @@ const TabButton = styled.button`
   }
 `;
 
+const Label = styled.div`
+  margin-bottom: 5px;
+  margin-top:10px;
+`;
+
 const Content = styled.div`
-  flex: 1;
+  display: flex;
+  flex-direction: column;
   background-color: var(--primary);
   padding: 2rem;
+  flex-grow: 1;
+  align-items: flex-start;
+  justify-content: flex-start;
 `;
 
 function Profile() {
   const { userId } = useParams();
-  const [profileData, setProfileData] = useState({ name: '', bio: ''});
+  const [profileData, setProfileData] = useState({id: userId, full_name: '', bio: ''});
   const [error, setError] = useState('');
   const [activeTab, setActivateTab] = useState('friends');
+  const [updateTrigger, setUpdateTrigger] = useState(0);
 
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const response = await fetch(`http://localhost:3010/v0/profile/${userID}`, {
+        const response = await fetch(`http://localhost:3010/v0/profile/${userId}`, {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
@@ -103,7 +127,7 @@ function Profile() {
 
         if (response.status === 200) {
           const data = await response.json();
-          setProfileData(data);
+          setProfileData({ id: userId, full_name: data.full_name, bio: data.bio });
         } else if (response.status === 404) {
           setError('Profile not found');
         } else {
@@ -111,10 +135,11 @@ function Profile() {
         }
       } catch (err) {
         console.error(err);
+        setError('Failed to fetch profile data');
       }
     };
     fetchProfile();
-  }, [userId]);
+  }, [userId, updateTrigger]);
 
   const decodeToken = (token) => {
     const payload = token.split('.')[1];
@@ -125,11 +150,11 @@ function Profile() {
   const token = localStorage.getItem('accessToken');
   const decodeId = decodeToken(token);
   const loggedId = decodeId?.id;
+  const ownPage = (loggedId === userId);
 
   const tabs = [
     { id: 'friends', label: 'Friends List', content: 'friends' },
-    { id: 'groups', label: 'Study Groups', content: 'groups' },
-    { id: 'schedule', label: 'Class Schedule', content: 'schedule' },
+    { id: 'schedule', label: 'Schedule', content: 'schedule' },
   ];
 
 if (loggedId === userId) {
@@ -144,8 +169,8 @@ if (loggedId === userId) {
           Profile Pic
         </ProfPic>
         <Biography>
-          <h1> {profileData.name} </h1>
-          <h3> {profileData.bio} </h3>
+            <h1> {profileData.full_name} </h1>
+            <h2> {profileData.bio} </h2>            
         </Biography>
       </Head>
 
@@ -164,7 +189,18 @@ if (loggedId === userId) {
         </Tabs>
 
         <Content>
-          {tabs.find(tab => tab.id === activeTab)?.content}
+          {(() => {
+            switch (activeTab) {
+              case 'friends':
+                return <Friends userId={userId} ownPage={ownPage} />;
+              case 'schedule':
+                return <Schedule profileData={profileData} ownPage={ownPage} />;
+              case 'edit':
+                return <Edit profileData={profileData} setProfileData={setProfileData} setUpdateTrigger={setUpdateTrigger}/>;
+              default:
+                return <Friends userId={userId} ownPage={ownPage}/>;
+            }
+          })()}
         </Content>
       </TabDisplay>
 

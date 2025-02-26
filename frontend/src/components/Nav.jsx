@@ -10,7 +10,7 @@ const Navbar = styled.div`
   background-color: var(--primary);
   border-bottom: 3px solid var(--tertiary);
   position: fixed;
-  height: 6rem;
+  height: 12vh;
   top: 0px;
   left: 0px;
   z-index: 100;
@@ -18,6 +18,7 @@ const Navbar = styled.div`
 
 const InnerNav = styled.div`
   display: flex;
+  height: 12vh;
   justify-content: space-between;
   align-items: center;
   padding-left: 1em;

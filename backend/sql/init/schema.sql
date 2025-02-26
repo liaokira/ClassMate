@@ -35,23 +35,26 @@ CREATE TABLE study_groups(
 DROP TABLE IF EXISTS member_profiles CASCADE;
 CREATE TABLE member_profiles (
     id UUID PRIMARY KEY REFERENCES member(id) ON DELETE CASCADE, 
-    bio_data VARCHAR(365) NOT NULL DEFAULT 'Add a bio...',
+    bio_data VARCHAR(365) NOT NULL DEFAULT 'Add a biography...',
     full_name VARCHAR(30) NOT NULL DEFAULT ''
-);
-
-DROP TABLE IF EXISTS group_members CASCADE;
-CREATE TABLE group_members (
-    user_id UUID REFERENCES member(id) ON DELETE CASCADE,
-    group_id UUID REFERENCES study_groups(id) ON DELETE CASCADE,
-    PRIMARY KEY (user_id, group_id)
 );
 
 DROP TABLE IF EXISTS messages CASCADE;
 CREATE TABLE messages (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    sender_id UUID REFERENCES member(id) ON DELETE CASCADE,
-    group_id UUID REFERENCES study_groups(id) ON DELETE CASCADE,
+    sender_id UUID NOT NULL REFERENCES member(id) ON DELETE CASCADE,
+    sender_name VARCHAR(40) NOT NULL,
+    group_id UUID NOT NULL REFERENCES study_groups(id) ON DELETE CASCADE,
     message TEXT NOT NULL,
     timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+DROP TABLE IF EXISTS member_friends CASCADE;
+CREATE TABLE member_friends (
+    member_id UUID NOT NULL,
+    friend_id UUID NOT NULL,
+    CHECK (member_id < friend_id),
+    PRIMARY KEY (member_id, friend_id),
+    FOREIGN KEY (member_id) REFERENCES member(id) ON DELETE CASCADE,
+    FOREIGN KEY (friend_id) REFERENCES member(id) ON DELETE CASCADE
+);

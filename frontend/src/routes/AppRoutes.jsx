@@ -8,12 +8,13 @@ import ProtectedRoute from "../routes/ProtectedRoute";
 import PostLoginRoutes from "../routes/PostLoginRoutes";
 import Login from "../pages/Login";
 import GroupsPage from "../pages/Groups";
+import GroupCreate from "../pages/GroupCreate";
 
 const AppRoutes = ({ isAuthenticated, setIsAuthenticated }) => {
     return (
       <Router>
         <Nav isAuthenticated = {isAuthenticated}/>
-        <div style={{marginTop: 6 + 'rem'}}>
+        <div style={{marginTop: 12 + 'vh'}}>
             <Routes>
             <Route
                 path="/"
@@ -52,6 +53,14 @@ const AppRoutes = ({ isAuthenticated, setIsAuthenticated }) => {
                 element={
                 <ProtectedRoute isAuthenticated={isAuthenticated}>
                     <GroupsPage />
+                </ProtectedRoute>
+                }
+            />
+            <Route
+                path="/creategroup"
+                element={
+                <ProtectedRoute isAuthenticated={isAuthenticated}>
+                    <GroupCreate />
                 </ProtectedRoute>
                 }
             />

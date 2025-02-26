@@ -1,3 +1,4 @@
+// app.js
 const express = require('express');
 const cors = require('cors');
 const yaml = require('js-yaml');
@@ -5,6 +6,15 @@ const swaggerUi = require('swagger-ui-express');
 const fs = require('fs');
 const path = require('path');
 const OpenApiValidator = require('express-openapi-validator');
+
+const login = require('./login');
+const register = require('./register');
+const study_group = require('./study_group');
+const profile = require('./profile');
+const classes = require('./classes');
+const friends = require('./friends');
+
+const { checkAuth } = require('./auth'); 
 
 const app = express();
 app.use(cors());
@@ -35,16 +45,22 @@ Endpoints for registering and logging in
 const login = require('./login');
 const register = require('./register');
 
+// ---------- Public Endpoints ----------
 app.post('/v0/login', login.login);
 app.post('/v0/register', register.register);
 
-/* 
-Endpoints for profile data
-(sprint 2)
-*/
-const profile = require('./profile');
 app.get('/v0/profile/:id', profile.getProfile);
-app.post('/v0/profile/:id', profile.setProfile);
+app.put('/v0/profile/:id', profile.setProfile);
+
+app.get('/v0/profile/:id/classes', classes.getClasses);
+app.get('/v0/classes', classes.getAllClasses);
+app.post('/v0/profile/:id/classes', classes.addClass);
+app.delete('/v0/profile/:id/classes/:classId', classes.removeClass);
+
+app.get('/v0/users/searchFriend', friends.searchFriend);
+app.get('/v0/users/search', friends.searchUser);
+app.put('/v0/users/addFriend', friends.addFriend);
+app.get('/v0/users/getFriends', friends.getFriends);
 
 /*
 Endpoints for study groups
@@ -60,8 +76,9 @@ app.delete('/v0/group/:id/leave', login.check, study_group.leaveGroup);
 
 app.get('/v0/messages/:id/', study_group.getMessages);
 
+// ---------- Error Handling ----------
 app.use((err, req, res, next) => {
-  res.status(err.status).json({
+  res.status(err.status || 500).json({
     message: err.message,
     errors: err.errors,
     status: err.status,

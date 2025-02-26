@@ -16,7 +16,7 @@
 
         socket.onopen = () => {
             console.log("Connected to WebSocket server");
-            socket.send(JSON.stringify({ type: "join", userId: "40be182e-74d4-470b-a446-c3292739807b", groupId: "40be182e-74d4-470b-a446-c3292730647a" }));
+            socket.send(JSON.stringify({ type: "join", userId: "40be182e-74d4-470b-a446-c3292739807b", sender_name: "molly", groupId: "40be182e-74d4-470b-a446-c3292730647a" }));
         };
 
         // Send a message to the group
@@ -27,6 +27,7 @@
                 socket.send(JSON.stringify({
                     type: "message",
                     senderId: "40be182e-74d4-470b-a446-c3292739807b",
+                    sender_name: "molly",
                     groupId: "40be182e-74d4-470b-a446-c3292730647a",
                     message: message
                 }));
