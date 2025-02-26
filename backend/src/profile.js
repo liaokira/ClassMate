@@ -44,8 +44,7 @@ exports.getProfile = async (req, res) => {
 };
 
 exports.setProfile = async (req, res) => {
-  const id = req.params.id;
-  const {full_name, bio} = req.body;
+  const {id, full_name, bio} = req.body;
   const userINSERT = `INSERT INTO member_profiles(id, bio_data, full_name) 
                       VALUES ($1, $2, $3) 
                       ON CONFLICT (id) DO UPDATE SET 
@@ -58,13 +57,6 @@ exports.setProfile = async (req, res) => {
   };
   const {rows} = await pool.query(userQuery);
   if (rows.length) {
-    
-    if(rows[0].xmax === 0){
-      res.status(200).json({id});
-    }
-    else{
-      res.status(201).json({id});
-    }
       console.log("id", rows[0].id);
 
       console.log("bio data", rows[0].bio_data);
@@ -75,4 +67,3 @@ exports.setProfile = async (req, res) => {
     res.status(404).send('Error: No Profile for User Found');
   }
 };
-

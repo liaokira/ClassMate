@@ -8,88 +8,127 @@ import styled from "styled-components";
 
 const Body = styled.div`
   background-color: var(--secondary);
-  position: relative;
+  height: 100vh;
+  text-align: center;
+  align-items: center;
 `;
 
 const Banner = styled.div`
   height: relative;
-  min-height: 50.9rem;
-  width: relative;
+  width: 81%;
   background-color: var(--secondary);
-  margin-left: 14rem;
+  margin: auto;
+  overflow-y: auto;
+  scrollbar-width: none;
 `;
 
 const TabRow = styled.div`
   display: flex;
-  padding-left: 6rem;
-  padding-top: 6rem;
+  padding-top: 11vh;
+  margin: auto;
 `;
 
 const Tab = styled.div`
-  height: 3rem;
-  width: 10rem;
+  height: 6vh;
+  width: 30%;
+  margin: auto;
   background-color: var(--secondary);
-  border: 3px solid var(--tertiary);
+  border-top: 3px solid var(--tertiary);
+  border-left: 3px solid var(--tertiary);
+  border-right: 3px solid var(--tertiary);
+  border-bottom: 0px;
   border-top-left-radius: 20px;
   border-top-right-radius: 20px;
   display: flex;
   text-align: center;
   align-items: center;
   justify-content: center;
+  cursor: pointer;
+  overflow: hidden;
+
+  &:hover {
+    background-color: var(--secondary-hover, #f0f0f0);
+  }
 `;
 
 const TabSelect = styled.div`
-  height: 3rem;
-  width: 10rem;
+  height: 6vh;
+  width: 30%;
+  margin: auto;
   background-color: var(--primary);
   border-top: 3px solid var(--tertiary);
   border-left: 3px solid var(--tertiary);
   border-right: 3px solid var(--tertiary);
-  border-bottom: 3px solid var(--secondary);
+  border-bottom: 0px;
   border-top-left-radius: 20px;
   border-top-right-radius: 20px;
   display: flex;
   text-align: center;
   align-items: center;
   justify-content: center;
+  cursor: pointer;
+  overflow: hidden;
+
+  &:hover {
+    background-color: var(--primary-hover, #dcdcdc);
+  }
 `;
 
 const GroupBlock = styled.div`
   background-color: var(--primary);
-  height: 27rem;
+  height: 40vh;
+  max-height: 40vh;
   overflow-y: auto;
   scrollbar-width: none;
   width: relative;
-  max-width: 80rem;
-  margin-left: 6rem;
-  padding-top: 3rem;
-  padding-bottom: 6rem;
+  margin: auto;
+  padding-top: 5vh;
+  padding-bottom: 11vh;
   border: 3px solid var(--tertiary);
-  border-top-right-radius: 20px;
-  border-bottom-left-radius: 20px;
-  border-bottom-right-radius: 20px;
+  border-radius: 20px;
   justify-content: space-between;
+  text-align: center;
 `;
 
 const GroupRow = styled.div`
   display: flex;
-  margin-top: 3rem;
+  flex-wrap: wrap;
+  margin-top: 6vh;
   justify-content: space-evenly;
 `;
 
-const GroupsUnder = styled.div`
-  height: relative;
-  width: 10rem;
-  border-bottom: 3px solid var(--tertiary);
-`;
-
 const Group = styled.div`
-  height: 20rem;
-  width: 20rem;
+  height: 11vh;
+  width: 35vh;
+  margin: 2vh 4vh;
   border: 3px solid var(--tertiary);
   border-radius: 20px;
   background-color: var(--secondary);
   text-align: center;
+  vertical-align: middle;
+  overflow: hidden;
+  cursor: pointer;
+
+  &:hover {
+    background-color: var(--secondary-hover, #f0f0f0);
+  }
+`;
+
+const GroupClicked = styled.div`
+  height: relative;
+  width: 35vh;
+  margin: 2vh 4vh;
+  border: 3px solid var(--tertiary);
+  border-radius: 20px;
+  background-color: var(--secondary);
+  text-align: center;
+  vertical-align: middle;
+  overflow-y: auto;
+  cursor: pointer;
+
+  &:hover {
+    background-color: var(--secondary-hover, #f0f0f0);
+  }
 `;
 
 const ImageHolder = styled.div`
@@ -104,25 +143,65 @@ const ImageHolder = styled.div`
   align-items: center;
 `;
 
-const GroupName = styled.h2`
-  height: relative;
-  width: relative;
-  background-color: var(--secondary);
-  border-bottom-left-radius: 20px;
-  border-bottom-right-radius: 20px;
+const GroupDescription = styled.h3`
+  margin-left: 1vw;
+  margin-right: 1vw;
 `;
 
-function PlaceHolder() {
+const GroupButton = styled.button`
+  margin-bottom: 2vh;
+`;
+
+const SearchBarBox = styled.input`
+  margin: auto;
+  margin-right: 2vw;
+  width: relative;
+`;
+
+function GroupTemplate({ name = "ClassName", description = "This is a class.", chat = "/groups" }) {
+  const [clicked, setClicked] = useState(false);
+
+  function handleClick() {
+    setClicked(!clicked)
+  }
+
   return (
-    <Group>
-        <ImageHolder><img src={logo} alt="Logo" /></ImageHolder>
-        <GroupName>Placeholder Name</GroupName>
-    </Group>
+    clicked ? 
+      <GroupClicked onClick={handleClick}>
+        <h2>{name}</h2>
+        <GroupDescription>{description}</GroupDescription>
+        <Link to={chat}>
+          <GroupButton>Chat</GroupButton>
+        </Link>
+      </GroupClicked>
+    :
+      <Group onClick={handleClick}>
+          <h2>{name}</h2>
+      </Group>
   );
 }
 
 function GroupsPage() {
   const [myGroups, setmyGroups] = useState(true);
+  const [query, setQuery] = useState (""); 
+  const [results, setResults] = useState ([]);
+
+  const handleChange = (e) => {
+    const { id, value } = e.target;
+    setFormData((prev) => ({ ...prev, [id]: value}));
+  }
+
+  function SearchBar(){
+    return (
+      <SearchBarBox
+        type="text"
+        //value={query}
+        id="search"
+        placeholder="Search..."
+        onChange={handleChange}
+      />
+    )
+  }
 
   function toggleGroups() {
     setmyGroups(!myGroups)
@@ -140,25 +219,27 @@ function GroupsPage() {
   function OwnedGroups() {
     return (
       <GroupBlock>
-      <GroupRow>
-        <PlaceHolder/>
-        <PlaceHolder/>
-      </GroupRow>
-    </GroupBlock>
+        <GroupRow>
+          <GroupTemplate/>
+          <GroupTemplate description="This is a different class. By the way, this class has different content. Just so you know."/>
+          <GroupTemplate/>
+          <GroupTemplate/>
+        </GroupRow>
+      </GroupBlock>
     );
   }
   function OtherGroups() {
     return (
       <GroupBlock>
+        <SearchBar/>
+        <button>Search</button>
         <GroupRow>
-          <PlaceHolder/>
-          <PlaceHolder/>
-          <PlaceHolder/>
-        </GroupRow>
-        <GroupRow>
-          <PlaceHolder/>
-          <PlaceHolder/>
-          <PlaceHolder/>
+          <GroupTemplate/>
+          <GroupTemplate/>
+          <GroupTemplate/>
+          <GroupTemplate/>
+          <GroupTemplate/>
+          <GroupTemplate/>
         </GroupRow>
       </GroupBlock>
     );
@@ -175,6 +256,7 @@ function GroupsPage() {
         <TabRow>
             <GroupsTab/>
             <DiscoverTab/>
+            <Tab style={{ userSelect: "none"}}><h2>Create +</h2></Tab>
         </TabRow>
         <Groups/>
       </Banner>

@@ -112,21 +112,21 @@ function Landing() {
       <BelowBanner>
         <FeatureBox>
           <h2>
-            Feature 1
+            Coordinate classes
           </h2>
-            Description 1
+            Input your course schedule and connect with your peers in the same classes.
         </FeatureBox>
         <FeatureBox>
           <h2>
-            Feature 2
+            Form groups
           </h2>
-          Description 2
+          Create study groups with your classmates.
         </FeatureBox>
         <FeatureBox>
           <h2>
-            Feature 3
+            Communicate
           </h2>
-          Description 3
+          Message your classmates and study group members in real time.
         </FeatureBox>
       </BelowBanner>
     </Body>
