@@ -110,8 +110,7 @@ exports.updateGroup = async (req, res) => {
     you can either disable the button or just return to previous page when it is clicked.
     */ 
     if (value_index == 1) {
-      res.status(200).send();
-      return;
+      return res.status(200).send();
     }
 
     updateGroup = updateGroup.slice(0, -2);
@@ -197,6 +196,44 @@ exports.getMembers = async (req, res) => {
   }
 };
 
+// checks if a given user is in a requested group
+/*
+returns:
+  0 if user is a member of the requested group
+  1 if user does not exist
+  2 if group does not exist
+  3 if user is not a member of the requested group
+*/
+const checkMembership = async (member_id, group_id) => {
+  const memberCheckQuery = {
+    text: `SELECT id FROM member WHERE id = $1`,
+    values: [`${member_id}`],
+  };
+  const {rows: userRows} = await pool.query(memberCheckQuery);
+  if (!userRows.length) {
+    return 1;
+  }
+
+  const groupCheckQuery = {
+    text: `SELECT id FROM study_groups WHERE id = $1`,
+    values: [`${group_id}`],
+  };
+  const {rows: groupRows} = await pool.query(groupCheckQuery);
+  if (!groupRows.length) {
+    return 2;
+  }
+
+  const membershipCheckQuery = {
+    text: 'SELECT * FROM group_members WHERE user_id = $1 AND group_id = $2',
+    values: [`${member_id}`, `${group_id}`],
+  };
+  const {rows: membershipRows} = await pool.query(membershipCheckQuery);
+  if (!membershipRows.length) {
+    return 3;
+  }
+  return 0;
+};
+
 exports.joinGroup = async (req, res) => {
   const group_id = req.params.id;
   const {member_id} = req.body;
@@ -237,5 +274,28 @@ exports.joinGroup = async (req, res) => {
 };
 
 exports.leaveGroup = async (req, res) => {
+  const group_id = req.params.id;
+  const {member_id} = req.body;
 
+  const membership = checkMembership(member_id, group_id);
+  switch (membership) {
+    case 0:
+      break;
+    case 1:
+      res.status(404).send("User not found");
+      break;
+    case 2:
+      res.status(404).send("Study group not found");
+      break;
+    case 3:
+      res.status(403).send("User is not a member of the study group");
+      break;
+  }
+
+  const leaveGroupQuery = {
+    text: `DELETE FROM group_members WHERE user_id = $1 and group_id = $2`,
+    values: [member_id, group_id],
+  };
+  await pool.query(leaveGroupQuery);
+  res.status(200).send();
 };

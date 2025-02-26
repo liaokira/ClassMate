@@ -177,6 +177,8 @@ paths:
 
   /group/{id}/leave:
     delete:
+      security:
+        - bearerAuth: []
       description: leave a study group
       parameters:
         - name: id
