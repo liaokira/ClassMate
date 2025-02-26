@@ -72,8 +72,14 @@ paths:
                   type: string
                 group_description:
                   type: string
+                color:
+                  type: string
+                associated_class:
+                  type: string
               required:
-                - group_name  
+                - group_name
+                - color
+                - associated_class
       responses:
         201:
           description: study group created
@@ -405,6 +411,10 @@ components:
           type: string
         group_description:
           type: string
+        color:
+          type: string
+        associated_class:
+          type: string
       # required:
       #   - group_name
 
@@ -415,6 +425,10 @@ components:
           type: string
           format: uuid
         group_name:
+          type: string
+        color:
+          type: string
+        associated_class:
           type: string
         members:
           type: array
@@ -429,6 +443,9 @@ components:
       required:
         - id
         - group_name
+        - color
+        - associated_class
+        - members
 
     # an array of matched groups
     GroupArray:

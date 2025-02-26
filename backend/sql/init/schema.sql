@@ -25,8 +25,9 @@ DROP TABLE IF EXISTS study_groups CASCADE;
 CREATE TABLE study_groups(
     id UUID UNIQUE PRIMARY KEY DEFAULT gen_random_uuid(),
     group_name VARCHAR(18) NOT NULL,
-    group_description TEXT NOT NULL DEFAULT 'Add a group description...'
-    associated_class REFERENCES classes(id)
+    group_description TEXT NOT NULL DEFAULT 'Add a group description...',
+    color VARCHAR(18) NOT NULL,
+    class REFERENCES classes(id)
 );
 
 DROP TABLE IF EXISTS member_profiles CASCADE;

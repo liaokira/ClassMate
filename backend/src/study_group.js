@@ -25,7 +25,7 @@ exports.getGroup = async (req, res) => {
     const members = await getMembers(id);
     console.log(members);
     console.log("group name:", rows[0].group_name);
-    res.status(200).json({id: id, group_name: rows[0].group_name, group_description: rows[0].group_description, members: members.map(member => ({id: member.user_id, name: member.full_name}))});
+    res.status(200).json({id: id, group_name: rows[0].group_name, group_description: rows[0].group_description, color: rows[0].color, associated_class: rows[0].associated_class, members: members.map(member => ({id: member.user_id, name: member.full_name}))});
   }
   else {
     const groupSelect2 = `SELECT id FROM study_groups WHERE id = $1`;
@@ -45,11 +45,11 @@ exports.getGroup = async (req, res) => {
 
 // may need to add checks if group with already existing name exists>
 exports.createGroup = async (req, res) => {
-  const {group_name, group_description} = req.body;
-  const groupInsert = `INSERT INTO study_groups(group_name, group_description) VALUES ($1, $2) RETURNING id`;
+  const {group_name, group_description, color, associated_class} = req.body;
+  const groupInsert = `INSERT INTO study_groups(group_name, group_description, color, associated_class) VALUES ($1, $2, $3, $4) RETURNING id`;
   const groupQuery = {
       text: groupInsert,
-      values: [`${group_name}`, `${group_description ? group_description : "Add a group description..."}`],
+      values: [`${group_name}`, `${group_description ? group_description : "Add a group description..."}`, `${color}`, `${associated_class}`],
   };
   const {rows} = await pool.query(groupQuery);
   if (rows.length) {
@@ -59,7 +59,7 @@ exports.createGroup = async (req, res) => {
 
 exports.updateGroup = async (req, res) => {
   const id = req.params.id;
-  const {group_name, group_description} = req.body;
+  const {group_name, group_description, color, associated_class} = req.body;
   const groupSelect = `SELECT * FROM study_groups WHERE id = $1`;
   const groupQuery = {
     text: groupSelect,
@@ -85,6 +85,18 @@ exports.updateGroup = async (req, res) => {
     if (group_description) {
       updateGroup += `group_description = $${value_index}, `;
       query_values.push(group_description);
+      value_index++;
+    }
+
+    if (color) {
+      updateGroup += `color = $${value_index}, `;
+      query_values.push(color);
+      value_index++;
+    }
+
+    if (associated_class) {
+      updateGroup += `associated_class = $${value_index}, `;
+      query_values.push(associated_class);
       value_index++;
     }
     
