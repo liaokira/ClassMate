@@ -27,7 +27,7 @@ CREATE TABLE study_groups(
     group_name VARCHAR(18) NOT NULL,
     group_description TEXT NOT NULL DEFAULT 'Add a group description...',
     color VARCHAR(18) NOT NULL,
-    class REFERENCES classes(id)
+    associated_class REFERENCES classes(id)
 );
 
 DROP TABLE IF EXISTS member_profiles CASCADE;
