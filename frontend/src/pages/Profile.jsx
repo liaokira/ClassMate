@@ -1,9 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import styled from "styled-components";
-import ClassManager from "../components/ClassManager";
 import Friends from '../components/Friends';
-import Groups from '../components/Groups';
 import Schedule from '../components/Schedule';
 import Edit from '../components/Edit';
 
@@ -152,10 +150,10 @@ function Profile() {
   const token = localStorage.getItem('accessToken');
   const decodeId = decodeToken(token);
   const loggedId = decodeId?.id;
+  const ownPage = (loggedId === userId);
 
   const tabs = [
     { id: 'friends', label: 'Friends List', content: 'friends' },
-    { id: 'groups', label: 'Study Groups', content: 'groups' },
     { id: 'schedule', label: 'Schedule', content: 'schedule' },
   ];
 
@@ -194,15 +192,13 @@ if (loggedId === userId) {
           {(() => {
             switch (activeTab) {
               case 'friends':
-                return <Friends userId={userId}/>;
-              case 'groups':
-                return <Groups />;
+                return <Friends userId={userId} ownPage={ownPage} />;
               case 'schedule':
-                return <Schedule />;
+                return <Schedule profileData={profileData} ownPage={ownPage} />;
               case 'edit':
                 return <Edit profileData={profileData} setProfileData={setProfileData} setUpdateTrigger={setUpdateTrigger}/>;
               default:
-                return <Friends userId={userId}/>;
+                return <Friends userId={userId} ownPage={ownPage}/>;
             }
           })()}
         </Content>

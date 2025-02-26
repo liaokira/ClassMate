@@ -27,7 +27,6 @@ const ParentContainer = styled.div`
 `;
 
 const Container = styled.div`
-  margin: auto;
   padding: 20px;
   border: 3px solid var(--tertiary);
   border-radius: 1rem;
@@ -41,7 +40,7 @@ const Results = styled.div`
 `;
 
 const FriendList = styled.div`
-  min-width: 25vw;
+  width: 32vw;
 `;
 
 const FriendItem = styled.div`
@@ -52,7 +51,12 @@ const FriendItem = styled.div`
   border-bottom: 1px solid var(--tertiary);
 `;
 
-const Friends = ({userId}) => {
+const Links = styled.div`
+  display: flex;
+  gap: 2vw;
+`;
+
+const Friends = ({userId, ownPage}) => {
   const [email, setEmail] = useState('');
   const [search, setSearch] = useState(null);
   const [error, setError] = useState('');
@@ -180,17 +184,6 @@ const Friends = ({userId}) => {
     }
   };
 
-  const decodeToken = (token) => {
-    const payload = token.split('.')[1];
-    const decode = atob(payload);
-    return JSON.parse(decode);
-  }
-
-  const token = localStorage.getItem('accessToken');
-  const decodeId = decodeToken(token);
-  const loggedId = decodeId?.id;
-  const ownPage = (loggedId === userId);
-
   return (
     <PageContainer>
       {ownPage &&
@@ -225,7 +218,10 @@ const Friends = ({userId}) => {
           friends.map((friend) => (
             <FriendItem key={friend.id}>
               <span><h3>{friend.full_name}</h3></span>
-              <Link to={`/profile/${friend.id}`}>View Profile</Link>
+              <Links>
+                <Link to={`/profile/${friend.id}`}>View Profile</Link>
+                <Link to={`/prMessage/${friend.id}`}>Message User</Link>
+              </Links>
             </FriendItem>
           ))
         )}

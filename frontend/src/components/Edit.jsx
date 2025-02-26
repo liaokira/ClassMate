@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import styled from "styled-components";
-import ClassManager from "../components/ClassManager";
 
 const Label = styled.div`
   margin-bottom: 5px;
@@ -15,10 +14,11 @@ const Container = styled.div`
 `;
 
 const EditContainer = styled.div`
+  margin: 20px;
   display:flex;
   align-items:flex-start;
   flex:wrap: wrap;
-  column-gap:10px;
+  column-gap: 2vw;
 `;
 
 const Edit = ({ profileData, setProfileData, setUpdateTrigger }) => {
@@ -66,14 +66,13 @@ const Edit = ({ profileData, setProfileData, setUpdateTrigger }) => {
   };
 
   return (
-    <EditContainer>
+    <div>
     <Container>
     <h3>Edit Profile</h3>
     <form onSubmit={handleSubmit}>
+      <EditContainer>
       <div>
         <Label>Username:</Label>
-      </div>
-      <div>
         <input
           id="full_name"
           type="text"
@@ -83,8 +82,6 @@ const Edit = ({ profileData, setProfileData, setUpdateTrigger }) => {
       </div>
       <div>
         <Label>Bio:</Label>
-      </div>
-      <div>
         <textarea
           id="bio"
           value={formData.bio}
@@ -97,10 +94,10 @@ const Edit = ({ profileData, setProfileData, setUpdateTrigger }) => {
         {error && <p style={{ color: 'red' }}>{error}</p>}
         {success && <p style={{ color: 'green' }}>{success}</p>}
       </div>
+      </EditContainer>
     </form>
     </Container>
-    <ClassManager  userId={formData.id}/>
-    </EditContainer>
+    </div>
   );
 };
 
