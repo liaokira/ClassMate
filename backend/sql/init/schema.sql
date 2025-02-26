@@ -24,7 +24,8 @@ CREATE TABLE member_classes (
 DROP TABLE IF EXISTS study_groups CASCADE;
 CREATE TABLE study_groups(
     id UUID UNIQUE PRIMARY KEY DEFAULT gen_random_uuid(),
-    group_name VARCHAR(18) NOT NULL
+    group_name VARCHAR(18) NOT NULL,
+    group_description TEXT NOT NULL DEFAULT 'Add a group description...'
 );
 
 DROP TABLE IF EXISTS member_profiles CASCADE;
@@ -32,6 +33,16 @@ CREATE TABLE member_profiles (
     id UUID PRIMARY KEY REFERENCES member(id) ON DELETE CASCADE, 
     bio_data VARCHAR(365) NOT NULL DEFAULT 'Add a biography...',
     full_name VARCHAR(30) NOT NULL DEFAULT ''
+);
+
+DROP TABLE IF EXISTS messages CASCADE;
+CREATE TABLE messages (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    sender_id UUID NOT NULL REFERENCES member(id) ON DELETE CASCADE,
+    sender_name VARCHAR(40) NOT NULL,
+    group_id UUID NOT NULL REFERENCES study_groups(id) ON DELETE CASCADE,
+    message TEXT NOT NULL,
+    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 DROP TABLE IF EXISTS member_friends CASCADE;
