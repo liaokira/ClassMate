@@ -47,31 +47,31 @@ Endpoints for registering and logging in
 app.post('/v0/login', login.login);
 app.post('/v0/register', register.register);
 
-app.get('/v0/profile/:id', auth.checkAuth, profile.getProfile);
-app.put('/v0/profile/:id', auth.checkAuth, profile.setProfile);
+app.get('/v0/profile/:id', checkAuth, profile.getProfile);
+app.put('/v0/profile/:id', checkAuth, profile.setProfile);
 
-app.get('/v0/profile/:id/classes', auth.checkAuth, classes.getClasses);
-app.get('/v0/classes', auth.checkAuth, classes.getAllClasses);
-app.post('/v0/profile/:id/classes', auth.checkAuth, classes.addClass);
-app.delete('/v0/profile/:id/classes/:classId', auth.checkAuth, classes.removeClass);
+app.get('/v0/profile/:id/classes', checkAuth, classes.getClasses);
+app.get('/v0/classes', checkAuth, classes.getAllClasses);
+app.post('/v0/profile/:id/classes', checkAuth, classes.addClass);
+app.delete('/v0/profile/:id/classes/:classId', checkAuth, classes.removeClass);
 
-app.get('/v0/users/searchFriend', auth.checkAuth, friends.searchFriend);
-app.get('/v0/users/search', auth.checkAuth, friends.searchUser);
-app.put('/v0/users/addFriend', auth.checkAuth, friends.addFriend);
-app.get('/v0/users/getFriends', auth.checkAuth, friends.getFriends);
+app.get('/v0/users/searchFriend', checkAuth, friends.searchFriend);
+app.get('/v0/users/search', checkAuth, friends.searchUser);
+app.put('/v0/users/addFriend', checkAuth, friends.addFriend);
+app.get('/v0/users/getFriends', checkAuth, friends.getFriends);
 
 /*
 Endpoints for study groups
 (sprint 2 / 3)
 */
-app.get('/v0/group/search', auth.checkAuth, study_group.searchGroups); // define /search before /{id} in order to prioritize matching by search query, then by UUID
-app.get('/v0/group/:id', auth.checkAuth, study_group.getGroup);
-app.post('/v0/group', auth.checkAuth, study_group.createGroup);
-app.put('/v0/group/:id', auth.checkAuth, study_group.updateGroup);
-app.post('/v0/group/:id/join', auth.checkAuth, study_group.joinGroup);
-app.delete('/v0/group/:id/leave', auth.checkAuth, study_group.leaveGroup);
+app.get('/v0/group/search', checkAuth, study_group.searchGroups); // define /search before /{id} in order to prioritize matching by search query, then by UUID
+app.get('/v0/group/:id', checkAuth, study_group.getGroup);
+app.post('/v0/group', checkAuth, study_group.createGroup);
+app.put('/v0/group/:id', checkAuth, study_group.updateGroup);
+app.post('/v0/group/:id/join', checkAuth, study_group.joinGroup);
+app.delete('/v0/group/:id/leave', checkAuth, study_group.leaveGroup);
 
-app.get('/v0/messages/:id/', auth.checkAuth, study_group.getMessages);
+app.get('/v0/messages/:id/', checkAuth, study_group.getMessages);
 
 // ---------- Error Handling ----------
 app.use((err, req, res, next) => {
