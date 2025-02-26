@@ -34,14 +34,9 @@ Endpoints for registering and logging in
 */
 const login = require('./login');
 const register = require('./register');
-const study_group = require('./study_group');
 
 app.post('/v0/login', login.login);
 app.post('/v0/register', register.register);
-app.get('/v0/group/search', study_group.searchGroups); // define /search before /{id} in order to prioritize matching by search query, then by UUID
-app.get('/v0/group/:id', study_group.getGroup);
-app.post('/v0/group', study_group.createGroup);
-app.put('/v0/group/:id', study_group.updateGroup);
 
 /* 
 Endpoints for profile data
@@ -51,8 +46,6 @@ const profile = require('./profile');
 app.get('/v0/profile/:id', profile.getProfile);
 app.post('/v0/profile/:id', profile.setProfile);
 
-app.get('/v0/messages/:id/', study_group.getMessages);
-
 app.use((err, req, res, next) => {
   res.status(err.status).json({
     message: err.message,
@@ -60,5 +53,18 @@ app.use((err, req, res, next) => {
     status: err.status,
   });
 });
+
+/*
+Endpoints for study groups
+(sprint 2 / 3)
+*/
+const study_group = require('./study_group');
+app.get('/v0/group/search', login.check, study_group.searchGroups); // define /search before /{id} in order to prioritize matching by search query, then by UUID
+app.get('/v0/group/:id', login.check, study_group.getGroup);
+app.post('/v0/group', login.check, study_group.createGroup);
+app.put('/v0/group/:id', login.check, study_group.updateGroup);
+app.post('/v0/group/:id', login.check, study_group.joinGroup);
+
+app.get('/v0/messages/:id/', study_group.getMessages);
 
 module.exports = app;

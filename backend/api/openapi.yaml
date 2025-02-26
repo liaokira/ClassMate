@@ -122,6 +122,40 @@ paths:
           description: study group successfully updated
         404:
           description: No study group with ID found
+    post:
+      description: join a study group
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID of the study group
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                member_id:
+                  type: string
+                  format: uuid
+              required:
+                - member_id
+      responses:
+        200:
+          description: user successfully joined
+        400:
+          description: user is already a member
+        404:
+          description: no study group or user found
+
+  /group/{id}/approve:
+    put:
+      description: approve or reject a join request
+      
 
   /group/search:
     get:
@@ -200,6 +234,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UnexpectedError'
+
   /messages/{id}:
     get:
       parameters:
@@ -311,6 +346,16 @@ components:
           format: uuid
         group_name:
           type: string
+        members:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                format: uuid
+              name:
+                type: string
       required:
         - id
         - group_name

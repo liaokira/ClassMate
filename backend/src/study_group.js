@@ -22,8 +22,20 @@ exports.getGroup = async (req, res) => {
   };
   const {rows} = await pool.query(groupQuery);
   if (rows.length) {
+    const membersSelect = `
+      SELECT member.id, member_profiles.full_name
+      FROM group_members
+      JOIN member_profiles ON group_members.user_id = member_profiles.id
+      JOIN member ON group_members.user_id = member.id
+      WHERE group_members.group_id = $1
+    `;
+    const membersQuery = {
+      text: membersSelect,
+      values: [`${id}`]
+    };
+    const {rows: members} = await pool.query(membersQuery);
     console.log("group name:", rows[0].group_name);
-    res.status(200).json({id: id, group_name: rows[0].group_name});
+    res.status(200).json({id: id, group_name: rows[0].group_name, members: members.map(member => ({id: member.member_id, name: member.full_name}))});
   }
   else {
     const groupSelect2 = `SELECT id FROM study_groups WHERE id = $1`;
@@ -110,4 +122,43 @@ exports.getMessages = async (req, res) => {
   else {
     res.status(404).send();
   }
+};
+
+exports.joinGroup = async (req, res) => {
+  const group_id = req.params.id;
+  const {member_id} = req.body;
+
+  const memberCheckQuery = {
+    text: `SELECT id FROM member WHERE id = $1`,
+    values: [`${member_id}`],
+  };
+  const {rows: userRows} = await pool.query(memberCheckQuery);
+  if (!userRows.length) {
+    return res.status(404).send();
+  }
+
+  const groupCheckQuery = {
+    text: `SELECT id FROM study_groups WHERE id = $1`,
+    values: [`${group_id}`],
+  };
+  const {rows: groupRows} = await pool.query(groupCheckQuery);
+  if (!groupRows.length) {
+    return res.status(404).send();
+  }
+
+  const membershipCheckQuery = {
+    text: 'SELECT * FROM group_members WHERE user_id = $1 AND group_id = $2',
+    values: [`${userId}`, `${groupId}`],
+  };
+  const {rows: membershipRows} = await pool.query(membershipCheckQuery);
+  if (membershipRows.length) {
+    return res.status(400).send();
+  }
+
+  const addQuery = {
+    text: `INSERT INTO group_members (user_id, group_id) VALUES ($1, $2)`,
+    values: [`${userId}`, `${group_id}`],
+  };
+  await pool.query(addQuery);
+  res.status(200).send();
 };
