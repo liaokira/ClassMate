@@ -65,11 +65,11 @@ exports.setProfile = async (req, res) => {
     else{
       res.status(201).json({id});
     }
-      console.log("id", rows[0].id);
+    console.log("id", rows[0].id);
 
-      console.log("bio data", rows[0].bio_data);
-      console.log("name data", rows[0].full_name);
-    res.status(200).json({id});
+    console.log("bio data", rows[0].bio_data);
+    console.log("name data", rows[0].full_name);
+    // res.status(200).json({id});
   }
   else {
     res.status(404).send('Error: No Profile for User Found');

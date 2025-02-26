@@ -46,14 +46,6 @@ const profile = require('./profile');
 app.get('/v0/profile/:id', profile.getProfile);
 app.post('/v0/profile/:id', profile.setProfile);
 
-app.use((err, req, res, next) => {
-  res.status(err.status).json({
-    message: err.message,
-    errors: err.errors,
-    status: err.status,
-  });
-});
-
 /*
 Endpoints for study groups
 (sprint 2 / 3)
@@ -63,8 +55,17 @@ app.get('/v0/group/search', login.check, study_group.searchGroups); // define /s
 app.get('/v0/group/:id', login.check, study_group.getGroup);
 app.post('/v0/group', login.check, study_group.createGroup);
 app.put('/v0/group/:id', login.check, study_group.updateGroup);
-app.post('/v0/group/:id', login.check, study_group.joinGroup);
+app.post('/v0/group/:id/join', login.check, study_group.joinGroup);
+app.delete('/v0/group/:id/leave', login.check, study_group.leaveGroup);
 
 app.get('/v0/messages/:id/', study_group.getMessages);
+
+app.use((err, req, res, next) => {
+  res.status(err.status).json({
+    message: err.message,
+    errors: err.errors,
+    status: err.status,
+  });
+});
 
 module.exports = app;

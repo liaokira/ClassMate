@@ -22,20 +22,10 @@ exports.getGroup = async (req, res) => {
   };
   const {rows} = await pool.query(groupQuery);
   if (rows.length) {
-    const membersSelect = `
-      SELECT member.id, member_profiles.full_name
-      FROM group_members
-      JOIN member_profiles ON group_members.user_id = member_profiles.id
-      JOIN member ON group_members.user_id = member.id
-      WHERE group_members.group_id = $1
-    `;
-    const membersQuery = {
-      text: membersSelect,
-      values: [`${id}`]
-    };
-    const {rows: members} = await pool.query(membersQuery);
+    const members = await getMembers(id);
+    console.log(members);
     console.log("group name:", rows[0].group_name);
-    res.status(200).json({id: id, group_name: rows[0].group_name, members: members.map(member => ({id: member.member_id, name: member.full_name}))});
+    res.status(200).json({id: id, group_name: rows[0].group_name, group_description: rows[0].group_description, members: members.map(member => ({id: member.user_id, name: member.full_name}))});
   }
   else {
     const groupSelect2 = `SELECT id FROM study_groups WHERE id = $1`;
@@ -55,11 +45,11 @@ exports.getGroup = async (req, res) => {
 
 // may need to add checks if group with already existing name exists>
 exports.createGroup = async (req, res) => {
-  const {group_name} = req.body;
-  const groupInsert = `INSERT INTO study_groups(group_name) VALUES ($1) RETURNING id`;
+  const {group_name, group_description} = req.body;
+  const groupInsert = `INSERT INTO study_groups(group_name, group_description) VALUES ($1, $2) RETURNING id`;
   const groupQuery = {
       text: groupInsert,
-      values: [`${group_name}`],
+      values: [`${group_name}`, `${group_description ? group_description : "Add a group description..."}`],
   };
   const {rows} = await pool.query(groupQuery);
   if (rows.length) {
@@ -69,7 +59,7 @@ exports.createGroup = async (req, res) => {
 
 exports.updateGroup = async (req, res) => {
   const id = req.params.id;
-  const {group_name} = req.body;
+  const {group_name, group_description} = req.body;
   const groupSelect = `SELECT * FROM study_groups WHERE id = $1`;
   const groupQuery = {
     text: groupSelect,
@@ -77,13 +67,49 @@ exports.updateGroup = async (req, res) => {
   };
   const {rows} = await pool.query(groupQuery);
   if (rows.length) {
-    const updateGroup = `UPDATE study_groups SET group_name = $1 WHERE id = $2 RETURNING id`;
+    // const updateGroup = `UPDATE study_groups SET group_name = $1, group_description = $2 WHERE id = $3 RETURNING id`;
+    // const updateQuery = {
+    //   text: updateGroup,
+    //   values: [`${group_name}`, `${group_description}`, `${id}`],
+    // };
+    let updateGroup = `UPDATE study_groups SET `;
+    let query_values = [];
+    let value_index = 1;
+
+    if (group_name) {
+      updateGroup += `group_name = $${value_index}, `;
+      query_values.push(group_name);
+      value_index++;
+    }
+
+    if (group_description) {
+      updateGroup += `group_description = $${value_index}, `;
+      query_values.push(group_description);
+      value_index++;
+    }
+    
+    /*
+    if no new values have been detected, then exit early.
+    this is only here to demonstrate it in tests.
+    see below.
+
+    NOTE TO FRONTEND:
+    disable confirming updates if no new values have been entered into the textboxes.
+    you can either disable the button or just return to previous page when it is clicked.
+    */ 
+    if (value_index == 1) {
+      res.status(200).send();
+      return;
+    }
+
+    updateGroup = updateGroup.slice(0, -2);
+    updateGroup += ` WHERE id = $${value_index}`;
+    query_values.push(id);
     const updateQuery = {
       text: updateGroup,
-      values: [`${group_name}`, `${id}`],
+      values: query_values,
     };
-    const rows2 = await pool.query(updateQuery);
-    console.log(rows2);
+    await pool.query(updateQuery);
     res.status(200).send();
   }
   else {
@@ -124,6 +150,41 @@ exports.getMessages = async (req, res) => {
   }
 };
 
+const getMembers = async (group_id) => {
+  // SELECT group_members.user_id, member_profiles.full_name
+  const getMembersSelect = `
+    SELECT user_id, full_name
+    FROM group_members
+    INNER JOIN member_profiles ON group_members.user_id = member_profiles.id AND group_members.group_id = $1
+  `;
+  // const getMembersSelect = `SELECT user_id FROM group_members WHERE group_id = $1`;
+  const getMembersQuery = {
+    text: getMembersSelect,
+    values: [group_id],
+    // values: [],
+  };
+  const {rows: members} = await pool.query(getMembersQuery);
+  return members;
+};
+
+/*
+NOT IN USE
+*/
+exports.getMembers = async (req, res) => {
+  const id = req.params.id;
+  const groupSelect = `SELECT * FROM study_groups WHERE id = $1`;
+  const groupQuery = {
+    text: groupSelect,
+    values: [`${id}`],
+  };
+  const {rows} = await pool.query(groupQuery);
+  if (rows.length) {
+    const members = await getMembers(id);
+    console.log(members);
+    res.status(200).json({members: members.map(member => ({id: member.user_id, name: member.full_name}))});
+  }
+};
+
 exports.joinGroup = async (req, res) => {
   const group_id = req.params.id;
   const {member_id} = req.body;
@@ -148,7 +209,7 @@ exports.joinGroup = async (req, res) => {
 
   const membershipCheckQuery = {
     text: 'SELECT * FROM group_members WHERE user_id = $1 AND group_id = $2',
-    values: [`${userId}`, `${groupId}`],
+    values: [`${member_id}`, `${group_id}`],
   };
   const {rows: membershipRows} = await pool.query(membershipCheckQuery);
   if (membershipRows.length) {
@@ -157,8 +218,12 @@ exports.joinGroup = async (req, res) => {
 
   const addQuery = {
     text: `INSERT INTO group_members (user_id, group_id) VALUES ($1, $2)`,
-    values: [`${userId}`, `${group_id}`],
+    values: [`${member_id}`, `${group_id}`],
   };
   await pool.query(addQuery);
   res.status(200).send();
+};
+
+exports.leaveGroup = async (req, res) => {
+
 };

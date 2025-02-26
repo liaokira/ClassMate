@@ -57,6 +57,8 @@ paths:
 
   /group:
     post:
+      security:
+        - bearerAuth: []
       description: create a study group
       requestBody:
         description: specifics of the study group (name, time, etc.)
@@ -64,7 +66,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/GroupData'
+              type: object
+              properties:
+                group_name:
+                  type: string
+                group_description:
+                  type: string
+              required:
+                - group_name  
       responses:
         201:
           description: study group created
@@ -83,6 +92,8 @@ paths:
 
   /group/{id}:
     get:
+      security:
+        - bearerAuth: []
       description: get information about a study group
       parameters:
         - name: id
@@ -102,6 +113,8 @@ paths:
         404:
           description: No study group with ID found
     put:
+      security:
+        - bearerAuth: []
       description: update information of a study group
       parameters:
         - name: id
@@ -122,7 +135,11 @@ paths:
           description: study group successfully updated
         404:
           description: No study group with ID found
+
+  /group/{id}/join:
     post:
+      security:
+        - bearerAuth: []
       description: join a study group
       parameters:
         - name: id
@@ -146,19 +163,51 @@ paths:
                 - member_id
       responses:
         200:
-          description: user successfully joined
+          description: user successfully joined study group
         400:
-          description: user is already a member
+          description: user is already a member of study group
         404:
-          description: no study group or user found
+          description: no study group found
 
-  /group/{id}/approve:
-    put:
-      description: approve or reject a join request
-      
+  /group/{id}/leave:
+    delete:
+      description: leave a study group
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID of the study group
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                member_id:
+                  type: string
+                  format: uuid
+              required:
+                - member_id
+      responses:
+        200:
+          description: successfully left study group
+        400:
+          description: user is not a member of study group
+        404:
+          description: no study group found
+  # /group/{id}/approve:
+  #   put:
+  #     description: approve or reject a join request
+
 
   /group/search:
     get:
+      security:
+        - bearerAuth: []
       description: search for message groups by name
       parameters:
         - name: searchFor
@@ -179,6 +228,8 @@ paths:
 
   /profile/{id}:
     get:
+      security:
+        - bearerAuth: []
       summary: Get user profile by ID
       description: Retrieves user profile details based on the provided ID.
       parameters:
@@ -204,15 +255,30 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UnexpectedError'
-  /profile:
+  # /profile:
     post:
+      security:
+        - bearerAuth: []
       description: setprofile
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the user profile to set.
+          schema:
+            type: string
+            format: uuid
       requestBody: 
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ProfileData'
+              type: object
+              properties:
+                bio:
+                  type: string
+                full_name:
+                  type: string
       responses:
         200:
           description: Profile Updated
@@ -237,6 +303,8 @@ paths:
 
   /messages/{id}:
     get:
+      security:
+        - bearerAuth: []
       parameters:
       - name: id
         in: path
@@ -335,8 +403,10 @@ components:
       properties:
         group_name:
           type: string
-      required:
-        - group_name
+        group_description:
+          type: string
+      # required:
+      #   - group_name
 
     GroupFullData:
       type: object
