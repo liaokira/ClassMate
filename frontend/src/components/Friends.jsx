@@ -40,6 +40,10 @@ const Results = styled.div`
   border-radius: 1rem;
 `;
 
+const FriendList = styled.div`
+  min-width: 25vw;
+`;
+
 const FriendItem = styled.div`
   display: flex;
   justify-content: space-between;
@@ -176,44 +180,56 @@ const Friends = ({userId}) => {
     }
   };
 
+  const decodeToken = (token) => {
+    const payload = token.split('.')[1];
+    const decode = atob(payload);
+    return JSON.parse(decode);
+  }
+
+  const token = localStorage.getItem('accessToken');
+  const decodeId = decodeToken(token);
+  const loggedId = decodeId?.id;
+  const ownPage = (loggedId === userId);
+
   return (
     <PageContainer>
-      <ParentContainer>
-        <Container>
-          <h3>Add a friend</h3>
-          <Label>Search by Email:</Label>
-          <input 
-            type="email"
-            placeholder="Enter email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-          <Button onClick={handleSearch}>Search</Button>
-        </Container>
+      {ownPage &&
+        <ParentContainer>
+          <Container>
+            <h3>Add a friend</h3>
+            <Label>Search by Email:</Label>
+            <input 
+              type="email"
+              placeholder="Enter email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+            <Button onClick={handleSearch}>Search</Button>
+          </Container>
 
-        <Results $fill={fill}>
-          {search && (
-            <div>
-              <h3>User found: {search.full_name}</h3>
-              <button onClick={handleAdd}>Add Friend</button>
-            </div>
-          )}
-          {error && <p style={{color: 'red'}}>{error}</p>}
-          {success && <p style={{color: 'green'}}>{success}</p>}
-        </Results>
-      </ParentContainer>
-        <div>
-          <br></br>
-          <h2>Your Friends</h2>
-          {friends.length > 0 && (
-            friends.map((friend) => (
-              <FriendItem key={friend.id}>
-                <span><h3>{friend.full_name}</h3></span>
-                <Link to={`/profile/${friend.id}`}>View Profile</Link>
-              </FriendItem>
-            ))
-          )}
-      </div>
+          <Results $fill={fill}>
+            {search && (
+              <div>
+                <h3>User found: {search.full_name}</h3>
+                <button onClick={handleAdd}>Add Friend</button>
+              </div>
+            )}
+            {error && <p style={{color: 'red'}}>{error}</p>}
+            {success && <p style={{color: 'green'}}>{success}</p>}
+          </Results>
+        </ParentContainer>
+      }
+      <FriendList>
+        <h2>{ownPage ? 'Your Friends' : 'Their Friends'}</h2>
+        {friends.length > 0 && (
+          friends.map((friend) => (
+            <FriendItem key={friend.id}>
+              <span><h3>{friend.full_name}</h3></span>
+              <Link to={`/profile/${friend.id}`}>View Profile</Link>
+            </FriendItem>
+          ))
+        )}
+      </FriendList>
     </PageContainer>
   );
 };

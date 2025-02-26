@@ -111,7 +111,7 @@ const Content = styled.div`
 
 function Profile() {
   const { userId } = useParams();
-  const [profileData, setProfileData] = useState({id: userId, name: '', bio: ''});
+  const [profileData, setProfileData] = useState({id: userId, full_name: '', bio: ''});
   const [error, setError] = useState('');
   const [activeTab, setActivateTab] = useState('friends');
   const [updateTrigger, setUpdateTrigger] = useState(0);
