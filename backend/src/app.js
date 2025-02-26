@@ -57,6 +57,7 @@ app.get('/v0/users/search', friends.searchUser);
 app.put('/v0/users/addFriend', friends.addFriend);
 app.get('/v0/users/getFriends', friends.getFriends);
 
+app.get('/v0/messages/:id/', study_group.getMessages);
 
 // ---------- Error Handling ----------
 app.use((err, req, res, next) => {
