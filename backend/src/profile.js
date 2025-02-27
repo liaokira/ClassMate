@@ -95,7 +95,7 @@ exports.getUserGroups = async (req, res) => {
   }
 
   const getUserGroupsSelect = `
-    SELECT group_id, group_name
+    SELECT *
     FROM group_members
     INNER JOIN study_groups ON group_members.group_id = study_groups.id AND group_members.user_id = $1
   `;

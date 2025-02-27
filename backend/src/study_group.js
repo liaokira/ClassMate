@@ -20,18 +20,11 @@ exports.discoverGroups = async (req, res) => {
     FROM group_members
     INNER JOIN study_groups ON group_members.group_id = study_groups.id AND NOT user_id = $1
   `;
-  // const groupSelect = `
-  //   SELECT id, group_name, group_description, color, associated_class
-  //   FROM study_groups
-  //   LEFT JOIN group_members ON study_groups.id = group_members.group_id
-  //   WHERE group_members.user_id != $1
-  // `;
   const groupQuery = {
     text: groupSelect,
     values: [user_id],
   };
   const {rows} = await pool.query(groupQuery);
-  // console.log(rows);
   res.status(200).send(rows);
 }
 
