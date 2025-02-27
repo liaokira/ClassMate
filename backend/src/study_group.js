@@ -211,6 +211,7 @@ const checkMembership = async (member_id, group_id) => {
   };
   const {rows: userRows} = await pool.query(memberCheckQuery);
   if (!userRows.length) {
+    console.log("user not found");
     return 1;
   }
 
@@ -220,6 +221,7 @@ const checkMembership = async (member_id, group_id) => {
   };
   const {rows: groupRows} = await pool.query(groupCheckQuery);
   if (!groupRows.length) {
+    console.log("study group not found");
     return 2;
   }
 
@@ -229,8 +231,10 @@ const checkMembership = async (member_id, group_id) => {
   };
   const {rows: membershipRows} = await pool.query(membershipCheckQuery);
   if (!membershipRows.length) {
+    console.log("user not in study group");
     return 3;
   }
+  console.log("user in study group");
   return 0;
 };
 
@@ -277,25 +281,24 @@ exports.leaveGroup = async (req, res) => {
   const group_id = req.params.id;
   const {member_id} = req.body;
 
-  const membership = checkMembership(member_id, group_id);
+  const membership = await checkMembership(member_id, group_id);
   switch (membership) {
     case 0:
-      break;
+      const leaveGroupQuery = {
+        text: `DELETE FROM group_members WHERE user_id = $1 and group_id = $2`,
+        values: [member_id, group_id],
+      };
+      await pool.query(leaveGroupQuery);
+      return res.status(200).send();
+      // break;
     case 1:
-      res.status(404).send("User not found");
-      break;
+      return res.status(404).send("User not found");
+      // break;
     case 2:
-      res.status(404).send("Study group not found");
-      break;
+      return res.status(404).send("Study group not found");
+      // break;
     case 3:
-      res.status(403).send("User is not a member of the study group");
-      break;
+      return res.status(403).send("User is not a member of the study group");
+      // break;
   }
-
-  const leaveGroupQuery = {
-    text: `DELETE FROM group_members WHERE user_id = $1 and group_id = $2`,
-    values: [member_id, group_id],
-  };
-  await pool.query(leaveGroupQuery);
-  res.status(200).send();
 };
