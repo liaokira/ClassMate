@@ -123,6 +123,48 @@ input::placeholder{
   text-align: left;
 }
 
+/* Style the select container */
+select {
+  appearance: none; /* Remove default styles */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  font-size: 1rem;
+  background-color: var(--primary);
+  border: 3px solid var(--tertiary);
+  border-radius: 2rem;
+  height: 2rem;
+  width:fit-content;
+  cursor: pointer;
+  color: var(--tertiary);;
+  text-align: center;
+  position: relative;
+  padding-left:1rem;
+  padding-right:1rem;
+}
+
+/* Add a dropdown arrow using a background */
+/* select::after {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+} */
+
+/* Style the dropdown options */
+select option {
+  background-color: var(--primary);
+  padding: 10px;
+  border: none;
+  text-align: center;
+}
+
+/* Highlight the hovered/selected option */
+select option:hover,
+select option:checked {
+  background-color: var(--secondary);
+}
+
 
 textarea{
   /* all:unset; */
@@ -132,7 +174,7 @@ textarea{
   border-radius: 1rem;
   height: 2rem;
   width:fit-content;
-  max-width:500px;
+  max-width:100%;
   padding:1rem;
   font-size: 1rem;
   font-family: Lato, sans-serif;
