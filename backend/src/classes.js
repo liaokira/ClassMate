@@ -12,6 +12,10 @@ const pool = new Pool({
   password: 'test',
 });
 
+exports.createClass = async (req, res, next) => {
+  
+}
+
 // POST /v0/profile/:id/classes
 exports.addClass = async (req, res, next) => {
   const userId = req.params.id;
