@@ -269,7 +269,6 @@ paths:
 
   /profile/{id}:
     get:
-      summary: get user profile of a user
       security:
         - bearerAuth: []
       summary: Get user profile by ID
@@ -302,7 +301,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/UnexpectedError'
   # /profile:
-    post:
+    put:
       summary: set the user profile of a user
       security:
         - bearerAuth: []
@@ -351,6 +350,29 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/UnexpectedError"
+  
+  /profile/{id}/groups:
+    get:
+      summary: get all the study groups a user is in
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: user UUID
+          schema:
+            type: string
+            format: uuid
+      responses:
+        200:
+          description: an array of study groups the user is a member of
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GroupArray"
+        404:
+          description: user not found
 
   /profile/{id}/classes:
     summary: get all the classes a user is in
@@ -382,7 +404,6 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
     post:
-      summary: add a class to a user
       security:
         - bearerAuth: []
       summary: Add a class to a user's profile

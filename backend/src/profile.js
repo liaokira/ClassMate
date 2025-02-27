@@ -12,6 +12,13 @@ const pool = new Pool({
   password: 'test',
 });
 
+exports.verifyUser = async (req, res, next) => {
+  console.log(req.user);
+  if (req.params.id !==  req.user.id) {
+    return res.status(403).json({ message: 'You cannot access another user\'s profile.' });
+  }
+  next();
+};
 
 exports.getProfile = async (req, res) => {
   const id = req.params.id;
@@ -22,9 +29,9 @@ exports.getProfile = async (req, res) => {
   };
   const {rows} = await pool.query(userQuery);
   if (rows.length) {
-    console.log("rows", rows);
-    console.log("bio data", rows[0].bio_data);
-    console.log("name data", rows[0].full_name);
+    // console.log("rows", rows);
+    // console.log("bio data", rows[0].bio_data);
+    // console.log("name data", rows[0].full_name);
     res.status(200).json({id: id, bio: rows[0].bio_data, full_name: rows[0].full_name});
   }
   else {
@@ -64,13 +71,39 @@ exports.setProfile = async (req, res) => {
     else{
       res.status(201).json({id});
     }
-    console.log("id", rows[0].id);
+    // console.log("id", rows[0].id);
 
-    console.log("bio data", rows[0].bio_data);
-    console.log("name data", rows[0].full_name);
+    // console.log("bio data", rows[0].bio_data);
+    // console.log("name data", rows[0].full_name);
     // res.status(200).json({id});
   }
   else {
     res.status(404).send('Error: No Profile for User Found');
   }
+};
+
+exports.getUserGroups = async (req, res) => {
+  const id = req.params.id;
+
+  const memberCheckQuery = {
+    text: `SELECT id FROM member WHERE id = $1`,
+    values: [`${id}`],
+  };
+  const {rows: userRows} = await pool.query(memberCheckQuery);
+  if (!userRows.length) {
+    return res.status(404).send();
+  }
+
+  const getUserGroupsSelect = `
+    SELECT group_id, group_name
+    FROM group_members
+    INNER JOIN study_groups ON group_members.group_id = study_groups.id AND group_members.user_id = $1
+  `;
+  const getUserGroupsQuery = {
+    text: getUserGroupsSelect,
+    values: [id],
+  };
+  const {rows: groups} = await pool.query(getUserGroupsQuery);
+  console.log(groups);
+  res.status(200).send(groups);
 };
