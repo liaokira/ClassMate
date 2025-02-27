@@ -391,8 +391,18 @@ paths:
               properties:
                 class_name:
                   type: string
+                # start_time:
+                #   type: integer
+                #   minimum: 0
+                #   maximum: 1440
+                # end_time:
+                #   type: integer
+                #   minimum: 0
+                #   maximum: 1440
               required:
                 - class_name
+                # - start_time
+                # - end_time
       responses:
         201:
           description: Class added successfully
@@ -844,9 +854,19 @@ components:
           format: uuid
         class_name:
           type: string
+        start_time:
+          type: integer
+          minimum: 0
+          maximum: 1440
+        end_time:
+          type: integer
+          minimum: 0
+          maximum: 1440
       required:
         - id
         - class_name
+        - start_time
+        - end_time
 
     SimpleUser:
       description: Basic user info

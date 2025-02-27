@@ -15,7 +15,7 @@ const pool = new Pool({
 // POST /v0/profile/:id/classes
 exports.addClass = async (req, res, next) => {
   const userId = req.params.id;
-  const { class_name } = req.body; 
+  const {class_name} = req.body; 
 
   if (!class_name) {
     return res.status(400).json({ error: 'class_name is required' });
@@ -24,8 +24,8 @@ exports.addClass = async (req, res, next) => {
   try {
     const normalizedClassName = class_name.toLowerCase().trim();
 
-    const selectQuery = 'SELECT * FROM classes WHERE class_name = $1';
-    let result = await pool.query(selectQuery, [normalizedClassName]);
+    const selectQuery = 'SELECT * FROM classes WHERE class_name ILIKE $1';
+    let result = await pool.query(selectQuery, [class_name]);
     let classRecord;
 
     if (result.rows.length > 0) {
@@ -33,6 +33,7 @@ exports.addClass = async (req, res, next) => {
     } else {
       const insertQuery = 'INSERT INTO classes (class_name) VALUES ($1) RETURNING *';
       result = await pool.query(insertQuery, [normalizedClassName]);
+      // console.log(classRecord);
       classRecord = result.rows[0];
     }
 
@@ -57,12 +58,13 @@ exports.getClasses = async(req, res, next) => {
   const userId = req.params.id;
   try {
     const query = `
-      SELECT c.id, c.class_name
+      SELECT *
       FROM classes c
       INNER JOIN member_classes mc ON c.id = mc.class_id
       WHERE mc.member_id = $1
     `;
     const result = await pool.query(query, [userId]);
+    // console.log(result);
     res.status(200).json(result.rows);
   } catch (error) {
     console.error('Error in getClasses:', error);
@@ -90,7 +92,7 @@ exports.removeClass = async(req, res, next) => {
 
 exports.getAllClasses = async (req, res, next) => {
   try {
-    const query = 'SELECT id, class_name FROM classes';
+    const query = 'SELECT * FROM classes';
     const result = await pool.query(query);
     return res.status(200).json(result.rows);
   } catch (error) {
