@@ -10,8 +10,8 @@ DROP TABLE IF EXISTS classes CASCADE;
 CREATE TABLE classes(
     id UUID UNIQUE PRIMARY KEY DEFAULT gen_random_uuid(),
     class_name VARCHAR(50) NOT NULL,
-    start_time INT,
-    end_time INT
+    start_time INT NOT NULL DEFAULT 0,
+    end_time INT NOT NULL DEFAULT 0
 ); 
 
 DROP TABLE IF EXISTS member_classes CASCADE;
@@ -29,7 +29,7 @@ CREATE TABLE study_groups(
     group_name VARCHAR(18) NOT NULL,
     group_description TEXT NOT NULL DEFAULT 'Add a group description...',
     color VARCHAR(18) NOT NULL,
-    associated_class UUID REFERENCES classes(id)
+    associated_class VARCHAR(50)
 );
 
 DROP TABLE IF EXISTS group_members CASCADE;
