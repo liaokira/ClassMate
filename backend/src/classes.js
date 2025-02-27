@@ -13,7 +13,7 @@ const pool = new Pool({
 });
 
 exports.createClass = async (req, res, next) => {
-  
+
 }
 
 // POST /v0/profile/:id/classes
@@ -26,10 +26,10 @@ exports.addClass = async (req, res, next) => {
   }
 
   try {
-    const normalizedClassName = class_name.toLowerCase().trim();
+    const normalizedClassName = class_name.toLowerCase().trim().replace(/[\s-]/g, '');
 
     const selectQuery = 'SELECT * FROM classes WHERE class_name ILIKE $1';
-    let result = await pool.query(selectQuery, [class_name]);
+    let result = await pool.query(selectQuery, [normalizedClassName]);
     let classRecord;
 
     if (result.rows.length > 0) {
@@ -37,7 +37,6 @@ exports.addClass = async (req, res, next) => {
     } else {
       const insertQuery = 'INSERT INTO classes (class_name) VALUES ($1) RETURNING *';
       result = await pool.query(insertQuery, [normalizedClassName]);
-      // console.log(classRecord);
       classRecord = result.rows[0];
     }
 
