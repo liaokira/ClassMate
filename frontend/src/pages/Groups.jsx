@@ -118,10 +118,11 @@ function GroupsPage() {
   
       if (response.ok) {
         const data = await response.json();
+        setUserGroups(data);
+
         if(data.length == 0){
           setError("You are not in any groups yet!");
         }
-        setUserGroups(data);
       } else {
         throw new Error("Failed to fetch groups");
       }
@@ -212,11 +213,13 @@ function GroupsPage() {
           // My groups
           <>
 
-          <Error>
-          {error && <p>{error}</p>}
-          </Error>
+          {error && (<Error>
+            <p>{error}</p>
+            </Error>
+            )
+          }
   
-          {userGroups.map((group) => (
+          {userGroups.length != 0 && (userGroups.map((group) => (
           <GroupCard key={group.id} 
           name={group.group_name} 
           groupclass={group.associated_class}
@@ -225,7 +228,7 @@ function GroupsPage() {
           color={group.color}
           joined={true}
           />
-        ))}
+        )))}
           </>
         ) : (
           // Explore page
@@ -237,9 +240,11 @@ function GroupsPage() {
           onChange={handleSearch}/>
           </SearchSection>
 
-          <Error>
-          {allError && <p>{allError}</p>}
-          </Error>
+          {allError && (<Error>
+            <p>{allError}</p>
+            </Error>
+            )
+          }
           {allGroups.map((group) => (
           <GroupCard key={group.id} 
           name={group.group_name} 
