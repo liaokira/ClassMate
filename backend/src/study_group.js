@@ -12,6 +12,17 @@ const pool = new Pool({
   password: 'test',
 });
 
+exports.getAllGroups = async (req, res) => {
+  const groupSelect = `SELECT * FROM study_groups`;
+  const groupQuery = {
+    text: groupSelect,
+    values: [],
+  };
+  const {rows} = await pool.query(groupQuery);
+  console.log(rows);
+  res.status(200).send(rows);
+};
+
 exports.getGroup = async (req, res) => {
   console.log("getGroup");
   const id = req.params.id;
