@@ -67,6 +67,18 @@ paths:
                 $ref: "#/components/schemas/UnexpectedError"
 
   /group:
+    get:
+      summary: retrieves all groups
+      security:
+        - bearerAuth: []
+      description: returns an array of all groups
+      responses:
+        200:
+          description: successfully retrieved all groups
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GroupArray"
     post:
       summary: create a new study group
       security:

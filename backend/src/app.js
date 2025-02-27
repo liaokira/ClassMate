@@ -65,6 +65,7 @@ app.get('/v0/users/getFriends', checkAuth, friends.getFriends);
 Endpoints for study groups
 (sprint 2 / 3)
 */
+app.get('/v0/group', checkAuth, study_group.getAllGroups)
 app.get('/v0/group/search', checkAuth, study_group.searchGroups); // define /search before /{id} in order to prioritize matching by search query, then by UUID
 app.get('/v0/group/:id', checkAuth, study_group.getGroup);
 app.post('/v0/group', checkAuth, study_group.createGroup);
