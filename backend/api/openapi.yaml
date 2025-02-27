@@ -11,6 +11,7 @@ servers:
 paths:
   /register:
     post:
+      summary: register
       # No security -> public
       description: register
       requestBody:
@@ -35,6 +36,7 @@ paths:
 
   /login:
     post:
+      summary: login
       # No security -> public
       description: login
       requestBody:
@@ -66,6 +68,7 @@ paths:
 
   /group:
     post:
+      summary: create a new study group
       security:
         - bearerAuth: []
       description: create a study group
@@ -111,6 +114,7 @@ paths:
 
   /group/{id}:
     get:
+      summary: get information about a study group given an ID
       security:
         - bearerAuth: []
       description: get information about a study group
@@ -136,6 +140,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
     put:
+      summary: update the information of a study group given an ID
       security:
         - bearerAuth: []
       description: update information of a study group
@@ -165,6 +170,7 @@ paths:
 
   /group/{id}/join:
     post:
+      summary: join a study group
       security:
         - bearerAuth: []
       description: join a study group
@@ -198,6 +204,7 @@ paths:
 
   /group/{id}/leave:
     delete:
+      summary: leave a study group
       security:
         - bearerAuth: []
       description: leave a study group
@@ -235,9 +242,10 @@ paths:
 
   /group/search:
     get:
+      summary: search for study groups given a keyword or phrase
       security:
         - bearerAuth: []
-      description: search for message groups by name
+      description: search for study groups by name
       parameters:
         - name: searchFor
           in: query
@@ -293,7 +301,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/UnexpectedError'
   # /profile:
-    post:
+    put:
+      summary: set the user profile of a user
       security:
         - bearerAuth: []
       description: setprofile
@@ -341,8 +350,32 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/UnexpectedError"
+  
+  /profile/{id}/groups:
+    get:
+      summary: get all the study groups a user is in
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: user UUID
+          schema:
+            type: string
+            format: uuid
+      responses:
+        200:
+          description: an array of study groups the user is a member of
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GroupArray"
+        404:
+          description: user not found
 
   /profile/{id}/classes:
+    summary: get all the classes a user is in
     get:
       security:
         - bearerAuth: []
@@ -484,6 +517,7 @@ paths:
 
   /messages/{id}:
     get:
+      summary: get messages from a study group
       security:
         - bearerAuth: []
       parameters:

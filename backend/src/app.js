@@ -48,10 +48,11 @@ app.post('/v0/login', login.login);
 app.post('/v0/register', register.register);
 
 app.get('/v0/profile/:id', checkAuth, profile.getProfile);
-app.put('/v0/profile/:id', checkAuth, profile.setProfile);
+app.put('/v0/profile/:id', checkAuth, profile.verifyUser, profile.setProfile);
 
 app.get('/v0/profile/:id/classes', checkAuth, classes.getClasses);
 app.get('/v0/classes', checkAuth, classes.getAllClasses);
+
 app.post('/v0/profile/:id/classes', checkAuth, classes.addClass);
 app.delete('/v0/profile/:id/classes/:classId', checkAuth, classes.removeClass);
 
@@ -68,6 +69,8 @@ app.get('/v0/group/search', checkAuth, study_group.searchGroups); // define /sea
 app.get('/v0/group/:id', checkAuth, study_group.getGroup);
 app.post('/v0/group', checkAuth, study_group.createGroup);
 app.put('/v0/group/:id', checkAuth, study_group.updateGroup);
+
+app.get('/v0/profile/:id/groups', checkAuth, profile.getUserGroups);
 app.post('/v0/group/:id/join', checkAuth, study_group.joinGroup);
 app.delete('/v0/group/:id/leave', checkAuth, study_group.leaveGroup);
 
