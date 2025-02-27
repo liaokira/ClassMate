@@ -60,10 +60,16 @@ exports.createGroup = async (req, res) => {
   const groupInsert = `INSERT INTO study_groups(group_name, group_description, color, associated_class) VALUES ($1, $2, $3, $4) RETURNING id`;
   const groupQuery = {
       text: groupInsert,
-      values: [`${group_name}`, `${group_description ? group_description : "Add a group description..."}`, `${color}`, `${associated_class}`],
+      values: [`${group_name}`, `${group_description ? group_description : "Add a group description..."}`, `${color}`, `${associated_class.toLowerCase().trim().replace(/[\s-]/g, '')}`],
   };
   const {rows} = await pool.query(groupQuery);
   if (rows.length) {
+    const user_id = req.user.id;
+    const addQuery = {
+      text: `INSERT INTO group_members (user_id, group_id) VALUES ($1, $2)`,
+      values: [`${user_id}`, `${rows[0].id}`],
+    };
+    await pool.query(addQuery);
     res.status(201).json({id: rows[0].id});
   }
 };
