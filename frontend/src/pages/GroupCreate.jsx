@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 
@@ -11,19 +11,24 @@ const BodyStyle = styled.body`
 `;
 
 const RegisterBox = styled.div`
+display:flex;
+justify-content:center;
+align-items:center;
+gap:1vh;
+flex-direction:column;
   text-align: center;
   width: 20rem;
   background-color: var(--primary);
   border: 3px solid var(--tertiary);
   border-radius: 2rem;
   padding: 0 2rem 2rem;
-`;
 
-const RegisterForm = styled.div`
-  width: 100%;
+  h2{
+    margin-bottom:2vh;
+  }
 
-  > input {
-    margin-bottom: 0.8rem;
+  textarea{
+    margin-bottom:2vh;
   }
 `;
 
@@ -58,8 +63,8 @@ const ColorPickerWrapper = styled.div`
 `;
 
 const ColorCircle = styled.div`
-  width: 40px;
-  height: 40px;
+  width: 2vw;
+  height: 2vw;
   border-radius: 50%;
   background-color: ${(props) => colordict[props.color]['normal']};
   border: ${(props) => (props.selected ? "3px solid " + colordict[props.color]['dark'] : "3px solid transparent")};
@@ -69,14 +74,56 @@ const ColorCircle = styled.div`
 
 function GroupCreate() {
     const [selectedColor, setSelectedColor] = useState('red');
-    const [formData, setFormData] = useState({ group: "", bio: "" });
+    const [userClasses, setUserClasses] = useState([]);
+    const [selectedClass, setSelectedClass] = useState("");
+    const [formData, setFormData] = useState({ group: "", groupclass: "", bio: "" });
+    const [error, setError] = useState('');
+    const navigate = useNavigate();
   
     const handleSelect = (color) => {
       setSelectedColor(color);
     };
+
+    const decodeToken = (token) => {
+      const payload = token.split('.')[1];
+      const decode = atob(payload);
+      return JSON.parse(decode);
+    }
   
-  const [error, setError] = useState('');
-  const navigate = useNavigate();
+    const token = localStorage.getItem('accessToken');
+    const decodeId = decodeToken(token);
+    const userId = decodeId?.id;
+
+    useEffect(() => {
+      const fetchUserClasses = async () => {
+        try {
+          const response = await fetch(
+            `http://localhost:3010/v0/profile/${userId}/classes`,
+            {
+              headers: {
+                Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+              },
+            }
+          );
+  
+          if (!response.ok) throw new Error("Failed to fetch user classes");
+  
+          const data = await response.json();
+          setUserClasses(data);
+        } catch (err) {
+          console.error(err);
+          setError("Could not load user classes");
+        }
+      };
+  
+      if (userId) fetchUserClasses();
+    }, [userId]);
+
+  const handleClassSelect = (event) => {
+    const selectedValue = event.target.value;
+    setSelectedClass(selectedValue);
+  };
+  
 
   const handleChange = (e) => {
     const { id, value } = e.target;
@@ -84,36 +131,34 @@ function GroupCreate() {
   };
 
   const handleSubmit = async () => {
+    const payload = {
+      'group_name': formData.group,
+      'group_description': formData.bio,
+      'color': selectedColor,
+      'associated_class': selectedClass,
+    };
     try {
-      setError('');
-      console.log('Sending request to login with:', formData);
-  
-      const response = await fetch('http://localhost:3010/v0/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+      const response = await fetch("http://localhost:3010/v0/group", {
+        method: "POST",
+        headers: { "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}` 
+        },
+        body: JSON.stringify(payload),
       });
-  
-      console.log('Response status:', response.status);
-  
-      if (response.status === 200) {
-        const data = await response.json();
-        console.log('Login successful:', data);
-        localStorage.setItem('accessToken', data.accessToken);
-        navigate('/profile');
-      } else if (response.status === 401) {
-        console.log('Invalid credentials');
-        setError('Invalid email or password');
-      } else {
-        console.log('Unexpected error');
-        setError('An unexpected error occurred');
+
+      if (!response.ok) {
+        console.log(response);
+        throw new Error("Failed to create group");
       }
+
+      const data = await response.json();
+      console.log("Group created successfully:", data);
+      navigate("/groups"); // Redirect after successful creation
     } catch (err) {
-      console.error('Error occurred:', err);
-      setError('Failed to connect to the server');
+      setError(err.message);
     }
   };
-  
+
 
   return (
     <BodyStyle>
@@ -129,8 +174,21 @@ function GroupCreate() {
           />
         ))}
       </ColorPickerWrapper>
-      <input id="group" placeholder="Group name" onChange={handleChange} />
-      <input id="groupclass" placeholder="Class" onChange={handleChange} />
+
+      <select id="class-dropdown" value={selectedClass} onChange={handleClassSelect}>
+  <option value="" disabled>
+    Select a class
+  </option>
+  {userClasses.map((classItem) => (
+    <option key={classItem.id} value={classItem.class_name}>
+      {classItem.class_name}
+    </option>
+  ))}
+</select>
+
+      <input id="group" maxLength="18" placeholder="Group name" onChange={handleChange} />
+
+
       <textarea id="bio" placeholder="Group description (Optional)" onChange={handleChange} />
       <button onClick={handleSubmit} disabled={!formData.group}>
         Submit

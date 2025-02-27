@@ -1,6 +1,5 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link } from "react-router-dom";
-import logo from '../assets/react.svg';
 import styled from "styled-components";
 import GroupCard from '../components/GroupCard';
 
@@ -12,6 +11,11 @@ flex-direction:column;
   align-items: center;
   height:calc(100vh - 12vh);
   justify-content:center;
+
+  button{
+    display:flex;
+    align-items:center;
+  }
 `;
 
 const View = styled.div`
@@ -62,7 +66,6 @@ const Tab = styled.div`
 
   &:hover {
     background: var(--primary);
-    border-bottom: 4px solid var(--primary);
   }
 `;
 
@@ -76,28 +79,113 @@ const SearchSection = styled.div`
   height:10vh;
 `;
 
+const Error = styled.div`
+  display:flex;
+  justify-content:center;
+  text-align:center;
+  width:100%
+`
+
 function GroupsPage() {
   const [activeTab, setActiveTab] = useState('myGroups');
+  const [userGroups, setUserGroups] = useState([]);
+  const [allGroups, setAllGroups] = useState([]);
+  const [error, setError] = useState("");
+  const [allError, setAllError] = useState('');
   const [query, setQuery] = useState (""); 
-  const [results, setResults] = useState ([]);
 
-  const handleChange = (e) => {
-    const { id, value } = e.target;
-    setFormData((prev) => ({ ...prev, [id]: value}));
+  const decodeToken = (token) => {
+    const payload = token.split('.')[1];
+    const decode = atob(payload);
+    return JSON.parse(decode);
   }
 
-  function SearchBar(){
-    return (
-      <SearchBarBox
-        type="text"
-        //value={query}
-        id="search"
-        placeholder="Search..."
-        onChange={handleChange}
-      />
-    )
-  }
+  const token = localStorage.getItem('accessToken');
+  const decodeId = decodeToken(token);
+  const userId = decodeId?.id;
 
+  useEffect(() => {
+      fetchUserGroups();
+      fetchAllGroups();
+    }, []);
+
+
+  const fetchUserGroups = async () => {
+    try {
+      const response = await fetch(`http://localhost:3010/v0/profile/${userId}/groups`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("accessToken")}` },
+      });
+  
+      if (response.ok) {
+        const data = await response.json();
+        if(data.length == 0){
+          setError("You are not in any groups yet!");
+        }
+        setUserGroups(data);
+      } else {
+        throw new Error("Failed to fetch groups");
+      }
+    } catch (err) {
+      console.error(err);
+      setError("Could not load user groups");
+    }
+  };
+
+  const fetchAllGroups = async () => {
+    try {
+      const response = await fetch(`http://localhost:3010/v0/group`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("accessToken")}` },
+      });
+  
+      if (response.ok) {
+        const data = await response.json();
+        setAllGroups(data);
+      } else {
+        throw new Error("Failed to fetch groups");
+      }
+    } catch (err) {
+      console.error(err);
+      setAllError("Could not load all groups");
+    }
+  };
+
+  useEffect(() => {
+    setAllError(null);
+    const fetchSearchResults = async () => {
+      if (query.trim() === "") {
+        fetchAllGroups(); // Reset to all groups if search is empty
+        return;
+      }
+  
+      try {
+        const response = await fetch(`http://localhost:3010/v0/group/search?searchFor=${query}`, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
+            'Content-Type': 'application/json',
+          },
+        });
+  
+        if (response.ok) {
+          const data = await response.json();
+          setAllGroups(data);
+        }
+        else if(response.status==404){
+          setAllError("No groups found...");
+          setAllGroups([]);
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    };
+  
+    fetchSearchResults();
+  }, [query]);
+  
+
+  const handleSearch = async (e) => {
+    setQuery(e.target.value);
+  }
 
   return (
     <Body>
@@ -112,7 +200,9 @@ function GroupsPage() {
         </TabHolder2>
         <Link to='/creategroup'>
         <Button>
-          <button>+ Create</button>
+          <button><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-plus" viewBox="0 0 16 16">
+  <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
+</svg>Create</button>
         </Button>
         </Link>
       </TabHolder>
@@ -121,24 +211,45 @@ function GroupsPage() {
         {activeTab === "myGroups" ? (
           // My groups
           <>
-            <GroupCard name={"The awesome group"} groupclass={'Class'} description={'Description'} link={'Link'} color={"red"} />
-            <GroupCard name={"My epic group"} groupclass={'cse186'} description={'Blah Blah Blah Yap Yap Yap'} link={'Link'} color={"green"} />
+
+          <Error>
+          {error && <p>{error}</p>}
+          </Error>
+  
+          {userGroups.map((group) => (
+          <GroupCard key={group.id} 
+          name={group.group_name} 
+          groupclass={group.associated_class}
+          description={group.group_description}
+          link={group.id}
+          color={group.color}
+          joined={true}
+          />
+        ))}
           </>
         ) : (
           // Explore page
           <>
           <SearchSection>
           <input
-          placeholder='Search for a group'/>
-          <button>Search</button>
+          placeholder='Search for a group'
+          type="text"
+          onChange={handleSearch}/>
           </SearchSection>
 
-            <GroupCard name={"Whatever"} groupclass={'cse186'} description={'Blah Blah Blah Yap Yap Yap'} link={'Link'} color={"blue"} />
-            <GroupCard name={"Whatever"} groupclass={'cse186'} description={'Blah Blah Blah Yap Yap Yap'} link={'Link'} color={"yellow"} />
-            <GroupCard name={"Whatever"} groupclass={'cse186'} description={'Blah Blah Blah Yap Yap Yap'} link={'Link'} color={"purple"} />
-            <GroupCard name={"Whatever"} groupclass={'cse186'} description={'Blah Blah Blah Yap Yap Yap'} link={'Link'} color={"purple"} />
-            <GroupCard name={"Whatever"} groupclass={'cse186'} description={'Blah Blah Blah Yap Yap Yap'} link={'Link'} color={"purple"} />
-            <GroupCard name={"Whatever"} groupclass={'cse186'} description={'Blah Blah Blah Yap Yap Yap'} link={'Link'} color={"purple"} />
+          <Error>
+          {allError && <p>{allError}</p>}
+          </Error>
+          {allGroups.map((group) => (
+          <GroupCard key={group.id} 
+          name={group.group_name} 
+          groupclass={group.associated_class}
+          description={group.group_description}
+          link={group.id}
+          color={group.color}
+          joined={false}
+          />
+        ))}
           </>
         )}
       </View>

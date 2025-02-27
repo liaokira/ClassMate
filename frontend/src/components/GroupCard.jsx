@@ -1,5 +1,6 @@
 
 import React from "react";
+import { Link } from "react-router-dom";
 import styled from "styled-components";
 
 const Card = styled.div`
@@ -9,7 +10,8 @@ const Card = styled.div`
 `;
 
 const TopHalf = styled.div`
-  height: 15vh;
+position:relative;
+  height: 10vh;
   background-color: ${(props) => props.inner};
   border: 3px solid ${(props) => props.outer}; /* Scales with screen */
   display: flex;
@@ -17,6 +19,7 @@ const TopHalf = styled.div`
 `;
 
 const BottomHalf = styled.div`
+position:relative;
   background-color: var(--primary);
   padding-left: 1vw;
   padding-right: 1vw;
@@ -24,10 +27,18 @@ const BottomHalf = styled.div`
   border-top: none;
   border-radius: 0 0 1vw 1vw;
   text-wrap:wrap;
+  min-height:25vh;
 `;
+
+const ButtonHolder = styled.div`
+    position:absolute;
+    right:1vw;
+    bottom:1vw;
+`
 
 const Header = styled.div`
   display: flex;
+  position:relative;
   align-items: center; /* Ensures vertical centering */
   justify-content: left;
 padding: .5vw;
@@ -42,32 +53,36 @@ padding-top:1vw;
 
 
 const ClassItem = styled.div`
+position:absolute;
+right:1vw;
+top:1vw;
 font-family: Lato;
 font-size: 2vh;;
   border-radius: 1rem;
     padding:10px;
-    background-color: var(--secondary);
+    background-color: var(--primary);
     display:flex;
     justify-content: space-between;
     align-items:center;
-    flex-shrink: 0;
-    width:fit-content;
-    display: inline-block
 `;
 
 const Description = styled.div`
   display: flex;
   align-items: center;
   justify-content: left;
+  text-align:left;
   padding-bottom: 3vh;
-  word-wrap: break-word; /* Allows text to wrap */
-  overflow-wrap: break-word; /* Ensures long words break */
+  word-wrap: break-word;
+  word-break: break-all;
   padding:.5vw;
-  padding-bottom:1vw;
+  margin-bottom:10vh;
   padding-top:0px;
 `;
 
-function GroupCard({ name, groupclass, description, link, color}) {
+function GroupCard({ name, groupclass, description, link, color, joined}) {
+    const slice = (description) => {
+        return description.length > 75 ? description.slice(0, 75) + "..." : description;
+    };
 
     const colors = {
         red: {
@@ -95,12 +110,25 @@ function GroupCard({ name, groupclass, description, link, color}) {
 return (
     <Card>
         <TopHalf inner={colors[color]['normal']} outer={colors[color]['dark']}>
+        <ClassItem>{groupclass}</ClassItem>
         </TopHalf>
         <BottomHalf>
             <Header>
-            <h2>{name} <ClassItem>{groupclass}</ClassItem></h2>
+            <h2>{name}</h2>
             </Header>
-            <Description>{description}</Description>
+            {description!="Add a group description..." &&(
+                <Description>{slice(description)}</Description>
+            )
+            }
+            <ButtonHolder>
+                <Link to={`/${link}`}>
+                    <button>
+                        {joined ? "View" : "Join"} <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-arrow-right-short" viewBox="0 0 16 16">
+  <path fillRule="evenodd" d="M4 8a.5.5 0 0 1 .5-.5h5.793L8.146 5.354a.5.5 0 1 1 .708-.708l3 3a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708-.708L10.293 8.5H4.5A.5.5 0 0 1 4 8"/>
+</svg>
+                    </button>
+                </Link>
+            </ButtonHolder>
         </BottomHalf>
     </Card>
 );
