@@ -712,7 +712,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/UnexpectedError'
 
-  /messages/{id}:
+  /group/{id}/messages:
     get:
       summary: get messages from a study group
       security:
@@ -732,6 +732,40 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/MessageArray'
+        404:
+          description: Not Found
+        default:
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnexpectedError'
+  
+  /users/{id}/{recepientId}/messages:
+    get:
+      summary: get messages from a study group
+      security:
+        - bearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: recepientId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        200:
+          description: Messages Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageArray2'
         404:
           description: Not Found
         default:
@@ -1083,6 +1117,33 @@ components:
       type: array
       items:
         $ref: '#/components/schemas/MessageData'
+
+    MessageData2:
+      type: object
+      properties:
+        sender_id:
+          type: string
+          format: uuid
+        sender_name:
+          type: string
+        recepient_id:
+          type: string
+          format: uuid
+        message:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+      required:
+        - sender_id
+        - sender_name
+        - recepient_id
+        - message
+        - timestamp
+    MessageArray2:
+      type: array
+      items:
+        $ref: '#/components/schemas/MessageData2'
 
     Class:
       type: object

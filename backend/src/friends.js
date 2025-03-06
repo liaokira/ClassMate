@@ -173,3 +173,21 @@ exports.getFriends = async (req, res) => {
     return res.status(500).json({ error: 'Server error' });
   }
 };
+
+exports.getMessages = async (req, res) => {
+  const id = req.params.id;
+  const recepientId = req.params.recepientId;
+  const groupSearchQuery = {
+    text:`SELECT sender_id, sender_name, recepient_id, message, timestamp FROM dm_messages 
+          WHERE (sender_id = $1 AND recepient_id = $2) OR (recepient_id = $1 AND sender_id = $2)
+          ORDER BY timestamp DESC`,
+    values: [`${id}`, `${recepientId}`],
+  };
+  const {rows} = await pool.query(groupSearchQuery);
+  if (rows.length) {
+    res.status(200).send(rows);
+  }
+  else {
+    res.status(404).send("No Messages found");
+  }
+};

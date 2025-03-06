@@ -1,7 +1,3 @@
-const jwt = require('jsonwebtoken');
-const bcrypt = require('bcrypt');
-
-const secrets = require('./secrets');
 const multer = require("multer");
 
 const {Pool} = require('pg');

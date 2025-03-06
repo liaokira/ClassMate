@@ -17,6 +17,7 @@ const server = http.createServer(app);
 const wss = new WebSocket.Server({ server });
 
 const clients = new Map(); // Stores connected clients and their names
+const dm_clients = new Map();
 
 wss.on('connection', (ws) => {
     console.log('New client connected');
@@ -41,6 +42,27 @@ wss.on('connection', (ws) => {
                 // Broadcast message to all users in the same group
                 broadcastToGroup(data.groupId, savedMessage);
             }
+            else if (data.type === 'dm_join') {
+                // Store user in the group
+                dm_clients.set(ws, { userId: data.userId, recepientId: data.recepientId, sender_name: data.sender_name});
+                console.log(`User ${data.userId} is dming ${data.recepientId}`);
+            } else if (data.type === 'dm_message') {
+                // Save message to the database
+                const result = await pool.query(
+                    `INSERT INTO dm_messages (sender_id, sender_name, recepient_id, message) VALUES ($1, $2, $3, $4) RETURNING *;`,
+                    [data.senderId, data.sender_name, data.recepientId, data.message]
+                );
+
+                const message = result.rows[0];
+
+                dm_clients.forEach((clientData, clientWs) => {
+                    if (((clientData.userId === data.recepientId && clientData.recepientId === data.senderId)
+                        || (clientData.userId === data.senderId && clientData.recepientId === data.recepientId))
+                         && clientWs.readyState === WebSocket.OPEN) {
+                        clientWs.send(JSON.stringify({ type: 'dm_message', message}));
+                    }
+                });
+            }
         } catch (error) {
             console.error('Error handling message:', error);
         }
@@ -50,6 +72,7 @@ wss.on('connection', (ws) => {
     ws.on('close', () => {
         console.log('Client disconnected');
         clients.delete(ws);
+        dm_clients.delete(ws);
     });
 });
 

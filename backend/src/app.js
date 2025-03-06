@@ -78,7 +78,8 @@ app.post('/v0/group/:id/join', checkAuth, study_group.joinGroup);
 app.delete('/v0/group/:id/leave', checkAuth, study_group.leaveGroup);
 app.get('/v0/group/:groupId/membership/:userId', checkAuth, study_group.checkMembershipForReal);
 
-app.get('/v0/messages/:id/', checkAuth, study_group.getMessages);
+app.get('/v0/group/:id/messages', checkAuth, study_group.getMessages);
+app.get('/v0/users/:id/:recepientId/messages', checkAuth, friends.getMessages)
 
 app.get('/v0/profile/:id/image', checkAuth, images.getImage);
 app.get('/v0/group/:id/image', checkAuth, images.getImage);

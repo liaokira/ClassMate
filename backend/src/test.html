@@ -12,11 +12,11 @@
     <ul id="messages"></ul>
 
     <script>
-        const socket = new WebSocket("ws://localhost:3011"); 
+        const socket = new WebSocket("ws://localhost:3010"); 
 
         socket.onopen = () => {
             console.log("Connected to WebSocket server");
-            socket.send(JSON.stringify({ type: "join", userId: "40be182e-74d4-470b-a446-c3292739807b", sender_name: "molly", groupId: "40be182e-74d4-470b-a446-c3292730647a" }));
+            socket.send(JSON.stringify({ type: "dm_join", userId: "40be182e-74d4-470b-a446-c3292739807b", sender_name: "molly", recepientId: "d1b65819-657b-421b-a627-deecf3deab27" }));
         };
 
         // Send a message to the group
@@ -25,13 +25,14 @@
             const message = messageInput.value.trim();
             if (message) {
                 socket.send(JSON.stringify({
-                    type: "message",
+                    type: "dm_message",
                     senderId: "40be182e-74d4-470b-a446-c3292739807b",
                     sender_name: "molly",
-                    groupId: "40be182e-74d4-470b-a446-c3292730647a",
+                    recepientId: "d1b65819-657b-421b-a627-deecf3deab27",
                     message: message
                 }));
                 messageInput.value = "";
+                console.log(message);
             } else {
                 console.log("Message is empty, not sending.");
             }
@@ -39,12 +40,13 @@
 
         socket.onmessage = (event) => {
             const data = JSON.parse(event.data);
-            if (data.type === "message") {
+            if (data.type === "dm_message") {
+                console.log(data);
                 console.log("New group message:", data.message);
 
                 const messageList = document.getElementById("messages");
                 const listItem = document.createElement("li");
-                listItem.textContent = `${data.message.sender_id}: ${data.message.message}`;
+                listItem.textContent = `${data.message.sender_name}: ${data.message.message}`;
                 messageList.appendChild(listItem);
             }
         };
