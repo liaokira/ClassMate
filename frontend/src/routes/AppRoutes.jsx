@@ -10,6 +10,7 @@ import Login from "../pages/Login";
 import GroupsPage from "../pages/Groups";
 import GroupCreate from "../pages/GroupCreate";
 import GroupMessenger from "../pages/GroupMessager";
+import JoinGroup from "../pages/JoinGroup";
 
 const AppRoutes = ({ isAuthenticated, setIsAuthenticated }) => {
     return (
@@ -54,6 +55,14 @@ const AppRoutes = ({ isAuthenticated, setIsAuthenticated }) => {
                 element={
                 <ProtectedRoute isAuthenticated={isAuthenticated}>
                     <GroupsPage />
+                </ProtectedRoute>
+                }
+            />
+            <Route
+                path="/group/:groupId"
+                element={
+                <ProtectedRoute isAuthenticated={isAuthenticated}>
+                    <JoinGroup />
                 </ProtectedRoute>
                 }
             />
