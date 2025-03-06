@@ -58,14 +58,6 @@ const AppRoutes = ({ isAuthenticated, setIsAuthenticated }) => {
                 }
             />
             <Route
-                path="/messaging/:groupid"
-                element={
-                <ProtectedRoute isAuthenticated={isAuthenticated}>
-                    <GroupMessenger />
-                </ProtectedRoute>
-                }
-            />
-            <Route
                 path="/creategroup"
                 element={
                 <ProtectedRoute isAuthenticated={isAuthenticated}>
