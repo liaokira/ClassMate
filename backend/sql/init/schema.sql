@@ -23,13 +23,21 @@ CREATE TABLE member_classes (
     FOREIGN KEY (class_id) REFERENCES classes(id) ON DELETE CASCADE
 );
 
+DROP TABLE IF EXISTS images CASCADE;
+CREATE TABLE images (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    file_data BYTEA NOT NULL,
+    mimetype TEXT NOT NULL
+);
+
 DROP TABLE IF EXISTS study_groups CASCADE;
 CREATE TABLE study_groups(
     id UUID UNIQUE PRIMARY KEY DEFAULT gen_random_uuid(),
     group_name VARCHAR(18) NOT NULL,
     group_description TEXT NOT NULL DEFAULT 'Add a group description...',
     color VARCHAR(18) NOT NULL,
-    associated_class VARCHAR(50)
+    associated_class VARCHAR(50),
+    group_pic_id UUID DEFAULT NULL REFERENCES images(id) ON DELETE CASCADE
 );
 
 DROP TABLE IF EXISTS group_members CASCADE;
@@ -43,7 +51,8 @@ DROP TABLE IF EXISTS member_profiles CASCADE;
 CREATE TABLE member_profiles (
     id UUID PRIMARY KEY REFERENCES member(id) ON DELETE CASCADE, 
     bio_data VARCHAR(365) NOT NULL DEFAULT 'Add a biography...',
-    full_name VARCHAR(30) NOT NULL DEFAULT ''
+    full_name VARCHAR(30) NOT NULL DEFAULT '',
+    profile_pic_id UUID DEFAULT NULL REFERENCES images(id) ON DELETE CASCADE
 );
 
 DROP TABLE IF EXISTS messages CASCADE;

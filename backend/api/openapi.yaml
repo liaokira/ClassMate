@@ -336,6 +336,70 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
 
+  /group/{id}/image:
+    get:
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Unique user ID
+          schema:
+            type: string
+            format: uuid
+      responses:
+        200:
+          description: Image retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ImageSchema"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        404:
+          description: "Not Found"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    put:
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Unique user ID
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/ImageSchema"
+      responses:
+        200:
+          description: Image uploaded successfully
+        404:
+          description: "Not Found"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
   /profile/{id}:
     get:
       security:
@@ -555,6 +619,70 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
+
+  /profile/{id}/image:
+    get:
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Unique user ID
+          schema:
+            type: string
+            format: uuid
+      responses:
+        200:
+          description: Image retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ImageSchema"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        404:
+          description: "Not Found"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    put:
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Unique user ID
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/ImageSchema"
+      responses:
+        200:
+          description: Image uploaded successfully
+        404:
+          description: "Not Found"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"                
 
   /classes:
     get:
@@ -1002,3 +1130,12 @@ components:
       required:
         - userId
         - id
+    ImageSchema:
+      type: object
+      properties:
+        image:
+          type: string
+          format: binary
+          description: The image file to upload
+      required:
+        - image
