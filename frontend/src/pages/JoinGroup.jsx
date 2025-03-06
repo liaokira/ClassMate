@@ -203,6 +203,9 @@ const colors = {
                     onClick={submitJoin}>
                         Join Group
                     </button>
+                    <button onClick={() => navigate(`/messaging/${groupId}`)}>
+                         Enter Chat
+                    </button>
             </ButtonHolder>
             </Details>
         </BottomHalf>
