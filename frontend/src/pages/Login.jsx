@@ -88,7 +88,7 @@ function Login({ setIsAuthenticated }) {
           <input 
             type="email" 
             id="email" 
-            placeholder="School Email" 
+            placeholder="Email" 
             onChange={handleChange} 
           />
           <input 

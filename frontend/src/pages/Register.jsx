@@ -72,7 +72,7 @@ function Register() {
         <RegisterForm>
           <input id="name" placeholder="Username" onChange={handleChange} />
           <input id="password" placeholder="Password" type="password" onChange={handleChange} />
-          <input id="email" placeholder="School Email" onChange={handleChange} />
+          <input id="email" placeholder="Email" onChange={handleChange} />
         </RegisterForm>
         {error && <p style={{ color: 'red' }}>{error}</p>}
         <SubmitButton onClick={handleSubmit}>Submit</SubmitButton>
