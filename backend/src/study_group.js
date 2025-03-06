@@ -13,10 +13,10 @@ const pool = new Pool({
 });
 
 exports.discoverGroups = async (req, res) => {
+  console.log("updated");
   const user_id = req.user.id;
-  console.log(user_id);
   const groupSelect = `
-    SELECT id, group_name, group_description, color, associated_class
+    SELECT DISTINCT ON (id) id, group_name, group_description, color, associated_class
     FROM group_members
     INNER JOIN study_groups ON group_members.group_id = study_groups.id AND NOT user_id = $1
   `;

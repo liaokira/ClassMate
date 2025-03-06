@@ -857,6 +857,8 @@ components:
           format: uuid
         group_name:
           type: string
+        group_description:
+          type: string
         color:
           type: string
         associated_class:

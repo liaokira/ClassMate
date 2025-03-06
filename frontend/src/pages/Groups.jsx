@@ -134,13 +134,14 @@ function GroupsPage() {
 
   const fetchAllGroups = async () => {
     try {
-      const response = await fetch(`http://localhost:3010/v0/group`, {
+      const response = await fetch(`http://localhost:3010/v0/group/discovery`, {
         headers: { Authorization: `Bearer ${localStorage.getItem("accessToken")}` },
       });
   
       if (response.ok) {
         const data = await response.json();
         setAllGroups(data);
+        console.log(data);
       } else {
         throw new Error("Failed to fetch groups");
       }

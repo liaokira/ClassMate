@@ -5,7 +5,7 @@ INSERT INTO member(id, data) VALUES ('40be182e-74d4-470b-a446-c3292739807b', '{"
 
 INSERT INTO classes(id, class_name, start_time, end_time) VALUES ('40be182e-74d4-470b-a446-c3292730115a', 'cse115a', 480, 545);
 
-INSERT INTO study_groups(id, group_name, color, associated_class) VALUES ('40be182e-74d4-470b-a446-c3292730647a', 'Test Group', 'red', 'cse115a');
+-- INSERT INTO study_groups(id, group_name, color, associated_class) VALUES ('40be182e-74d4-470b-a446-c3292730647a', 'Test Group', 'red', 'cse115a');
 
-INSERT INTO group_members(user_id, group_id) VALUES ('40be182e-74d4-470b-a446-c3292739807b', '40be182e-74d4-470b-a446-c3292730647a');
+-- INSERT INTO group_members(user_id, group_id) VALUES ('40be182e-74d4-470b-a446-c3292739807b', '40be182e-74d4-470b-a446-c3292730647a');
 
