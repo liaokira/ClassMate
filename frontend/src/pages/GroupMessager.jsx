@@ -1,36 +1,66 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import styled from 'styled-components';
+import MessageBubble from '../components/MessageBubble';
+import placeholder from '../assets/placeholder.png'
 
 const Container = styled.div`
   display: flex;
   height: 88vh;
-  background-color: var(--tertiary);
+  background-color: var(--secondary);
   color: black;
 `;
 
 const Sidebar = styled.div`
-  width: 16vw;
-  min-width: 200px;
-  background-color: ${({ groupColor }) => groupColor || 'var(--tertiary)'};
-  opacity: 0.8;
-  padding: 2vh 1.5vw;
-  border-right: 1px solid #202225;
+  background-color: var(--primary);
+  border-right: 3px solid var(--tertiary);
   color: black;
+  height:100%;
 `;
+
+
+const ClassItem = styled.div`
+font-family: Lato;
+font-size: 2vh;;
+  border-radius: 1rem;
+    padding:10px;
+    background-color: var(--primary);
+    display:flex;
+    justify-content: space-between;
+    align-items:center;
+    width:fit-content;
+`;
+
 
 const GroupInfo = styled.div`
-  margin-bottom: 2vh;
+  padding: 2vh 1.5vw;
+  background-color: ${({ groupColor }) => groupColor || 'var(--tertiary)'};
+  border: 3px solid ${({ secondaryColor }) => secondaryColor || 'var(--tertiary)'};
+  border-left:none;
+
+  h2{
+    margin-top:1vh;
+    margin-bottom:2vh;
+  }
 `;
 
-const Members = styled.ul`
-  list-style: none;
-  padding: 0;
+const SidebarContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 18vw; /* Same width as Sidebar */
+  min-width: 200px;
+`;
+
+
+const Members = styled.div`
+   background-color: var(--secondary);
+    border-radius: 1rem;
+    margin: .5vh 2vh 2vh 2vh;
+    padding:1vw;
 `;
 
 const MemberItem = styled.div`
   text-decoration:underline;
-  font-size: 1.1vw;
 
   &:hover {
     color: var(--tertiary);
@@ -38,7 +68,6 @@ const MemberItem = styled.div`
 `;
 
 const User = styled.div`
-  font-size: 1.2vw;
   margin-bottom: 1vh;
 `;
 
@@ -52,33 +81,25 @@ const MessageList = styled.div`
   flex: 1;
   padding: 2vh 1.5vw;
   overflow-y: auto;
-`;
-
-const Message = styled.div`
-  margin-bottom: 1.5vh;
-  color: black;
-  background-color: var(--secondary);
-  padding: 1vh;
-  border-radius: 0.5vw;
-`;
-
-const MessageSender = styled.strong`
-  color: black;
-  font-size: 1.2vw;
+  align-content:flex-end;
 `;
 
 const MessageInputC = styled.div`
   display: flex;
   padding: 1.5vh 1.5vw;
   background-color: var(--primary);
-  border-top: 1px solid #202225;
+  border-top: 3px solid var(--tertiary);
+
+  button{
+    margin-left:2vw;
+  }
 `;
 
 const MessageInput = styled.input`
   flex: 1;
   padding: 1vh 1vw;
-  background-color: var(--secondary);
-  border: 1px solid #202225;
+  background-color: var(--primary);
+  border: 3px solid var(--tertiary);
   border-radius: 0.5vw;
   color: black;
   outline: none;
@@ -87,30 +108,27 @@ const MessageInput = styled.input`
 
   &:focus {
     flex: 1;
-    padding: 1vh 1vw;
-    background-color: var(--tertiary);
-    border: 1px solid #202225;
-    border-radius: 0.5vw;
-    color: black;
-    outline: none;
-    font-size: 1.2vw;
-    transition: background-color 0.2s ease-in-out;
+  padding: 1vh 1vw;
+  background-color: var(--secondary);
+  border: 3px solid var(--tertiary);
+  border-radius: 0.5vw;
+  color: black;
+  outline: none;
+  font-size: 1.2vw;
+  transition: background-color 0.2s ease-in-out;
   }
 `;
 
-const Send = styled.button`
-  margin-left: 1vw;
-  padding: 1vh 2vw;
-  background-color: var(--tertiary);
-  border: none;
-  border-radius: 0.5vw;
-  color: black;
-  cursor: pointer;
-  font-size: 1.2vw;
-
-  &:hover {
+const Details = styled.div`
     background-color: var(--secondary);
-  }
+    border-radius: 1rem;
+    margin: .5vh 2vh 2vh 2vh;
+    padding:1vw;
+`;
+
+const Label = styled.div`
+    margin-left:2vw;
+    margin-top:2vh;
 `;
 
 const GroupMessenger = () => {
@@ -120,6 +138,30 @@ const GroupMessenger = () => {
   const [currentUser, setCurrentUser] = useState({ id: '', name: '' });
   const [groupInfo, setGroupInfo] = useState(undefined);
   const socketRef = useRef(null);
+
+  
+  const colors = {
+    red: {
+      normal: "#D27D7D",  // Desaturated red
+      dark: "#A35F5F",    // Darker, more neutral red
+    },
+    yellow: {
+      normal: "#D1B37C",  // Desaturated yellow
+      dark: "#A78D62",    // Darker, more neutral yellow
+    },
+    green: {
+      normal: "#7DAF89",  // Desaturated green
+      dark: "#5E8A6A",    // Darker, more neutral green
+    },
+    blue: {
+      normal: "#7D9ABD",  // Desaturated blue
+      dark: "#5F7991",    // Darker, more neutral blue
+    },
+    purple: {
+      normal: "#9F7DAF",  // Desaturated purple
+      dark: "#7A5F86",    // Darker, more neutral purple
+    }
+}
 
   const decodeToken = (token) => {
     try {
@@ -262,20 +304,65 @@ useEffect(() => {
       senderId: currentUser.id,
       sender_name: currentUser.name,
       groupId: groupid,
-      message: trimmedMessage
+      message: trimmedMessage,
+      timestamp: new Date()
     };
     socketRef.current.send(JSON.stringify(msgData));
     setInputMessage('');
   };
 
+  
+  const formatReceivedDate = (receivedDate) => {
+    const date = new Date(receivedDate);
+    const now = new Date();
+
+    const isSameDay = (d1, d2) =>
+      d1.getFullYear() === d2.getFullYear() &&
+      d1.getMonth() === d2.getMonth() &&
+      d1.getDate() === d2.getDate();
+
+    const isYesterday = (d) => {
+      const yesterday = new Date();
+      yesterday.setDate(now.getDate() - 1);
+      return isSameDay(d, yesterday);
+    };
+
+    if (isSameDay(date, now)) {
+      return date.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
+    }
+    if (isYesterday(date)) {
+      return 'Yesterday';
+    }
+    if (date.getFullYear() === now.getFullYear()) {
+      return date.toLocaleDateString([],
+          {month: 'short', day: 'numeric'}); // "Jan 31"
+    }
+    return date.getFullYear().toString(); // "2022"
+  };
+
   return (
-    <Container>
-      <Sidebar groupColor={groupInfo?.color}>
-        <GroupInfo>
+      <Container>
+        {groupInfo && (
+          <>
+          <SidebarContainer>
+          <GroupInfo groupColor={colors[groupInfo.color]["normal"]}
+        secondaryColor={colors[groupInfo.color]["dark"]}>
           <h2>{groupInfo?.group_name || 'Failed to fetch group'}</h2>
-          <p>{groupInfo?.group_description || 'No description available'}</p>
-          <p>{groupInfo?.associated_class || 'No associated class'}</p>
+          <ClassItem>
+            {groupInfo?.associated_class || 'No associated class'}
+          </ClassItem>
         </GroupInfo>
+        <Sidebar>
+      <Label>
+      Description
+      </Label>
+      <Details>
+      {groupInfo?.group_description || 'No description available'}
+      </Details>
+
+      <Label>
+      Members
+      </Label>
         <Members>
           {groupInfo?.members && (groupInfo.members.map((member) => (
             <User key={member.id}>
@@ -288,12 +375,20 @@ useEffect(() => {
           ))) || 'No members to display'}
         </Members>
       </Sidebar>
+
+
+          </SidebarContainer>
       <Messenger>
         <MessageList>
           {messages.map((msg, index) => (
-            <Message key={index}>
-              <MessageSender>{msg.sender_name}</MessageSender>: {msg.message}
-            </Message>
+            <MessageBubble 
+            key={index}
+            profilePic={placeholder}
+            username={msg.sender_name}
+            text={msg.message}
+            timestamp={formatReceivedDate(msg.timestamp)}
+            iscurrentuser={decodedToken.id == msg.sender_id}>
+            </MessageBubble>
           ))}
         </MessageList>
         <MessageInputC>
@@ -301,11 +396,20 @@ useEffect(() => {
             type="text"
             value={inputMessage}
             onChange={(e) => setInputMessage(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault(); // Optional: Prevents form submission if inside a form.
+                handleSendMessage();
+              }
+            }
+          }
             placeholder="Type a message..."
           />
-          <Send onClick={handleSendMessage}>Send</Send>
+          <button onClick={handleSendMessage}>Send</button>
         </MessageInputC>
       </Messenger>
+          </>
+      )}
     </Container>
   );
 };

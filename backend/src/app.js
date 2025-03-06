@@ -76,8 +76,7 @@ app.put('/v0/group/:id', checkAuth, study_group.updateGroup);
 app.get('/v0/profile/:id/groups', checkAuth, profile.getUserGroups);
 app.post('/v0/group/:id/join', checkAuth, study_group.joinGroup);
 app.delete('/v0/group/:id/leave', checkAuth, study_group.leaveGroup);
-app.get('/v0/group/:groupId/membership/:userId', checkAuth, study_group.checkGroupMembership);
-
+app.get('/v0/group/:groupId/membership/:userId', checkAuth, study_group.checkMembershipForReal);
 
 app.get('/v0/messages/:id/', checkAuth, study_group.getMessages);
 

@@ -13,7 +13,7 @@ const pool = new Pool({
 });
 
 exports.verifyUser = async (req, res, next) => {
-  console.log(req.user);
+  // console.log(req.user);
   if (req.params.id !==  req.user.id) {
     return res.status(403).json({ message: 'You cannot access another user\'s profile.' });
   }
@@ -104,6 +104,6 @@ exports.getUserGroups = async (req, res) => {
     values: [id],
   };
   const {rows: groups} = await pool.query(getUserGroupsQuery);
-  console.log(groups);
+  // console.log(groups);
   res.status(200).send(groups);
 };

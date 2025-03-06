@@ -134,7 +134,7 @@ function GroupsPage() {
 
   const fetchAllGroups = async () => {
     try {
-      const response = await fetch(`http://localhost:3010/v0/group/discovery`, {
+      const response = await fetch(`http://localhost:3010/v0/group`, {
         headers: { Authorization: `Bearer ${localStorage.getItem("accessToken")}` },
       });
   

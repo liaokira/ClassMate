@@ -110,7 +110,6 @@ function JoinGroup() {
             throw new Error('Failed to join study group');
           }
       
-          console.log('User successfully joined the study group');
           navigate('/groups');
         } catch (err) {
           console.error(err.message);
@@ -133,7 +132,6 @@ function JoinGroup() {
           if (!response.ok) throw new Error("Failed to fetch group details");
   
           const data = await response.json();
-          console.log(data);
           setGroupDetails(data);
         } catch (err) {
           console.error(err);
@@ -202,9 +200,6 @@ const colors = {
                     <button
                     onClick={submitJoin}>
                         Join Group
-                    </button>
-                    <button onClick={() => navigate(`/messaging/${groupId}`)}>
-                         Enter Chat
                     </button>
             </ButtonHolder>
             </Details>

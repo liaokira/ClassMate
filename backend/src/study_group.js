@@ -48,8 +48,8 @@ exports.getGroup = async (req, res) => {
   const {rows} = await pool.query(groupQuery);
   if (rows.length) {
     const members = await getMembers(id);
-    console.log(members);
-    console.log("group name:", rows[0].group_name);
+    // console.log(members);
+    // console.log("group name:", rows[0].group_name);
     res.status(200).json({id: id, group_name: rows[0].group_name, group_description: rows[0].group_description, color: rows[0].color, associated_class: rows[0].associated_class, members: members.map(member => ({id: member.user_id, name: member.full_name}))});
   }
   else {
@@ -160,7 +160,7 @@ exports.updateGroup = async (req, res) => {
 };
 
 exports.searchGroups = async (req, res) => {
-  console.log("correct");
+  // console.log("correct");
   const searchFor = req.query.searchFor;
   const groupSearchSelect = `SELECT * FROM study_groups WHERE group_name ILIKE $1`;
   const groupSearchQuery = {
@@ -183,7 +183,7 @@ exports.getMessages = async (req, res) => {
     values: [`${group_id}`],
   };
   const {rows} = await pool.query(groupSearchQuery);
-  console.log(rows);
+  // console.log(rows);
   if (rows.length) {
     res.status(200).send(rows);
   }
@@ -222,7 +222,7 @@ exports.getMembers = async (req, res) => {
   const {rows} = await pool.query(groupQuery);
   if (rows.length) {
     const members = await getMembers(id);
-    console.log(members);
+    // console.log(members);
     res.status(200).json({members: members.map(member => ({id: member.user_id, name: member.full_name}))});
   }
 };
@@ -267,6 +267,30 @@ const checkMembership = async (member_id, group_id) => {
   }
   console.log("user in study group");
   return 0;
+};
+
+exports.checkMembershipForReal = async(req, res) => {
+  const { groupId, userId } = req.params;
+  console.log(groupId, userId);
+
+  try {
+      const result = await checkMembership(userId, groupId);
+      console.log(result);
+
+      // Send a proper response based on result
+      if (result === 0) {
+          return res.status(200).json({ member: true });
+      } else if (result === 1) {
+          return res.status(404).json({ error: "User not found" });
+      } else if (result === 2) {
+          return res.status(404).json({ error: "Study group not found" });
+      } else if (result === 3) {
+          return res.status(200).json({ member: false});
+      }
+  } catch (error) {
+      console.error("Ewwow checking membwewship:", error);
+      res.status(500).json({ error: "Internal server error" });
+  }
 };
 
 exports.joinGroup = async (req, res) => {
