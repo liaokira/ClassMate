@@ -1069,10 +1069,15 @@ components:
           format: uuid
         message:
           type: string
+        timestamp:
+          type: string
+          format: date-time
       required:
         - sender_id
+        - sender_name
         - group_id
         - message
+        - timestamp
     
     MessageArray:
       type: array
