@@ -65,6 +65,16 @@ CREATE TABLE messages (
     timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+DROP TABLE IF EXISTS dm_messages CASCADE;
+CREATE TABLE dm_messages (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    sender_id UUID NOT NULL REFERENCES member(id) ON DELETE CASCADE,
+    sender_name VARCHAR(40) NOT NULL,
+    recepient_id UUID NOT NULL REFERENCES member(id) ON DELETE CASCADE,
+    message TEXT NOT NULL,
+    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 DROP TABLE IF EXISTS member_friends CASCADE;
 CREATE TABLE member_friends (
     member_id UUID NOT NULL,
