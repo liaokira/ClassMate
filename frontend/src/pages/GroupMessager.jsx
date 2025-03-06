@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useLayoutEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import styled from 'styled-components';
 import MessageBubble from '../components/MessageBubble';
@@ -138,6 +138,7 @@ const GroupMessenger = () => {
   const [currentUser, setCurrentUser] = useState({ id: '', name: '' });
   const [groupInfo, setGroupInfo] = useState(undefined);
   const socketRef = useRef(null);
+  const messageListRef = useRef();
 
   
   const colors = {
@@ -221,6 +222,7 @@ const GroupMessenger = () => {
         if (response.ok) {
           const data = await response.json();
           setMessages(data.reverse());
+          scrollToBottom();
         } else {
           console.error('Failed to fetch messages');
         }
@@ -295,6 +297,10 @@ useEffect(() => {
     };
   }, [groupInfo, currentUser.id, currentUser.name]);
 
+  useLayoutEffect(() => {
+    scrollToBottom();
+  }, [messages])
+
   // Handle sending a new message.
   const handleSendMessage = () => {
     const trimmedMessage = inputMessage.trim();
@@ -340,6 +346,14 @@ useEffect(() => {
     return date.getFullYear().toString(); // "2022"
   };
 
+  const scrollToBottom = () => {
+    if (messageListRef) {
+      if (messageListRef.current) {
+        messageListRef.current.scrollTop = messageListRef.current.scrollHeight;
+      }
+    }
+  };
+
   return (
       <Container>
         {groupInfo && (
@@ -379,7 +393,7 @@ useEffect(() => {
 
           </SidebarContainer>
       <Messenger>
-        <MessageList>
+        <MessageList ref = {messageListRef}>
           {messages.map((msg, index) => (
             <MessageBubble 
             key={index}

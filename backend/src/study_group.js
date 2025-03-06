@@ -15,11 +15,21 @@ const pool = new Pool({
 exports.discoverGroups = async (req, res) => {
   console.log("updated");
   const user_id = req.user.id;
+  // const groupSelect = `
+  //   SELECT DISTINCT ON (id) id, group_name, group_description, color, associated_class
+  //   FROM group_members
+  //   INNER JOIN study_groups ON group_members.group_id = study_groups.id AND NOT user_id = $1
+  // `;
   const groupSelect = `
-    SELECT DISTINCT ON (id) id, group_name, group_description, color, associated_class
-    FROM group_members
-    INNER JOIN study_groups ON group_members.group_id = study_groups.id AND NOT user_id = $1
+    SELECT id, group_name, group_description, color, associated_class
+    FROM study_groups
+    WHERE id NOT IN (
+      SELECT group_id 
+      FROM group_members 
+      WHERE user_id = $1
+    )
   `;
+
   const groupQuery = {
     text: groupSelect,
     values: [user_id],
