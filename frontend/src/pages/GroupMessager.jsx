@@ -8,7 +8,6 @@ const GroupMessenger = () => {
   const [currentUser, setCurrentUser] = useState({ id: '', name: '' });
   const socketRef = useRef(null);
 
-  // Decode token to get user id (and possibly name if available)
   const decodeToken = (token) => {
     try {
       const payload = token.split('.')[1];
@@ -27,7 +26,6 @@ const GroupMessenger = () => {
   useEffect(() => {
     if (decodedToken.id) {
       setCurrentUser((prev) => ({ ...prev, id: decodedToken.id }));
-      // Fetch profile data to get full name
       const fetchProfile = async () => {
         try {
           const response = await fetch(`http://localhost:3010/v0/profile/${decodedToken.id}`, {
@@ -67,7 +65,6 @@ const GroupMessenger = () => {
         });
         if (response.ok) {
           const data = await response.json();
-          // Reverse messages if you want oldest at top.
           setMessages(data.reverse());
         } else {
           console.error('Failed to fetch messages');
@@ -82,12 +79,10 @@ const GroupMessenger = () => {
 
   // Setup the WebSocket connection.
   useEffect(() => {
-    // Update the WebSocket URL as needed. Ensure this matches your backend.
     socketRef.current = new WebSocket('ws://localhost:3010');
 
     socketRef.current.onopen = () => {
       console.log('Connected to WebSocket server');
-      // Send join request with current user info and group id.
       const joinMsg = {
         type: 'join',
         userId: currentUser.id,
