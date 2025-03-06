@@ -333,3 +333,23 @@ exports.leaveGroup = async (req, res) => {
       // break;
   }
 };
+
+exports.checkGroupMembership = async (req, res) => {
+  const { userId, groupId } = req.params;
+  try {
+    const membershipResult = await checkMembership(userId, groupId);
+    if (membershipResult === 0) {
+      res.status(200).json({ member: true });
+    } else if (membershipResult === 1) {
+      res.status(404).json({ error: "User not found" });
+    } else if (membershipResult === 2) {
+      res.status(404).json({ error: "Group not found" });
+    } else if (membershipResult === 3) {
+      res.status(200).json({ member: false });
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+

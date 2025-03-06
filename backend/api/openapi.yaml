@@ -265,7 +265,50 @@ paths:
   #   put:
   #     description: approve or reject a join request
 
-
+  /group/{groupId}/membership/{userId}:
+    get:
+      summary: Check group membership for a user
+      description: Checks if the user is a member of the study group 
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: groupId
+          in: path
+          required: true
+          description: ID of the study group
+          schema:
+            type: string
+            format: uuid
+        - name: userId
+          in: path
+          required: true
+          description: ID of the user
+          schema:
+            type: string
+            format: uuid
+      responses:
+        200:
+          description: Membership check successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  member:
+                    type: boolean
+                    description: true if the user is a member, false otherwise
+        404:
+          description: User or group not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
   /group/search:
     get:
       summary: search for study groups given a keyword or phrase
