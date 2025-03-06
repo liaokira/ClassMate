@@ -4,6 +4,7 @@ import styled from "styled-components";
 import Friends from '../components/Friends';
 import Schedule from '../components/Schedule';
 import Edit from '../components/Edit';
+import placeholderPic from '../assets/placeholder.png';
 
 const PageContainer = styled.body`
   display: flex;
@@ -95,7 +96,7 @@ const Content = styled.div`
 
 function Profile() {
   const { userId } = useParams();
-  const [profileData, setProfileData] = useState({id: userId, full_name: '', bio: ''});
+  const [profileData, setProfileData] = useState({id: userId, full_name: '', bio: '', picture: null});
   const [error, setError] = useState('');
   const [activeTab, setActivateTab] = useState('friends');
   const [updateTrigger, setUpdateTrigger] = useState(0);
@@ -113,7 +114,7 @@ function Profile() {
 
         if (response.status === 200) {
           const data = await response.json();
-          setProfileData({ id: userId, full_name: data.full_name, bio: data.bio });
+          setProfileData({ id: userId, full_name: data.full_name, bio: data.bio, picture: data.profile_pic_id });
         } else if (response.status === 404) {
           setError('Profile not found');
         } else {
@@ -152,7 +153,19 @@ if (loggedId === userId) {
 
       <Head>
         <ProfPic>
-          Profile Pic
+          {profileData.picture ? (
+            <img
+              src={`http://localhost:3010/v0/images/${profileData.picture}`}
+              alt="Profile Picture"
+              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+            />
+          ) : (
+            <img
+              src={placeholderPic}
+              alt="Default Picture"
+              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+            />
+          )}
         </ProfPic>
         <Biography>
             <h1> {profileData.full_name} </h1>
