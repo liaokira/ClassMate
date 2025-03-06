@@ -81,8 +81,8 @@ app.get('/v0/messages/:id/', checkAuth, study_group.getMessages);
 
 app.get('/v0/profile/:id/image', checkAuth, images.getImage);
 app.get('/v0/group/:id/image', checkAuth, images.getImage);
-app.put('/v0/profile/:id/image', checkAuth, images.upload, images.uploadNewImage);
-app.put('/v0/group/:id/image', checkAuth, images.upload, images.uploadNewImage);
+app.put('/v0/profile/:id/image', checkAuth, images.uploadNewImage);
+app.put('/v0/group/:id/image', checkAuth, images.uploadNewImage);
 
 // ---------- Error Handling ----------
 app.use((err, req, res, next) => {
