@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 import GroupCard from '../components/GroupCard';
+import FadeIn from 'react-fade-in';
 
 const Body = styled.div`
 display:flex;
@@ -19,16 +20,13 @@ flex-direction:column;
 `;
 
 const View = styled.div`
-  display:flex;
   width:65vw;
   text-align: center;
   background-color: var(--primary);
   border: 3px solid var(--tertiary);
   border-radius: 0 1vw 1vw 1vw;
   padding: 0 2rem 2rem;
-  gap:1vw;
   padding-top:1vw;
-  flex-wrap: wrap;
   overflow-y:scroll;
   height:60vh;
 `;
@@ -42,7 +40,6 @@ height:8vh;
 const TabHolder2 = styled.div`
 position:absolute;
 bottom:-3px;
-left:-2px;
 padding-bottom:-3px;
   padding:0px;
   display:flex;
@@ -84,6 +81,17 @@ const Error = styled.div`
   justify-content:center;
   text-align:center;
   width:100%
+`
+
+const CardContainer = styled.div`
+  display:flex;
+  justify-content:left;
+  flex-direction:row;
+  width:contain;
+  padding-left:.5vw;
+  flex-wrap: wrap;
+  gap:1vw;
+
 `
 
 function GroupsPage() {
@@ -191,6 +199,8 @@ function GroupsPage() {
 
   return (
     <Body>
+      <FadeIn>
+        <>
       <TabHolder>
         <TabHolder2>
           <Tab active={activeTab === "myGroups"} onClick={() => setActiveTab("myGroups")}>
@@ -219,7 +229,8 @@ function GroupsPage() {
             </Error>
             )
           }
-  
+          <CardContainer>
+            <FadeIn wrapperTag={CardContainer}>
           {userGroups.length != 0 && (userGroups.map((group) => (
           <GroupCard key={group.id} 
           name={group.group_name} 
@@ -230,6 +241,8 @@ function GroupsPage() {
           joined={true}
           />
         )))}
+        </FadeIn>
+        </CardContainer>
           </>
         ) : (
           // Explore page
@@ -246,6 +259,8 @@ function GroupsPage() {
             </Error>
             )
           }
+          <CardContainer>
+          <FadeIn wrapperTag={CardContainer}>
           {allGroups.map((group) => (
           <GroupCard key={group.id} 
           name={group.group_name} 
@@ -256,9 +271,13 @@ function GroupsPage() {
           joined={false}
           />
         ))}
+        </FadeIn>
+        </CardContainer>
           </>
         )}
       </View>
+      </>
+      </FadeIn>
     </Body>
   );
 }

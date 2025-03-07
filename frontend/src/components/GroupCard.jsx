@@ -26,7 +26,7 @@ position:relative;
   border-top: none;
   border-radius: 0 0 1vw 1vw;
   text-wrap:wrap;
-  min-height:25vh;
+  min-height:30vh;
 `;
 
 const ButtonHolder = styled.div`

@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { useParams } from 'react-router-dom';
 import styled from "styled-components";
+import FadeIn from 'react-fade-in';
 
 const BodyStyle = styled.body`
   background-color: var(--secondary);
@@ -171,6 +172,7 @@ const colors = {
 
   return (
     <BodyStyle>
+      <FadeIn>
         {groupDetails != undefined &&(
             <Card>
         <TopHalf inner={colors[groupDetails.color]['normal']}
@@ -206,6 +208,7 @@ const colors = {
         </BottomHalf>
     </Card>
         )}
+        </FadeIn>
     </BodyStyle>
   );
 }
