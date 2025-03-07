@@ -29,10 +29,7 @@ exports.getProfile = async (req, res) => {
   };
   const {rows} = await pool.query(userQuery);
   if (rows.length) {
-    // console.log("rows", rows);
-    // console.log("bio data", rows[0].bio_data);
-    // console.log("name data", rows[0].full_name);
-    res.status(200).json({id: id, bio: rows[0].bio_data, full_name: rows[0].full_name});
+    res.status(200).json({id: id, bio: rows[0].bio_data, full_name: rows[0].full_name, profile_pic_id: rows[0].profile_pic_id});
   }
   else {
     const userSelect2 = `SELECT id FROM member WHERE id = $1`;
@@ -42,7 +39,7 @@ exports.getProfile = async (req, res) => {
     };
     const {rows2} = await pool.query(userQuery2);
     if (rows2 && rows2.length){
-      res.status(200).json({id: id, bio: '', full_name: ''});
+      res.status(200).json({id: id, bio: '', full_name: '', profile_pic_id: null});
     }
     else{
       res.status(404).send('Error: No Profile for user found');
@@ -51,18 +48,23 @@ exports.getProfile = async (req, res) => {
 };
 
 exports.setProfile = async (req, res) => {
-  const {id, full_name, bio} = req.body;
-  const userINSERT = `INSERT INTO member_profiles(id, bio_data, full_name) 
-                      VALUES ($1, $2, $3) 
+  const {id, full_name, bio, profile_pic_id} = req.body;
+  const userINSERT = `INSERT INTO member_profiles(id, bio_data, full_name, profile_pic_id) 
+                      VALUES ($1, $2, $3, $4) 
                       ON CONFLICT (id) DO UPDATE SET 
                         bio_data = EXCLUDED.bio_data,
-                        full_name = EXCLUDED.full_name
-                      RETURNING id, bio_data, full_name`;
+                        full_name = EXCLUDED.full_name,
+                        profile_pic_id = EXCLUDED.profile_pic_id
+                      RETURNING id, bio_data, full_name, profile_pic_id`;
   const userQuery = {
     text: userINSERT,
-    values: [`${id}`, `${bio}`, `${full_name}`],
+    values: [`${id}`, `${bio}`, `${full_name}`, `${profile_pic_id}`],
   };
   const {rows} = await pool.query(userQuery);
+  console.log("id", rows[0].id);
+  console.log("bio data", rows[0].bio_data);
+  console.log("name data", rows[0].full_name);
+  console.log("pic data", rows[0].profile_pic_id);
   if (rows.length) {
     
     if(rows[0].xmax === 0){

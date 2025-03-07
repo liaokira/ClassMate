@@ -28,7 +28,7 @@ const ProfileImage = styled.img`
 `;
 
 const Edit = ({ profileData, setProfileData, setUpdateTrigger }) => {
-  const [formData, setFormData] = useState({id: profileData.id, full_name: profileData.full_name, bio: profileData.bio, picture: profileData.picture});
+  const [formData, setFormData] = useState({id: profileData.id, full_name: profileData.full_name, bio: profileData.bio, picture: profileData.picture || null});
   const [file, setFile] = useState(null);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');

@@ -636,9 +636,10 @@ paths:
         200:
           description: Image retrieved successfully
           content:
-            application/json:
+            image/*:
               schema:
-                $ref: "#/components/schemas/ImageSchema"
+                type: string
+                format: binary
         500:
           description: Internal server error
           content:
@@ -671,6 +672,21 @@ paths:
       responses:
         200:
           description: Image uploaded successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  image_id:
+                    type: string
+                    format: uuid
+                    description: Image Id uploaded
+        400:
+          description: Invalid or missing input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         404:
           description: "Not Found"
           content:
@@ -1035,10 +1051,15 @@ components:
           type: string
         full_name:
           type: string
+        profile_pic_id:
+          type: string
+          format: uuid
+          nullable: true
       required:
         - id
         - bio
         - full_name
+        - profile_pic_id
 
     GroupData:
       type: object

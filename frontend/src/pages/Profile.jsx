@@ -97,6 +97,7 @@ const Content = styled.div`
 function Profile() {
   const { userId } = useParams();
   const [profileData, setProfileData] = useState({id: userId, full_name: '', bio: '', picture: null});
+  const [picObj, setPicObj] = useState(null);
   const [error, setError] = useState('');
   const [activeTab, setActivateTab] = useState('friends');
   const [updateTrigger, setUpdateTrigger] = useState(0);
@@ -114,7 +115,29 @@ function Profile() {
 
         if (response.status === 200) {
           const data = await response.json();
-          setProfileData({ id: userId, full_name: data.full_name, bio: data.bio, picture: data.profile_pic_id });
+          setProfileData({ id: userId, full_name: data.full_name, bio: data.bio, picture: data.profile_pic_id || null });
+          console.log('fetching profile: ', data);
+
+          if (profileData.picture) {
+            let picURL = null;
+
+            const imgResponse = await fetch (`http://localhost:3010/v0/profile/${userId}/image`, {
+              method: 'GET',
+              headers: {
+                'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
+              },
+            });
+
+            if (imgResponse.ok) {
+              const imgBlob = await imgResponse.blob();
+              console.log(imgBlob);
+              picURL = URL.createObjectURL(imgBlob)
+              console.log(picURL);
+              setPicObj({picURL});
+              console.log('picObj: ', picObj);
+            }
+          }
+
         } else if (response.status === 404) {
           setError('Profile not found');
         } else {
@@ -155,9 +178,9 @@ if (loggedId === userId) {
         <ProfPic>
           {profileData.picture ? (
             <img
-              src={`http://localhost:3010/v0/images/${profileData.picture}`}
+              src={picObj}
               alt="Profile Picture"
-              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+              style={{ width: '100%', height: '100%', objectFit: 'cover', alignContent: 'center' }}
             />
           ) : (
             <img

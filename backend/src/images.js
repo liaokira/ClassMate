@@ -24,28 +24,28 @@ exports.uploadNewImage = async (req, res) =>  {
             const profile_query = "UPDATE member_profiles SET profile_pic_id = $1 WHERE id = $2 RETURNING id";
             const {rows: profile_rows} = await pool.query(profile_query, [image_id, id]);
             if (profile_rows.length){
-                res.status(200).send("member profile image updated");
+                res.status(200).json({image_id: image_id});
             }
             else{
-                res.status(404).send("No member profile found");
+                res.status(404).json({error: "No member profile found"});
             }
         }
         else if (path.includes('group')){
             const group_query = "UPDATE study_groups SET group_pic_id = $1 WHERE id = $2 RETURNING id";
             const {rows: group_rows} = await pool.query(group_query, [image_id, id]);
             if (group_rows.length){
-                res.status(200).send("group image updated");
+                res.status(200).json({image_id: image_id});
             }
             else{
-                res.status(404).send("No group found");
+                res.status(404).json({error: "No group found"});
             }
         }
         else{
-            res.status(500).send("Invalid path");
+            res.status(500).json({error: "Invalid path"});
         }
     }
     else{
-        res.status(500).send('Image Insertion Failed');
+        res.status(500).json({error: 'Image Insertion Failed'});
     }
 };
 
