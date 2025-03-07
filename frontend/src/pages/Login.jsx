@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from "react-router-dom";
 import styled from "styled-components";
+import FadeIn from 'react-fade-in';
 
 const BodyStyle = styled.body`
   background-color: var(--secondary);
@@ -82,6 +83,7 @@ function Login({ setIsAuthenticated }) {
 
   return (
     <BodyStyle>
+      <FadeIn>
       <RegisterBox>
         <h2>Login</h2>
         <RegisterForm>
@@ -104,6 +106,7 @@ function Login({ setIsAuthenticated }) {
           <Text>Don't have an account?</Text>
         </Link>
       </RegisterBox>
+      </FadeIn>
     </BodyStyle>
   );
 }

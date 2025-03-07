@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import styled from "styled-components";
+import FadeIn from 'react-fade-in';
 
 const BodyStyle = styled.body`
   background-color: var(--secondary);
@@ -67,6 +68,7 @@ function Register() {
 
   return (
     <BodyStyle>
+      <FadeIn>
       <RegisterBox>
         <h2>Register</h2>
         <RegisterForm>
@@ -77,6 +79,7 @@ function Register() {
         {error && <p style={{ color: 'red' }}>{error}</p>}
         <SubmitButton onClick={handleSubmit}>Submit</SubmitButton>
       </RegisterBox>
+      </FadeIn>
     </BodyStyle>
   );
 }

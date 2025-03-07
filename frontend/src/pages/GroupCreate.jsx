@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
+import FadeIn from 'react-fade-in';
 
 const BodyStyle = styled.body`
   background-color: var(--secondary);
@@ -162,6 +163,7 @@ function GroupCreate() {
 
   return (
     <BodyStyle>
+      <FadeIn>
       <RegisterBox>
         <h2>Create Group</h2>
         <ColorPickerWrapper>
@@ -195,6 +197,7 @@ function GroupCreate() {
       </button>
       {error && <p style={{ color: 'red' }}>{error}</p>}
       </RegisterBox>
+      </FadeIn>
     </BodyStyle>
   );
 }

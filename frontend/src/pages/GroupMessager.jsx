@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import styled from 'styled-components';
 import MessageBubble from '../components/MessageBubble';
 import placeholder from '../assets/placeholder.png'
+import FadeIn from 'react-fade-in';
 
 const Container = styled.div`
   display: flex;
@@ -212,7 +213,7 @@ const GroupMessenger = () => {
   useEffect(() => {
     const fetchMessages = async () => {
       try {
-        const response = await fetch(`http://localhost:3010/v0/messages/${groupid}/`, {
+        const response = await fetch(`http://localhost:3010/v0/group/${groupid}/messages`, {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -394,6 +395,7 @@ useEffect(() => {
           </SidebarContainer>
       <Messenger>
         <MessageList ref = {messageListRef}>
+          <FadeIn>
           {messages.map((msg, index) => (
             <MessageBubble 
             key={index}
@@ -404,6 +406,7 @@ useEffect(() => {
             iscurrentuser={decodedToken.id == msg.sender_id}>
             </MessageBubble>
           ))}
+          </FadeIn>
         </MessageList>
         <MessageInputC>
           <MessageInput
