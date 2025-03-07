@@ -64,6 +64,16 @@ const Friends = ({userId, ownPage}) => {
   const [fill, setFill] = useState(false);
   const [friends, setFriends] = useState([]);
 
+  const decodeToken = (token) => {
+    const payload = token.split('.')[1];
+    const decode = atob(payload);
+    return JSON.parse(decode);
+  }
+
+  const token = localStorage.getItem('accessToken');
+  const decodeId = decodeToken(token);
+  const loggedId = decodeId?.id;
+
   useEffect(() => {
     if (search || error || success) {
       setFill(true);
@@ -220,7 +230,9 @@ const Friends = ({userId, ownPage}) => {
               <span><h3>{friend.full_name}</h3></span>
               <Links>
                 <Link to={`/profile/${friend.id}`}>View Profile</Link>
-                <Link to={`/dm/${friend.id}`}>Message User</Link>
+                {friend.id != loggedId &&
+                  (<Link to={`/prMessage/${friend.id}`}>Message User</Link>)
+                }
               </Links>
             </FriendItem>
           ))
