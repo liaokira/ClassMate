@@ -59,14 +59,28 @@ const FriendMessager = () => {
   const socketRef = useRef(null);
   const messageListRef = useRef();
 
-  // Colors for potential styling
   const colors = {
-    red: { normal: "#D27D7D", dark: "#A35F5F" },
-    yellow: { normal: "#D1B37C", dark: "#A78D62" },
-    green: { normal: "#7DAF89", dark: "#5E8A6A" },
-    blue: { normal: "#7D9ABD", dark: "#5F7991" },
-    purple: { normal: "#9F7DAF", dark: "#7A5F86" },
-  };
+    red: {
+      normal: "#D27D7D",  // Desaturated red
+      dark: "#A35F5F",    // Darker, more neutral red
+    },
+    yellow: {
+      normal: "#D1B37C",  // Desaturated yellow
+      dark: "#A78D62",    // Darker, more neutral yellow
+    },
+    green: {
+      normal: "#7DAF89",  // Desaturated green
+      dark: "#5E8A6A",    // Darker, more neutral green
+    },
+    blue: {
+      normal: "#7D9ABD",  // Desaturated blue
+      dark: "#5F7991",    // Darker, more neutral blue
+    },
+    purple: {
+      normal: "#9F7DAF",  // Desaturated purple
+      dark: "#7A5F86",    // Darker, more neutral purple
+    }
+}
 
   // Decode JWT
   const decodeToken = (token) => {

@@ -87,7 +87,7 @@ const AppRoutes = ({ isAuthenticated, setIsAuthenticated }) => {
                 }
             />
             <Route
-                path="/messaging/:recepientId"
+                path="/dm/:recepientId"
                 element={
                 <ProtectedRoute isAuthenticated={isAuthenticated}>
                         <FriendMessager />

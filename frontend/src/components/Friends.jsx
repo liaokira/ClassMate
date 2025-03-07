@@ -220,7 +220,7 @@ const Friends = ({userId, ownPage}) => {
               <span><h3>{friend.full_name}</h3></span>
               <Links>
                 <Link to={`/profile/${friend.id}`}>View Profile</Link>
-                <Link to={`/prMessage/${friend.id}`}>Message User</Link>
+                <Link to={`/dm/${friend.id}`}>Message User</Link>
               </Links>
             </FriendItem>
           ))
