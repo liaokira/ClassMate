@@ -58,7 +58,7 @@ exports.setProfile = async (req, res) => {
                       RETURNING id, bio_data, full_name, profile_pic_id`;
   const userQuery = {
     text: userINSERT,
-    values: [`${id}`, `${bio}`, `${full_name}`, `${profile_pic_id}`],
+    values: [id, bio, full_name, profile_pic_id],
   };
   const {rows} = await pool.query(userQuery);
   console.log("id", rows[0].id);

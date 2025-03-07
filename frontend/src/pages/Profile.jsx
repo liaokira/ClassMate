@@ -101,7 +101,6 @@ function Profile() {
   const [error, setError] = useState('');
   const [activeTab, setActivateTab] = useState('friends');
   const [updateTrigger, setUpdateTrigger] = useState(0);
-  const [imageTrigger, setImageTrigger] = useState(0);
 
   useEffect(() => {
     const fetchProfile = async () => {

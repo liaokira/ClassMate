@@ -28,7 +28,7 @@ const ProfileImage = styled.img`
 `;
 
 const Edit = ({ profileData, setProfileData, setUpdateTrigger }) => {
-  const [formData, setFormData] = useState({id: profileData.id, full_name: profileData.full_name, bio: profileData.bio, picture: profileData.picture || null});
+  const [formData, setFormData] = useState({id: profileData.id, full_name: profileData.full_name, bio: profileData.bio, profile_pic_id: profileData.picture || null});
   const [file, setFile] = useState(null);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -46,6 +46,7 @@ const Edit = ({ profileData, setProfileData, setUpdateTrigger }) => {
     e.preventDefault();
     setError('');
     setSuccess('');
+    console.log('form: ', formData);
 
     try {
       const response = await fetch (`http://localhost:3010/v0/profile/${profileData.id}`, {
@@ -57,9 +58,9 @@ const Edit = ({ profileData, setProfileData, setUpdateTrigger }) => {
         body: JSON.stringify(formData),
       });
 
-      if (response.status === 200) {
+      if (response.status === 200 || response.status === 201) {
+        setProfileData({full_name: formData.full_name, bio: formData.bio});
         setUpdateTrigger((prev) => prev + 1);
-        setProfileData((prev) => ({...prev, full_name: formData.full_name, bio: formData.bio}));
         setSuccess('Profile updated');
         setError('');
       } else if (response.status === 400) {
@@ -99,6 +100,7 @@ const Edit = ({ profileData, setProfileData, setUpdateTrigger }) => {
       if (response.ok) {
         const data = await response.json();
         setProfileData((prev) => ({ ...prev, picture: data.image_id }))
+        setFormData((prev) => ({ ...prev, profile_pic_id: data.image_id }))
         setUpdateTrigger((prev) => prev + 1);
         setSuccess('Profile image updated!');
         setError('');
