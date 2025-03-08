@@ -1,4 +1,5 @@
 import { useState, useEffect, useLayoutEffect, useRef } from 'react';
+import { useNavigate } from "react-router-dom";
 import { useParams, Link } from 'react-router-dom';
 import styled from 'styled-components';
 import MessageBubble from '../components/MessageBubble';
@@ -66,6 +67,10 @@ const MemberItem = styled.div`
   &:hover {
     color: var(--tertiary);
   }
+`;
+
+const LeaveGroupButton = styled.button`
+  margin: .5vh 2vh 2vh 2vh;
 `;
 
 const User = styled.div`
@@ -140,6 +145,7 @@ const GroupMessenger = () => {
   const [groupInfo, setGroupInfo] = useState(undefined);
   const socketRef = useRef(null);
   const messageListRef = useRef();
+  const navigate = useNavigate();
 
   
   const colors = {
@@ -163,7 +169,7 @@ const GroupMessenger = () => {
       normal: "#9F7DAF",  // Desaturated purple
       dark: "#7A5F86",    // Darker, more neutral purple
     }
-}
+  }
 
   const decodeToken = (token) => {
     try {
@@ -318,6 +324,30 @@ useEffect(() => {
     setInputMessage('');
   };
 
+  // Handle leaving the group.
+  const handleLeaveGroup = async () => {
+    try {
+      const response = await fetch(`http://localhost:3010/v0/group/${groupid}/leave`, {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ member_id: currentUser.id }),
+      });
+
+      if (!response.ok) {
+        if (response.status === 400) throw new Error('User is not a member of study group');
+        if (response.status === 404) throw new Error('No study group found');
+        throw new Error('Failed to leave study group');
+      }
+
+      navigate('/groups');
+    } catch (err) {
+      console.error(err.message)
+    }
+  };
+
   
   const formatReceivedDate = (receivedDate) => {
     const date = new Date(receivedDate);
@@ -389,6 +419,10 @@ useEffect(() => {
             </User>
           ))) || 'No members to display'}
         </Members>
+        <LeaveGroupButton 
+        onClick={handleLeaveGroup}>
+          Leave Group
+        </LeaveGroupButton>
       </Sidebar>
 
 

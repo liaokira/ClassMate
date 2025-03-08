@@ -38,17 +38,6 @@ const Left = styled.div`
   }
 `;
 
-const Right = styled.div`
-  display: flex;
-  align-items: center;
-  height: 100%;
-  width: 100%
-
-  & > div {
-    padding-right: 0.5em;
-  }
-`;
-
 const Head1 = styled.h2`
   text-decoration: bold;
   text-wrap: wrap;
@@ -67,10 +56,6 @@ const RegBox = styled.div`
   border: 3px solid var(--tertiary);
   border-radius: 2rem;
   padding: 0rem 1rem 1.5rem;
-  margin-top: 1rem;
-`;
-
-const SubmitButton = styled.button`
   margin-top: 1rem;
 `;
 
