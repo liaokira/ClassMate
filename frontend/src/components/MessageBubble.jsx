@@ -1,5 +1,6 @@
 import React from "react";
 import styled from "styled-components";
+import placeholder from '../assets/placeholder.png'; // Adjust path if needed
 
 const MessageContainer = styled.div`
   display: flex;
@@ -47,6 +48,9 @@ const Timestamp = styled.span`
 `;
 
 const Message = ({ profilePic, username, text, timestamp, iscurrentuser }) => {
+  if (profilePic == null){
+    profilePic = placeholder;
+  }
   return (
     <MessageContainer iscurrentuser={iscurrentuser}>
       {!iscurrentuser && <ProfilePic src={profilePic} alt="User Profile" />}

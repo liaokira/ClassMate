@@ -143,6 +143,8 @@ const GroupMessenger = () => {
   const [inputMessage, setInputMessage] = useState('');
   const [currentUser, setCurrentUser] = useState({ id: '', name: '' });
   const [groupInfo, setGroupInfo] = useState(undefined);
+  const [memberPics, setMemberPics] = useState({});
+  
   const socketRef = useRef(null);
   const messageListRef = useRef();
   const navigate = useNavigate();
@@ -244,18 +246,49 @@ const GroupMessenger = () => {
 // Fetch group info to fill sidebar
 useEffect(() => {
   const fetchGroupInfo = async () => {
+    if (!groupid || !token) return;
+
     try {
-      const response = await fetch (`http://localhost:3010/v0/group/${groupid}`, {
+      const response = await fetch(`http://localhost:3010/v0/group/${groupid}`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
+          'Content-Type': 'application/json',
+        },
       });
+
       if (response.ok) {
         const data = await response.json();
         setGroupInfo(data);
-        console.log('Group info: ', data);
+
+        // Fetch member images directly from the data
+        const picDict = {};
+        for (const member of data.members) { // Use 'data' instead of 'groupInfo' to avoid infinite loop
+          let picURL = null;
+          try {
+            const imageResponse = await fetch(`http://localhost:3010/v0/profile/${member.id}/image`, {
+              method: 'GET',
+              headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+              },
+            });
+
+            if (imageResponse.ok) {
+              const imgBlob = await imageResponse.blob();
+              picURL = URL.createObjectURL(imgBlob);
+              picDict[member.id] = picURL;
+            } else {
+              picDict[member.id] = placeholder;
+            }
+          } catch (err) {
+            console.error(`Error fetching image for member ${member.id}:`, err);
+          }
+        }
+
+        setMemberPics(picDict);
+        console.log('Member pics:', picDict);
+
       } else {
         console.error('Failed to fetch group info');
       }
@@ -265,7 +298,8 @@ useEffect(() => {
   };
 
   fetchGroupInfo();
-}, [groupid, token]);
+}, [groupid, token]); // Remove 'groupInfo' from dependencies
+
 
   // Setup the WebSocket connection.
   useEffect(() => {
@@ -433,7 +467,7 @@ useEffect(() => {
           {messages.map((msg, index) => (
             <MessageBubble 
             key={index}
-            profilePic={placeholder}
+            profilePic={memberPics[msg.sender_id]}
             username={msg.sender_name}
             text={msg.message}
             timestamp={formatReceivedDate(msg.timestamp)}

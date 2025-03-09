@@ -2,6 +2,7 @@ import { useState, useEffect, useLayoutEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import styled from 'styled-components';
 import FadeIn from 'react-fade-in';
+import placeholderPic from '../assets/placeholder.png';
 
 import MessageBubble from '../components/MessageBubble';
 import placeholder from '../assets/placeholder.png'; // Adjust path if needed
@@ -11,6 +12,7 @@ const Container = styled.div`
   height: 88vh;
   background-color: var(--secondary);
   color: black;
+  align-content:center;
 `;
 
 /* Optional left sidebar for friend info (similar style to GroupMessenger). 
@@ -22,21 +24,28 @@ const FriendInfoSidebar = styled.div`
   min-width: 200px;
   border-right: 3px solid var(--tertiary);
   background-color: var(--primary);
+  text-align:center;
 `;
 
-const FriendDetails = styled.div`
-  padding: 2vh 1.5vw;
-  color: black;
-`;
+const GroupInfo = styled.div`
+padding-top:2vh;
+  border-left:none;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  width:100%;
+  h2{
+    margin-top:2vh;
+    margin-bottom:1vh;
+  }
+  a{
+    text-decoration:underline;
+  }
 
-const Label = styled.div`
-  margin-top: 2vh;
-  margin-bottom: 1vh;
-  font-weight: bold;
-`;
-
-const FriendName = styled.div`
-  font-size: 2vh;
+  a:hover{
+    color:var(--tertiary);
+  }
 `;
 
 const Messenger = styled.div`
@@ -75,8 +84,46 @@ const MessageInput = styled.input`
   transition: background-color 0.2s ease-in-out;
 
   &:focus {
-    background-color: var(--secondary);
+    flex: 1;
+  padding: 1vh 1vw;
+  background-color: var(--secondary);
+  border: 3px solid var(--tertiary);
+  border-radius: 0.5vw;
+  color: black;
+  outline: none;
+  font-size: 1.2vw;
+  transition: background-color 0.2s ease-in-out;
   }
+`;
+
+const ProfPic = styled.div`
+  background-color: var(--primary);
+  align-items: center;
+  justify-content: center;
+  height: 20vh;
+  width:  20vh;
+  border: 2px solid var(--tertiary);
+  border-radius: 50%;
+  overflow: hidden;
+`;
+
+const ClassList = styled.div`
+  display:flex;
+  flex-wrap:wrap;
+  margin-top:2vw;
+  border-radius: 1rem;
+  width:80%;
+  justify-content:flex-start;
+`;
+
+const ClassItem = styled.div`
+  border-radius: 1rem;
+    padding:10px;
+    background-color: var(--secondary);
+    margin:2px;
+    display:flex;
+    align-items:center;
+    width:fit-content;
 `;
 
 const FriendMessager = () => {
@@ -85,7 +132,10 @@ const FriendMessager = () => {
   const [messages, setMessages] = useState([]);
   const [inputMessage, setInputMessage] = useState('');
   const [currentUser, setCurrentUser] = useState({ id: '', name: '' });
-  const [friendInfo, setFriendInfo] = useState(null);
+  const [friendInfo, setFriendInfo] = useState({picURL : placeholder});
+  const [friendPicObj, setFriendPicObj] = useState({picURL : placeholder});
+  const [picObj, setPicObj] = useState(null);
+  const [userClasses, setUserClasses] = useState([]);
 
   const socketRef = useRef(null);
   const messageListRef = useRef(null);
@@ -103,6 +153,28 @@ const FriendMessager = () => {
     }
   };
   const decodedToken = decodeToken(token);
+
+  const fetchUserClasses = async () => {
+    try {
+      const response = await fetch(`http://localhost:3010/v0/profile/${recepientId}/classes`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("accessToken")}` },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log(data);
+        setUserClasses(data);
+      } else {
+        throw new Error("Failed to fetch user classes");
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  useEffect(() => {
+      fetchUserClasses();
+  }, []);
 
   // Fetch current user's profile
   useEffect(() => {
@@ -232,6 +304,63 @@ const FriendMessager = () => {
     scrollToBottom();
   }, [messages]);
 
+  //fetch recipient profile pic
+  useEffect(() => {
+    const fetchImage = async () => {
+      try {
+          let picURL = null;
+    
+          const imgResponse = await fetch (`http://localhost:3010/v0/profile/${recepientId}/image`, {
+            method: 'GET',
+            headers: {
+              'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
+            },
+          });
+    
+          if (imgResponse.ok) {
+            const imgBlob = await imgResponse.blob();
+            picURL = URL.createObjectURL(imgBlob)
+            setFriendPicObj({picURL});
+          }
+
+      } catch (err) {
+        console.error(err);
+        setFriendPicObj({picURL : placeholder});
+      }
+      console.log(friendPicObj);
+    };
+    if(friendInfo){
+      fetchImage();
+    }
+  }, [recepientId, friendInfo]);
+
+  useEffect(() => {
+    const fetchImage = async () => {
+      try {
+          let picURL = null;
+    
+          const imgResponse = await fetch (`http://localhost:3010/v0/profile/${decodedToken.id}/image`, {
+            method: 'GET',
+            headers: {
+              'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
+            },
+          });
+    
+          if (imgResponse.ok) {
+            const imgBlob = await imgResponse.blob();
+            picURL = URL.createObjectURL(imgBlob)
+              setPicObj({picURL});
+          }
+      } catch (err) {
+        console.error(err);
+      }
+
+    };
+    if(decodedToken.id){
+      fetchImage();
+    }
+  }, [decodedToken.id]);
+
   const scrollToBottom = () => {
     if (messageListRef?.current) {
       messageListRef.current.scrollTop = messageListRef.current.scrollHeight;
@@ -286,20 +415,44 @@ const FriendMessager = () => {
     <Container>
       {/* Optional friend info section, similar to GroupMessenger’s sidebar */}
       <FriendInfoSidebar>
-        <FriendDetails>
-          <Label>Messaging with:</Label>
+          <GroupInfo>
+            <ProfPic>
+                      {friendPicObj ? (
+                        <img
+                          src={friendPicObj?.picURL}
+                          alt="Profile Picture"
+                          style={{ width: '100%', height: '100%', objectFit: 'cover', alignContent: 'center' }}
+                        />
+                      ) : (
+                        <img
+                          src={placeholderPic}
+                          alt="Default Picture"
+                          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                        />
+                      )}
+                    </ProfPic>
+            
           {friendInfo ? (
-            <FriendName>{friendInfo.full_name}</FriendName>
+            <h2>{friendInfo.full_name}</h2>
           ) : (
-            <FriendName>Loading...</FriendName>
+            <h2>Loading...</h2>
           )}
-          <br/>
-          {friendInfo && (
+
+{friendInfo && (
             <Link to={`/profile/${recepientId}`}>
-              View {friendInfo.full_name}'s Profile
+              View Profile
             </Link>
           )}
-        </FriendDetails>
+
+<ClassList>
+        {userClasses.map((c) => (
+          <ClassItem key={c.id}>
+            {c.class_name}
+          </ClassItem>
+        ))}
+      </ClassList>
+          
+          </GroupInfo>
       </FriendInfoSidebar>
 
       <Messenger>
@@ -308,7 +461,7 @@ const FriendMessager = () => {
             {messages.map((msg, index) => (
               <MessageBubble
                 key={index}
-                profilePic={placeholder}
+                profilePic={decodedToken.id == msg.sender_id ? picObj.picURL : friendPicObj.picURL}
                 username={msg.sender_name}
                 text={msg.message}
                 timestamp={formatReceivedDate(msg.timestamp)}
