@@ -10,12 +10,13 @@ const DropdownContainer = styled.div`
 const DropdownMenu = styled.div`
   position: absolute;
   top: 100%;
-  right: 5px;
+  right: 1vw;
   background-color: var(--primary);
   border-radius: 5px;
   margin-top: 5px;
   z-index: 10;
-  width: 100px;
+  min-width:fit-content;
+  width:100px;
   border: 3px solid var(--tertiary);
   display: ${(props) => (props.$visible ? "block" : "none")};
 `;
@@ -55,7 +56,7 @@ export default function Dropdown() {
             <DropdownItem onClick={toggleMenu}>Groups</DropdownItem>
         </Link>
         <Link to={`/profile/${userId}`}>
-            <DropdownItem onClick={toggleMenu}>My Profile</DropdownItem>
+            <DropdownItem onClick={toggleMenu}>Profile</DropdownItem>
         </Link>
         <Link to="/logout">
             <DropdownItem onClick={toggleMenu}>Log out</DropdownItem>

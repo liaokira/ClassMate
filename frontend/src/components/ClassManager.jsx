@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import styled from "styled-components";
 
 const Container = styled.div`
-  width: 340px;
+  width: fit-content;
   padding: 20px;
   border: 3px solid var(--tertiary);
   border-radius: 1rem;
@@ -11,6 +11,7 @@ const Container = styled.div`
 const ClassInput = styled.div`
   display:flex;
   justify-content:space-between;
+  gap:1vw;
 `;
 
 const ClassList = styled.div`
