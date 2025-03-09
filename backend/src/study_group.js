@@ -13,7 +13,6 @@ const pool = new Pool({
 });
 
 exports.discoverGroups = async (req, res) => {
-  console.log("updated");
   const user_id = req.user.id;
   // const groupSelect = `
   //   SELECT DISTINCT ON (id) id, group_name, group_description, color, associated_class
@@ -58,8 +57,6 @@ exports.getGroup = async (req, res) => {
   const {rows} = await pool.query(groupQuery);
   if (rows.length) {
     const members = await getMembers(id);
-    // console.log(members);
-    // console.log("group name:", rows[0].group_name);
     res.status(200).json({id: id, group_name: rows[0].group_name, group_description: rows[0].group_description, color: rows[0].color, associated_class: rows[0].associated_class, members: members.map(member => ({id: member.user_id, name: member.full_name}))});
   }
   else {
@@ -78,7 +75,6 @@ exports.getGroup = async (req, res) => {
   }
 };
 
-// may need to add checks if group with already existing name exists>
 exports.createGroup = async (req, res) => {
   const {group_name, group_description, color, associated_class} = req.body;
   const groupInsert = `INSERT INTO study_groups(group_name, group_description, color, associated_class) VALUES ($1, $2, $3, $4) RETURNING id`;
@@ -108,11 +104,6 @@ exports.updateGroup = async (req, res) => {
   };
   const {rows} = await pool.query(groupQuery);
   if (rows.length) {
-    // const updateGroup = `UPDATE study_groups SET group_name = $1, group_description = $2 WHERE id = $3 RETURNING id`;
-    // const updateQuery = {
-    //   text: updateGroup,
-    //   values: [`${group_name}`, `${group_description}`, `${id}`],
-    // };
     let updateGroup = `UPDATE study_groups SET `;
     let query_values = [];
     let value_index = 1;
@@ -170,7 +161,6 @@ exports.updateGroup = async (req, res) => {
 };
 
 exports.searchGroups = async (req, res) => {
-  // console.log("correct");
   const searchFor = req.query.searchFor;
   const groupSearchSelect = `SELECT * FROM study_groups WHERE group_name ILIKE $1`;
   const groupSearchQuery = {
@@ -193,7 +183,6 @@ exports.getMessages = async (req, res) => {
     values: [`${group_id}`],
   };
   const {rows} = await pool.query(groupSearchQuery);
-  // console.log(rows);
   if (rows.length) {
     res.status(200).send(rows);
   }
@@ -203,17 +192,14 @@ exports.getMessages = async (req, res) => {
 };
 
 const getMembers = async (group_id) => {
-  // SELECT group_members.user_id, member_profiles.full_name
   const getMembersSelect = `
     SELECT user_id, full_name
     FROM group_members
     INNER JOIN member_profiles ON group_members.user_id = member_profiles.id AND group_members.group_id = $1
   `;
-  // const getMembersSelect = `SELECT user_id FROM group_members WHERE group_id = $1`;
   const getMembersQuery = {
     text: getMembersSelect,
     values: [group_id],
-    // values: [],
   };
   const {rows: members} = await pool.query(getMembersQuery);
   return members;
@@ -232,7 +218,6 @@ exports.getMembers = async (req, res) => {
   const {rows} = await pool.query(groupQuery);
   if (rows.length) {
     const members = await getMembers(id);
-    // console.log(members);
     res.status(200).json({members: members.map(member => ({id: member.user_id, name: member.full_name}))});
   }
 };

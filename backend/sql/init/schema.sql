@@ -62,7 +62,8 @@ CREATE TABLE messages (
     sender_name VARCHAR(40) NOT NULL,
     group_id UUID NOT NULL REFERENCES study_groups(id) ON DELETE CASCADE,
     message TEXT NOT NULL,
-    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CHECK (LENGTH(message) <= 280)
 );
 
 DROP TABLE IF EXISTS member_friends CASCADE;
