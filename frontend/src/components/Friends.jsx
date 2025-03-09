@@ -242,7 +242,7 @@ const Friends = ({userId, ownPage}) => {
                   <Link to={`/profile/${friend.id}`}>View Profile</Link>
                 )}
                 {friend.id != loggedId && (
-                  <Link to={`/prMessage/${friend.id}`}>Message User</Link>
+                  <Link to={`/dm/${friend.id}`}>Message User</Link>
                 )}
               </Links>
             </FriendItem>
