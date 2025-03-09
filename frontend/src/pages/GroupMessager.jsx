@@ -131,6 +131,10 @@ const Label = styled.div`
     margin-top:2vh;
 `;
 
+// const SendButton = styled.button`
+
+// `;
+
 const GroupMessenger = () => {
   const { groupid } = useParams();
   const [messages, setMessages] = useState([]);
@@ -411,7 +415,7 @@ useEffect(() => {
             value={inputMessage}
             onChange={(e) => setInputMessage(e.target.value)}
             onKeyDown={(e) => {
-              if (e.key === "Enter") {
+              if (e.key === "Enter" && inputMessage.length <= 280) {
                 e.preventDefault(); // Optional: Prevents form submission if inside a form.
                 handleSendMessage();
               }
@@ -419,7 +423,11 @@ useEffect(() => {
           }
             placeholder="Type a message..."
           />
-          <button onClick={handleSendMessage}>Send</button>
+          <button onClick={handleSendMessage}
+                  disabled={inputMessage.length <= 280 ? false : true}
+          >
+          Send
+          </button>
         </MessageInputC>
       </Messenger>
           </>
