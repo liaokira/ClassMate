@@ -44,6 +44,13 @@ const Button = styled.button`
   margin-right: 10px;
 `;
 
+const Bio = styled.textarea`
+  max-width: 20vw;
+  max-height: 15vh;
+  min-width: 13vw;
+  min-height: 4vh;
+`;
+
 const Edit = ({ profileData, setProfileData, setUpdateTrigger }) => {
   const [formData, setFormData] = useState({id: profileData.id, full_name: profileData.full_name, bio: profileData.bio, profile_pic_id: profileData.picture || null});
   const [file, setFile] = useState(null);
@@ -151,7 +158,7 @@ const Edit = ({ profileData, setProfileData, setUpdateTrigger }) => {
               onChange={handleChange}
             />
             <Label>Bio:</Label>
-            <textarea
+            <Bio
               id="bio"
               value={formData.bio}
               maxLength={172}

@@ -21,7 +21,7 @@ const Head = styled.div`
   z-index: 3;
 `;
 
-const Biography = styled.div`
+const Info = styled.div`
   display: flex;
   align-items: center;
   justify-content: flex-start;
@@ -32,6 +32,11 @@ const Biography = styled.div`
 
 const Username = styled.h1`
   white-space: nowrap;
+`;
+
+const Biography = styled.h2`
+  width: 56vw;
+  overflow-wrap: break-word;
 `;
 
 const ProfPic = styled.div`
@@ -198,10 +203,10 @@ if (loggedId === userId) {
             />
           )}
         </ProfPic>
-        <Biography>
+        <Info>
             <Username> {profileData.full_name} </Username>
-            <h2> {profileData.bio} </h2>            
-        </Biography>
+            <Biography> {profileData.bio} </Biography>            
+        </Info>
       </Head>
 
       <TabDisplay>
