@@ -35,7 +35,7 @@ const Username = styled.h1`
 `;
 
 const Biography = styled.h2`
-  width: 56vw;
+  width: 50vw;
   overflow-wrap: break-word;
 `;
 

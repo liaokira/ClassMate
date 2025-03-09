@@ -148,6 +148,7 @@ const GroupMessenger = () => {
   const [currentUser, setCurrentUser] = useState({ id: '', name: '' });
   const [groupInfo, setGroupInfo] = useState(undefined);
   const [memberPics, setMemberPics] = useState({});
+  const [memberNames, setMemberNames] = useState({});
   
   const socketRef = useRef(null);
   const messageListRef = useRef();
@@ -265,9 +266,29 @@ useEffect(() => {
         const data = await response.json();
         setGroupInfo(data);
 
-        // Fetch member images directly from the data
+        // Fetch member names and images directly from the data
         const picDict = {};
+        const nameDict = {};
         for (const member of data.members) { // Use 'data' instead of 'groupInfo' to avoid infinite loop
+          try {
+            const nameResponse = await fetch(`http://localhost:3010/v0/profile/${member.id}`, {
+              method: 'GET',
+              headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+              },
+            });
+
+            if (nameResponse.ok) {
+              const userData = await nameResponse.json()
+              nameDict[member.id] = userData.full_name;
+            }
+          } catch (err) {
+            console.error(`Error fetching name for member ${member.id}:`, err);
+          }
+
+          setMemberNames(nameDict);
+
           let picURL = null;
           try {
             const imageResponse = await fetch(`http://localhost:3010/v0/profile/${member.id}/image`, {
@@ -472,7 +493,7 @@ useEffect(() => {
             <MessageBubble 
             key={index}
             profilePic={memberPics[msg.sender_id]}
-            username={msg.sender_name}
+            username={memberNames[msg.sender_id] || msg.sender_name}
             text={msg.message}
             timestamp={formatReceivedDate(msg.timestamp)}
             iscurrentuser={decodedToken.id == msg.sender_id}>
