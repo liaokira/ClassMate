@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import styled from "styled-components";
 import ClassManager from "../components/ClassManager";
 
@@ -10,26 +10,54 @@ const PageContainer = styled.body`
 `;
 
 const Classes = styled.body`
-  display: flex;
-  flex-direction: column;
-  padding: 20px;
-  border: 3px solid var(--tertiary);
-  border-radius: 1rem;
+  min-width: 24vw;
 `;
 
-const Schedule = ({profileData, ownPage}) => {
+const ClassItem = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  border-bottom: 1px solid var(--tertiary);
+`;
+
+const Schedule = ({userId, profileData, ownPage}) => {
+  const [userClasses, setUserClasses] = useState([]);
+
+  const refreshClasses = async () => {
+    try {
+      const response = await fetch(`http://localhost:3010/v0/profile/${userId}/classes`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("accessToken")}` },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setUserClasses(data);
+      } else {
+        throw new Error("Failed to fetch user classes");
+      }
+    } catch (err) {
+      console.error(err);
+      setError("Could not load user classes");
+    }
+  };
+  
+  useEffect(() => {
+    refreshClasses();
+  }, [userId]);
 
   return (
     <PageContainer>
       {ownPage &&
-        <ClassManager  userId={profileData.id}/>
+        <ClassManager userId={profileData.id} refreshClasses={refreshClasses}/>
       }
-      <h2>{ownPage ? 'Your Schedule' : 'Their Schedule'}</h2>
+      <h2>{ownPage ? 'Your Classes' : 'Their Classes'}</h2>
       <Classes>
-        <div>List 1</div>
-        <div>List 2</div>
-        <div>List 3</div>
-        <div>List 4</div>
+        {userClasses.map((c) => (
+          <ClassItem key={c.id}>
+            <h3 style={{ textTransform: 'uppercase' }}>{c.class_name}</h3>
+          </ClassItem>
+        ))}
       </Classes>
     </PageContainer>
   );

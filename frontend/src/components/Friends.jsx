@@ -56,6 +56,10 @@ const Links = styled.div`
   gap: 2vw;
 `;
 
+const MessageContainer = styled.div`
+  margin: 20px;
+`;
+
 const Friends = ({userId, ownPage}) => {
   const [email, setEmail] = useState('');
   const [search, setSearch] = useState(null);
@@ -75,12 +79,12 @@ const Friends = ({userId, ownPage}) => {
   const loggedId = decodeId?.id;
 
   useEffect(() => {
-    if (search || error || success) {
+    if (search) {
       setFill(true);
     } else {
       setFill(false);
     }
-  }, [search, error, success]);
+  }, [search]);
 
   useEffect (() => {
     fetchFriends();
@@ -217,9 +221,11 @@ const Friends = ({userId, ownPage}) => {
                 <button onClick={handleAdd}>Add Friend</button>
               </div>
             )}
+          </Results>
+          <MessageContainer>
             {error && <p style={{color: 'red'}}>{error}</p>}
             {success && <p style={{color: 'green'}}>{success}</p>}
-          </Results>
+          </MessageContainer>
         </ParentContainer>
       }
       <FriendList>
@@ -229,10 +235,15 @@ const Friends = ({userId, ownPage}) => {
             <FriendItem key={friend.id}>
               <span><h3>{friend.full_name}</h3></span>
               <Links>
-                <Link to={`/profile/${friend.id}`}>View Profile</Link>
-                {friend.id != loggedId &&
-                  (<Link to={`/prMessage/${friend.id}`}>Message User</Link>)
-                }
+                {friend.id == loggedId && (
+                  <Link to={`/profile/${friend.id}`}>Your Profile</Link>
+                )}
+                {friend.id != loggedId && (
+                  <Link to={`/profile/${friend.id}`}>View Profile</Link>
+                )}
+                {friend.id != loggedId && (
+                  <Link to={`/prMessage/${friend.id}`}>Message User</Link>
+                )}
               </Links>
             </FriendItem>
           ))

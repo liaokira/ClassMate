@@ -70,9 +70,10 @@ exports.searchUser = async (req, res) => {
     }
 
     const userSelect = `
-      SELECT id, data->>'email' AS email, data->>'name' AS full_name
+      SELECT member.id AS id, member.data->>'email' AS email, member_profiles.full_name AS full_name
       FROM member
-      WHERE data->>'email' = $1
+      JOIN member_profiles ON member_profiles.id = member.id
+      WHERE member.data->>'email' = $1
     `;
     const { rows } = await pool.query(userSelect, [email]);
     if (rows.length === 0) {
@@ -151,7 +152,7 @@ exports.getFriends = async (req, res) => {
     const friendsQuery = `
       SELECT
         friends.friend_id AS id,
-        member.data->>'name' AS full_name,
+        member_profiles.full_name AS full_name,
         member.data->>'email' AS email
       FROM (
         SELECT
@@ -162,7 +163,8 @@ exports.getFriends = async (req, res) => {
         FROM member_friends
         WHERE member_id = $1 OR friend_id = $1
       ) AS friends
-      JOIN member ON member.id = friends.friend_id;
+      JOIN member ON member.id = friends.friend_id
+      JOIN member_profiles ON member_profiles.id = friends.friend_id
     `;
 
     const { rows } = await pool.query(friendsQuery, [userId]);

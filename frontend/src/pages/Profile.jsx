@@ -30,6 +30,10 @@ const Biography = styled.div`
   padding-left:calc(8vw + 26vh);
 `;
 
+const Username = styled.h1`
+  white-space: nowrap;
+`;
+
 const ProfPic = styled.div`
   background-color: var(--primary);
   display: flex;
@@ -77,11 +81,6 @@ const TabButton = styled.button`
   &:hover {
     background: var(--tertiary);
   }
-`;
-
-const Label = styled.div`
-  margin-bottom: 5px;
-  margin-top:10px;
 `;
 
 const Content = styled.div`
@@ -173,7 +172,7 @@ function Profile() {
 
   const tabs = [
     { id: 'friends', label: 'Friends List', content: 'friends' },
-    { id: 'schedule', label: 'Schedule', content: 'schedule' },
+    { id: 'schedule', label: 'Classes', content: 'schedule' },
   ];
 
 if (loggedId === userId) {
@@ -200,7 +199,7 @@ if (loggedId === userId) {
           )}
         </ProfPic>
         <Biography>
-            <h1> {profileData.full_name} </h1>
+            <Username> {profileData.full_name} </Username>
             <h2> {profileData.bio} </h2>            
         </Biography>
       </Head>
@@ -225,7 +224,7 @@ if (loggedId === userId) {
               case 'friends':
                 return <Friends userId={userId} ownPage={ownPage} />;
               case 'schedule':
-                return <Schedule profileData={profileData} ownPage={ownPage} />;
+                return <Schedule userId={userId} profileData={profileData} ownPage={ownPage} />;
               case 'edit':
                 return <Edit profileData={profileData} setProfileData={setProfileData} setUpdateTrigger={setUpdateTrigger}/>;
               default:

@@ -7,24 +7,41 @@ const Label = styled.div`
 `;
 
 const Container = styled.div`
-  margin: auto;
+  display: flex;
+  width: auto;
+  height: auto;
+`;
+
+const EditContainer = styled.div`
   padding: 20px;
+  margin: 20px;
   border: 3px solid var(--tertiary);
   border-radius: 1rem;
 `;
 
-const EditContainer = styled.div`
+const PicContainer = styled.div`
+  padding: 20px;
   margin: 20px;
-  display:flex;
-  align-items:flex-start;
-  flex:wrap: wrap;
-  column-gap: 2vw;
+  border: 3px solid var(--tertiary);
+  border-radius: 1rem;
+  display: flex;
+  flex-direction: column;
+  height: fit-content;
 `;
 
-const ProfileImage = styled.img`
-  width: 26vw;
-  height: 26vh;
-  object-fit: cover;
+const FileInput = styled.input`
+  margin-top: 10px;
+  padding: 10px;
+  height: fit-content;
+`;
+
+const MessageContainer = styled.div`
+  margin: 20px;
+`;
+
+const Button = styled.button`
+  margin-top: 10px;
+  margin-right: 10px;
 `;
 
 const Edit = ({ profileData, setProfileData, setUpdateTrigger }) => {
@@ -46,7 +63,6 @@ const Edit = ({ profileData, setProfileData, setUpdateTrigger }) => {
     e.preventDefault();
     setError('');
     setSuccess('');
-    console.log('form: ', formData);
 
     try {
       const response = await fetch (`http://localhost:3010/v0/profile/${profileData.id}`, {
@@ -115,44 +131,50 @@ const Edit = ({ profileData, setProfileData, setUpdateTrigger }) => {
     }
   }
 
+  const handleResetPic = async () => {
+    // reset picture here
+    return;
+  }
+
   return (
     <div>
       <Container>
-        <h3>Edit Profile</h3>
-        <form onSubmit={handleSubmit}>
-          <EditContainer>
-            <div>
-              <Label>Username:</Label>
-              <input
-                id="full_name"
-                type="text"
-                value={formData.full_name}
-                onChange={handleChange}
-              />
-            </div>
-            <div>
-              <Label>Bio:</Label>
-              <textarea
-                id="bio"
-                value={formData.bio}
-                onChange={handleChange}
-              />
-            </div>
-            <div>
-              <br></br>
-              <button type="submit">Save Changes</button>
-              {error && <p style={{ color: 'red' }}>{error}</p>}
-              {success && <p style={{ color: 'green' }}>{success}</p>}
-            </div>
-          </EditContainer>
-        </form>
-
-        <h3>Update Profile Picture</h3>
-        <form onSubmit={handleFileUpload}>
-          <input type="file" accept="image/*" onChange={handleFile} />
-          <button type="submit">Upload</button>
-        </form>
+        <EditContainer>
+          <h3>Edit Profile</h3>
+          <form onSubmit={handleSubmit}>
+            <Label>Username:</Label>
+            <input
+              id="full_name"
+              type="text"
+              value={formData.full_name}
+              maxLength={22}
+              onChange={handleChange}
+            />
+            <Label>Bio:</Label>
+            <textarea
+              id="bio"
+              value={formData.bio}
+              maxLength={172}
+              onChange={handleChange}
+            />
+            <br></br>
+            <Button type="submit">Save Changes</Button>
+          </form>
+        </EditContainer>
+        <PicContainer>
+          <h3>Upload Profile Picture</h3>
+          <form onSubmit={handleFileUpload}>
+            <FileInput type="file" accept="image/*" onChange={handleFile} />
+            <br></br>
+            <Button type="submit">Upload</Button>
+            <Button type="button" onClick={handleResetPic}>Reset</Button>
+          </form>
+        </PicContainer>
       </Container>
+      <MessageContainer>
+        {error && <p style={{ color: 'red' }}>{error}</p>}
+        {success && <p style={{ color: 'green' }}>{success}</p>}
+      </MessageContainer>
     </div>
   );
 };

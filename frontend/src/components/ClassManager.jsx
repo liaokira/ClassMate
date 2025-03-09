@@ -45,7 +45,7 @@ const RemoveButton = styled.button`
   }
 `;
 
-const ClassManager = ({ userId }) => {
+const ClassManager = ({ userId, refreshClasses }) => {
   const [userClasses, setUserClasses] = useState([]);
   const [newClassName, setNewClassName] = useState("");
   const [error, setError] = useState("");
@@ -92,6 +92,7 @@ const ClassManager = ({ userId }) => {
         setNewClassName("");
         setSuccess("Class added successfully");
         setError("");
+        refreshClasses();
       } else if (response.status === 400) {
         setError("Invalid class data");
         setSuccess("");
@@ -119,6 +120,7 @@ const ClassManager = ({ userId }) => {
         setUserClasses(userClasses.filter((c) => c.id !== classId));
         setSuccess("Class removed successfully");
         setError("");
+        refreshClasses();
       } else if (response.status === 404) {
         setError("Class not found");
         setSuccess("");
@@ -135,12 +137,13 @@ const ClassManager = ({ userId }) => {
 
   return (
     <Container>      
-      <h3>Edit Classes</h3>
+      <h3>Change Classes</h3>
       <ClassInput>
       <input
         type="text"
-        placeholder="Class Name"
+        placeholder="Course Number"
         value={newClassName}
+        maxLength={10}
         onChange={(e) => setNewClassName(e.target.value)}
       />
       <button onClick={handleAddClass}>Add</button>
