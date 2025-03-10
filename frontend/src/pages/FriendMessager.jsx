@@ -133,9 +133,11 @@ const FriendMessager = () => {
   const [inputMessage, setInputMessage] = useState('');
   const [currentUser, setCurrentUser] = useState({ id: '', name: '' });
   const [friendInfo, setFriendInfo] = useState({picURL : placeholder});
-  const [friendPicObj, setFriendPicObj] = useState({picURL : placeholder});
-  const [picObj, setPicObj] = useState(null);
+  //const [friendPicObj, setFriendPicObj] = useState({picURL : placeholder});
+  //const [picObj, setPicObj] = useState(null);
   const [userClasses, setUserClasses] = useState([]);
+  const [memberPics, setMemberPics] = useState({});
+  const [memberNames, setMemberNames] = useState({});
 
   const socketRef = useRef(null);
   const messageListRef = useRef(null);
@@ -157,7 +159,7 @@ const FriendMessager = () => {
   const fetchUserClasses = async () => {
     try {
       const response = await fetch(`http://localhost:3010/v0/profile/${recepientId}/classes`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem("accessToken")}` },
+        headers: { Authorization: `Bearer ${token}` },
       });
 
       if (response.ok) {
@@ -191,14 +193,40 @@ const FriendMessager = () => {
           if (response.ok) {
             const data = await response.json();
             setCurrentUser({ id: decodedToken.id, name: data.full_name });
+            setMemberNames((prev) => ({...prev, [decodedToken.id]: data.full_name}));
           } else {
             console.error('Failed to fetch current user profile');
             setCurrentUser({ id: decodedToken.id, name: decodedToken.full_name || 'User' });
+            nameDict[decodedToken.id] = decodedToken.full_name || 'User';
           }
         } catch (err) {
           console.error('Error fetching current user profile:', err);
           setCurrentUser({ id: decodedToken.id, name: decodedToken.full_name || 'User' });
+          setMemberNames((prev) => ({...prev, [decodedToken.id]: decodedToken.full_name || 'User'}));
         }
+        console.log('user:', memberNames);
+
+        try {
+          const imageResponse = await fetch(`http://localhost:3010/v0/profile/${decodedToken.id}/image`, {
+            method: 'GET',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json',
+            },
+          });
+
+          if (imageResponse.ok) {
+            const imgBlob = await imageResponse.blob();
+            const picURL = URL.createObjectURL(imgBlob);
+            setMemberPics((prev) => ({...prev, [decodedToken.id]: picURL}));
+          } else {
+            setMemberPics((prev) => ({...prev, [decodedToken.id]: placeholder}));
+          }
+        } catch (err) {
+          console.error(`Error fetching image for user:`, err);
+          setMemberPics((prev) => ({...prev, [decodedToken.id]: placeholder}));
+        }
+        console.log('user:', memberPics);
       };
       fetchProfile();
     }
@@ -218,12 +246,38 @@ const FriendMessager = () => {
         if (response.ok) {
           const data = await response.json();
           setFriendInfo(data);
+          setMemberNames((prev) => ({...prev, [recepientId]: data.full_name}));
         } else {
-          console.error('Failed to fetch friend info');
+          console.error('Failed to fetch current user profile');
+          setMemberNames((prev) => ({...prev, [recepientId]: 'Friend'}));
         }
-      } catch (error) {
-        console.error('Error fetching friend info:', error);
+      } catch (err) {
+        console.error('Error fetching current user profile:', err);
+        setMemberNames((prev) => ({...prev, [recepientId]: 'Friend'}));
       }
+      console.log('friend:', memberNames);
+
+      try {
+        const imageResponse = await fetch(`http://localhost:3010/v0/profile/${recepientId}/image`, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (imageResponse.ok) {
+          const imgBlob = await imageResponse.blob();
+          const picURL = URL.createObjectURL(imgBlob);
+          setMemberPics((prev) => ({...prev, [recepientId]: picURL}));
+        } else {
+          setMemberPics((prev) => ({...prev, [recepientId]: placeholder}));
+        }
+      } catch (err) {
+        console.error(`Error fetching image for recepient:`, err);
+        setMemberPics((prev) => ({...prev, [recepientId]: placeholder}));
+      }
+      console.log('friend:', memberPics);
     };
     if (recepientId) {
       fetchFriendInfo();
@@ -304,62 +358,6 @@ const FriendMessager = () => {
     scrollToBottom();
   }, [messages]);
 
-  //fetch recipient profile pic
-  useEffect(() => {
-    const fetchImage = async () => {
-      try {
-          let picURL = null;
-    
-          const imgResponse = await fetch (`http://localhost:3010/v0/profile/${recepientId}/image`, {
-            method: 'GET',
-            headers: {
-              'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
-            },
-          });
-    
-          if (imgResponse.ok) {
-            const imgBlob = await imgResponse.blob();
-            picURL = URL.createObjectURL(imgBlob)
-            setFriendPicObj({picURL});
-          }
-
-      } catch (err) {
-        console.error(err);
-        setFriendPicObj({picURL : placeholder});
-      }
-      console.log(friendPicObj);
-    };
-    if(friendInfo){
-      fetchImage();
-    }
-  }, [recepientId, friendInfo]);
-
-  useEffect(() => {
-    const fetchImage = async () => {
-      try {
-          let picURL = null;
-    
-          const imgResponse = await fetch (`http://localhost:3010/v0/profile/${decodedToken.id}/image`, {
-            method: 'GET',
-            headers: {
-              'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
-            },
-          });
-    
-          if (imgResponse.ok) {
-            const imgBlob = await imgResponse.blob();
-            picURL = URL.createObjectURL(imgBlob)
-              setPicObj({picURL});
-          }
-      } catch (err) {
-        console.error(err);
-      }
-
-    };
-    if(decodedToken.id){
-      fetchImage();
-    }
-  }, [decodedToken.id]);
 
   const scrollToBottom = () => {
     if (messageListRef?.current) {
@@ -417,9 +415,9 @@ const FriendMessager = () => {
       <FriendInfoSidebar>
           <GroupInfo>
             <ProfPic>
-                      {friendPicObj ? (
+                      {memberPics[recepientId] ? (
                         <img
-                          src={friendPicObj?.picURL}
+                          src={memberPics[recepientId]}
                           alt="Profile Picture"
                           style={{ width: '100%', height: '100%', objectFit: 'cover', alignContent: 'center' }}
                         />
@@ -432,8 +430,8 @@ const FriendMessager = () => {
                       )}
                     </ProfPic>
             
-          {friendInfo ? (
-            <h2>{friendInfo.full_name}</h2>
+          {memberNames[recepientId] ? (
+            <h2>{memberNames[recepientId]}</h2>
           ) : (
             <h2>Loading...</h2>
           )}
@@ -446,7 +444,7 @@ const FriendMessager = () => {
 
 <ClassList>
         {userClasses.map((c) => (
-          <ClassItem key={c.id}>
+          <ClassItem key={c.id} style={{ textTransform: 'uppercase' }}>
             {c.class_name}
           </ClassItem>
         ))}
@@ -461,8 +459,8 @@ const FriendMessager = () => {
             {messages.map((msg, index) => (
               <MessageBubble
                 key={index}
-                profilePic={decodedToken.id == msg.sender_id ? picObj.picURL : friendPicObj.picURL}
-                username={msg.sender_name}
+                profilePic={memberPics[msg.sender_id]}
+                username={memberNames[msg.sender_id]}
                 text={msg.message}
                 timestamp={formatReceivedDate(msg.timestamp)}
                 iscurrentuser={decodedToken.id === msg.sender_id}
