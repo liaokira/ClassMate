@@ -85,6 +85,8 @@ app.get('/v0/profile/:id/image', checkAuth, images.getImage);
 app.get('/v0/group/:id/image', checkAuth, images.getImage);
 app.put('/v0/profile/:id/image', checkAuth, images.uploadNewImage);
 app.put('/v0/group/:id/image', checkAuth, images.uploadNewImage);
+app.delete('/v0/profile/:id/image', checkAuth, images.resetImage);
+
 
 // ---------- Error Handling ----------
 app.use((err, req, res, next) => {

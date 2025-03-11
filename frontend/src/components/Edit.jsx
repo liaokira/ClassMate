@@ -3,7 +3,7 @@ import styled from "styled-components";
 
 const Label = styled.div`
   margin-bottom: 5px;
-  margin-top:10px;
+  margin-top: 10px;
 `;
 
 const Container = styled.div`
@@ -52,27 +52,38 @@ const Bio = styled.textarea`
 `;
 
 const Edit = ({ profileData, setProfileData, setUpdateTrigger }) => {
-  const [formData, setFormData] = useState({id: profileData.id, full_name: profileData.full_name, bio: profileData.bio, profile_pic_id: profileData.picture || null});
+  const [formData, setFormData] = useState({
+    id: profileData.id,
+    full_name: profileData.full_name,
+    bio: profileData.bio,
+    profile_pic_id: profileData.picture || null
+  });
   const [file, setFile] = useState(null);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
   const handleChange = (e) => {
     const { id, value } = e.target;
-    setFormData( (prev) => ({...prev, [id]: value }));
+    setFormData((prev) => ({ ...prev, [id]: value }));
   };
 
   const handleFile = (e) => {
     setFile(e.target.files[0]);
-  }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setSuccess('');
 
+    // Input validation: username cannot be empty.
+    if (!formData.full_name.trim()) {
+      setError('Username cannot be empty');
+      return;
+    }
+
     try {
-      const response = await fetch (`http://localhost:3010/v0/profile/${profileData.id}`, {
+      const response = await fetch(`http://localhost:3010/v0/profile/${profileData.id}`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
@@ -82,7 +93,7 @@ const Edit = ({ profileData, setProfileData, setUpdateTrigger }) => {
       });
 
       if (response.status === 200 || response.status === 201) {
-        setProfileData({full_name: formData.full_name, bio: formData.bio});
+        setProfileData({ full_name: formData.full_name, bio: formData.bio });
         setUpdateTrigger((prev) => prev + 1);
         setSuccess('Profile updated');
         setError('');
@@ -122,8 +133,8 @@ const Edit = ({ profileData, setProfileData, setUpdateTrigger }) => {
 
       if (response.ok) {
         const data = await response.json();
-        setProfileData((prev) => ({ ...prev, picture: data.image_id }))
-        setFormData((prev) => ({ ...prev, profile_pic_id: data.image_id }))
+        setProfileData((prev) => ({ ...prev, picture: data.image_id }));
+        setFormData((prev) => ({ ...prev, profile_pic_id: data.image_id }));
         setUpdateTrigger((prev) => prev + 1);
         setSuccess('Profile image updated!');
         setError('');
@@ -136,12 +147,33 @@ const Edit = ({ profileData, setProfileData, setUpdateTrigger }) => {
       setError('Error uploading image');
       setSuccess('');
     }
-  }
+  };
 
   const handleResetPic = async () => {
-    // reset picture here
-    return;
-  }
+    try {
+      const response = await fetch(`http://localhost:3010/v0/profile/${profileData.id}/image`, {
+        method: 'DELETE', // Using DELETE to reset the profile image
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
+        },
+      });
+      if (response.ok) {
+        // Set the picture to null (default image will be used)
+        setProfileData((prev) => ({ ...prev, picture: null }));
+        setFormData((prev) => ({ ...prev, profile_pic_id: null }));
+        setUpdateTrigger((prev) => prev + 1);
+        setSuccess('Profile image reset to default');
+        setError('');
+      } else {
+        setError('Failed to reset profile image');
+        setSuccess('');
+      }
+    } catch (err) {
+      console.error(err);
+      setError('Error resetting profile image');
+      setSuccess('');
+    }
+  };
 
   return (
     <div>
@@ -156,6 +188,7 @@ const Edit = ({ profileData, setProfileData, setUpdateTrigger }) => {
               value={formData.full_name}
               maxLength={22}
               onChange={handleChange}
+              placeholder="Enter your username"
             />
             <Label>Bio:</Label>
             <Bio
@@ -163,8 +196,9 @@ const Edit = ({ profileData, setProfileData, setUpdateTrigger }) => {
               value={formData.bio}
               maxLength={172}
               onChange={handleChange}
+              placeholder="Enter your bio (optional)"
             />
-            <br></br>
+            <br />
             <Button type="submit">Save Changes</Button>
           </form>
         </EditContainer>
@@ -172,7 +206,7 @@ const Edit = ({ profileData, setProfileData, setUpdateTrigger }) => {
           <h3>Upload Profile Picture</h3>
           <form onSubmit={handleFileUpload}>
             <FileInput type="file" accept="image/*" onChange={handleFile} />
-            <br></br>
+            <br />
             <Button type="submit">Upload</Button>
             <Button type="button" onClick={handleResetPic}>Reset</Button>
           </form>
@@ -186,4 +220,4 @@ const Edit = ({ profileData, setProfileData, setUpdateTrigger }) => {
   );
 };
 
-export default Edit
+export default Edit;

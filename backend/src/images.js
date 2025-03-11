@@ -91,3 +91,21 @@ exports.getImage = async (req, res) =>  {
     res.setHeader("Content-Type", mimetype);
     res.send(file_data);
 }
+
+// In images.js (or your appropriate controller file)
+exports.resetImage = async (req, res) => {
+    const id = req.params.id;
+    try {
+      const profile_query = "UPDATE member_profiles SET profile_pic_id = NULL WHERE id = $1 RETURNING id";
+      const { rows } = await pool.query(profile_query, [id]);
+      if (rows.length) {
+        res.status(200).json({ message: "Profile image reset" });
+      } else {
+        res.status(404).json({ error: "Profile not found" });
+      }
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: "Failed to reset profile image" });
+    }
+  };
+  
