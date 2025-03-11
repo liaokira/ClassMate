@@ -9,7 +9,7 @@ CREATE TABLE member(
 DROP TABLE IF EXISTS classes CASCADE;
 CREATE TABLE classes(
     id UUID UNIQUE PRIMARY KEY DEFAULT gen_random_uuid(),
-    class_name VARCHAR(50) NOT NULL,
+    class_name VARCHAR(50) NOT NULL UNIQUE,
     start_time INT NOT NULL DEFAULT 0,
     end_time INT NOT NULL DEFAULT 0
 ); 
