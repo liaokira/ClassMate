@@ -200,16 +200,13 @@ exports.removeFriend = async (req, res) => {
     if (!userId || !friendId) {
       return res.status(400).json({ error: 'Missing required id' });
     }
-    console.log('user, friend:', userId, friendId);
     const sorted = [userId, friendId].sort();
     const deleteQuery = `
       DELETE FROM member_friends
       WHERE member_id = $1 AND friend_id = $2
       RETURNING *
     `;
-    console.log('sorted:', sorted);
     const {rows} = await pool.query(deleteQuery, [sorted[0], sorted[1]]);
-    console.log('rows, length:', rows, rows.length);
     if (rows.length) {
       return res.status(200).json({ message: 'Friend removed' });
     } else {
