@@ -46,11 +46,10 @@ const RemoveButton = styled.button`
   }
 `;
 
+/* eslint-disable react/prop-types */
 const ClassManager = ({ userId, refreshClasses }) => {
   const [userClasses, setUserClasses] = useState([]);
   const [newClassName, setNewClassName] = useState("");
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
 
   useEffect(() => {
     fetchUserClasses();
@@ -70,7 +69,6 @@ const ClassManager = ({ userId, refreshClasses }) => {
       }
     } catch (err) {
       console.error(err);
-      setError("Could not load user classes");
     }
   };
 
@@ -91,20 +89,15 @@ const ClassManager = ({ userId, refreshClasses }) => {
         const newClass = await response.json();
         setUserClasses([...userClasses, newClass]);
         setNewClassName("");
-        setSuccess("Class added successfully");
-        setError("");
         refreshClasses();
       } else if (response.status === 400) {
-        setError("Invalid class data");
-        setSuccess("");
+        console.error("400");
       } else {
-        setError("Unexpected error while adding class");
-        setSuccess("");
+        console.error("Unexpected error while adding class");
       }
     } catch (err) {
       console.error(err);
-      setError("Failed to add class");
-      setSuccess("");
+      console.error("Failed to add class");
     }
   };
 
@@ -119,20 +112,15 @@ const ClassManager = ({ userId, refreshClasses }) => {
 
       if (response.ok) {
         setUserClasses(userClasses.filter((c) => c.id !== classId));
-        setSuccess("Class removed successfully");
-        setError("");
         refreshClasses();
       } else if (response.status === 404) {
-        setError("Class not found");
-        setSuccess("");
+        console.error("Class not found");
       } else {
-        setError("Could not remove class");
-        setSuccess("");
+        console.error("Could not remove class");
       }
     } catch (err) {
       console.error(err);
-      setError("Failed to remove class");
-      setSuccess("");
+      console.error("Failed to remove class");
     }
   };
 

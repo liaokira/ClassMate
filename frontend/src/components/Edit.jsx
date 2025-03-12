@@ -44,6 +44,7 @@ const Button = styled.button`
   margin-right: 10px;
 `;
 
+/* eslint-disable react/prop-types */
 const Edit = ({ profileData, setProfileData, setUpdateTrigger }) => {
   const [formData, setFormData] = useState({id: profileData.id, full_name: profileData.full_name, bio: profileData.bio, profile_pic_id: profileData.picture || null});
   const [file, setFile] = useState(null);

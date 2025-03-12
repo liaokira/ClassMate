@@ -38,6 +38,7 @@ const Text = styled.div`
   text-decoration: underline;
 `;
 
+/* eslint-disable react/prop-types */
 function Login({ setIsAuthenticated }) {
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
@@ -103,7 +104,7 @@ function Login({ setIsAuthenticated }) {
         {error && <p style={{ color: 'red' }}>{error}</p>}
         <SubmitButton onClick={handleSubmit}>Submit</SubmitButton>
         <Link to="/register">
-          <Text>Don't have an account?</Text>
+          <Text>Don&apos;t have an account?</Text>
         </Link>
       </RegisterBox>
       </FadeIn>

@@ -1,8 +1,8 @@
 import {Navigate, useParams} from 'react-router-dom';
 import { useState, useEffect } from "react";
 import Blank from '../pages/Blank'
-import PropTypes from 'prop-types';
 
+/* eslint-disable react/prop-types */
 const GroupAuth = ({children}) => {
     const { groupid } = useParams();
     const [isMember, setIsMember] = useState(null);

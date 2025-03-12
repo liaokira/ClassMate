@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { Link } from "react-router-dom";
 import logo from '../assets/react.svg';
 import Dropdown from '../components/Dropdown';
@@ -50,6 +49,8 @@ const Text = styled.div`
   color: var(--text-2);
 `;
 
+
+/* eslint-disable react/prop-types */
 function Nav({ isAuthenticated }) {
   const path = useLocation().pathname
   return (

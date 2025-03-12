@@ -60,6 +60,7 @@ const MessageContainer = styled.div`
   margin: 20px;
 `;
 
+/* eslint-disable react/prop-types */
 const Friends = ({userId, ownPage}) => {
   const [email, setEmail] = useState('');
   const [search, setSearch] = useState(null);

@@ -238,7 +238,6 @@ function GroupsPage() {
           description={group.group_description}
           link={group.id}
           color={group.color}
-          joined={true}
           />
         )))}
         </FadeIn>
@@ -268,7 +267,6 @@ function GroupsPage() {
           description={group.group_description}
           link={group.id}
           color={group.color}
-          joined={false}
           />
         ))}
         </FadeIn>
