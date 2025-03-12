@@ -182,6 +182,7 @@ const FriendMessager = () => {
   useEffect(() => {
     if (decodedToken.id) {
       const fetchProfile = async () => {
+        const nameDict = [];
         try {
           const response = await fetch(`http://localhost:3010/v0/profile/${decodedToken.id}`, {
             method: 'GET',
