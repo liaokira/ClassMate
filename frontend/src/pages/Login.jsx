@@ -47,6 +47,7 @@ const Text = styled.div`
   text-decoration: underline;
 `;
 
+/* eslint-disable react/prop-types */
 function Login({ setIsAuthenticated }) {
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [validationErrors, setValidationErrors] = useState({ email: '', password: '' });

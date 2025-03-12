@@ -51,6 +51,7 @@ const Bio = styled.textarea`
   min-height: 4vh;
 `;
 
+/* eslint-disable react/prop-types */
 const Edit = ({ profileData, setProfileData, setUpdateTrigger }) => {
   const [formData, setFormData] = useState({
     id: profileData.id,

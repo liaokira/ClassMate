@@ -14,6 +14,7 @@ import JoinGroup from "../pages/JoinGroup";
 import GroupAuth from "../routes/GroupAuth";
 import FriendMessager from "../pages/FriendMessager";
 
+/* eslint-disable react/prop-types */
 const AppRoutes = ({ isAuthenticated, setIsAuthenticated }) => {
     return (
       <Router>

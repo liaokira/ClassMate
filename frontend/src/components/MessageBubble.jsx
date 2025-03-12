@@ -1,4 +1,3 @@
-import React from "react";
 import styled from "styled-components";
 import placeholder from '../assets/placeholder.png'; // Adjust path if needed
 
@@ -47,6 +46,7 @@ const Timestamp = styled.span`
   margin-top: 4px;
 `;
 
+/* eslint-disable react/prop-types */
 const Message = ({ profilePic, username, text, timestamp, iscurrentuser }) => {
   if (profilePic == null){
     profilePic = placeholder;

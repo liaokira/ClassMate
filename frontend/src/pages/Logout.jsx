@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
+/* eslint-disable react/prop-types */
 function Logout({ setIsAuthenticated }) {
   const navigate = useNavigate();
 

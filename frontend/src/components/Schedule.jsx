@@ -21,6 +21,7 @@ const ClassItem = styled.div`
   border-bottom: 1px solid var(--tertiary);
 `;
 
+/* eslint-disable react/prop-types */
 const Schedule = ({userId, profileData, ownPage}) => {
   const [userClasses, setUserClasses] = useState([]);
 
@@ -38,7 +39,6 @@ const Schedule = ({userId, profileData, ownPage}) => {
       }
     } catch (err) {
       console.error(err);
-      setError("Could not load user classes");
     }
   };
   

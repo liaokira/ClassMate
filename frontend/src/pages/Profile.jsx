@@ -102,7 +102,6 @@ function Profile() {
   const { userId } = useParams();
   const [profileData, setProfileData] = useState({id: userId, full_name: '', bio: '', picture: null});
   const [picObj, setPicObj] = useState(null);
-  const [error, setError] = useState('');
   const [activeTab, setActivateTab] = useState('friends');
   const [updateTrigger, setUpdateTrigger] = useState(0);
 
@@ -121,13 +120,13 @@ function Profile() {
           const data = await response.json();
           setProfileData({ id: userId, full_name: data.full_name, bio: data.bio, picture: data.profile_pic_id || null });
         } else if (response.status === 404) {
-          setError('Profile not found');
+          console.error('Profile not found');
         } else {
-          setError('Unexpected error');
+          console.error('Unexpected error');
         }
       } catch (err) {
         console.error(err);
-        setError('Failed to fetch profile data');
+        console.error('Failed to fetch profile data');
       }
     };
     fetchProfile();
@@ -156,7 +155,7 @@ function Profile() {
         }
       } catch (err) {
         console.error(err);
-        setError('Failed to fetch image data');
+        console.error('Failed to fetch image data');
       }
     };
     fetchImage();

@@ -78,7 +78,8 @@ const Description = styled.div`
   padding-top:0px;
 `;
 
-function GroupCard({ name, groupclass, description, link, color, joined}) {
+/* eslint-disable react/prop-types */
+function GroupCard({ name, groupclass, description, link, color}) {
     const slice = (description) => {
         return description.length > 75 ? description.slice(0, 75) + "..." : description;
     };
