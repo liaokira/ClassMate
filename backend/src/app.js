@@ -61,6 +61,7 @@ app.get('/v0/users/searchFriend', checkAuth, friends.searchFriend);
 app.get('/v0/users/search', checkAuth, friends.searchUser);
 app.put('/v0/users/addFriend', checkAuth, friends.addFriend);
 app.get('/v0/users/getFriends', checkAuth, friends.getFriends);
+app.delete('/v0/users/removeFriend', checkAuth, friends.removeFriend);
 
 /*
 Endpoints for study groups

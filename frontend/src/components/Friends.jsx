@@ -40,7 +40,9 @@ const Results = styled.div`
 `;
 
 const FriendList = styled.div`
-  width: 32vw;
+  min-width: 25vw;
+  width: auto;
+  max-width: 75vw;
 `;
 
 const FriendItem = styled.div`
@@ -52,6 +54,7 @@ const FriendItem = styled.div`
 `;
 
 const Links = styled.div`
+  padding-left: 2vw;
   display: flex;
   gap: 2vw;
 `;
@@ -96,7 +99,7 @@ const Friends = ({userId, ownPage}) => {
       const response = await fetch(`http://localhost:3010/v0/users/getFriends?userId=${userId}`, {
         method: 'GET',
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
+          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
       });
@@ -123,7 +126,7 @@ const Friends = ({userId, ownPage}) => {
       const friends = await fetch(`http://localhost:3010/v0/users/searchFriend?userId=${userId}&email=${encode}`, {
         method: 'GET',
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
+          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
       });
@@ -147,7 +150,7 @@ const Friends = ({userId, ownPage}) => {
       const response = await fetch(`http://localhost:3010/v0/users/search?email=${encode}`, {
         method: 'GET',
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
+          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
       });
@@ -179,7 +182,7 @@ const Friends = ({userId, ownPage}) => {
       const response = await fetch(`http://localhost:3010/v0/users/addFriend`, {
         method: 'PUT',
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
+          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({userId: userId, id: search.id, full_name: search.full_name, email: search.email})
@@ -198,6 +201,33 @@ const Friends = ({userId, ownPage}) => {
       setError('Failed to add');
     }
   };
+
+  const removeFriend = async (friendId) => {
+    try {
+      const response = await fetch(`http://localhost:3010/v0/users/removeFriend?userId=${userId}&friendId=${friendId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        setSuccess('Friend removed');
+        setError('');
+        fetchFriends();
+      } else if (response.status === 404) {
+        setError('Friend pair not found');
+        setSuccess('');
+      } else {
+        setError('Failed to remove friend');
+        setSuccess('');
+      }
+    } catch (err) {
+      console.error('Error removing friend: ', err);
+      setError('Failed to remove friend');
+      setSuccess('');
+    }
+  }
 
   return (
     <PageContainer>
@@ -238,6 +268,9 @@ const Friends = ({userId, ownPage}) => {
               <Links>
                 {friend.id == loggedId && (
                   <Link to={`/profile/${friend.id}`}>Your Profile</Link>
+                )}
+                {ownPage && friend.id != loggedId && (
+                  <Link onClick={() => removeFriend(friend.id)}>Remove</Link>
                 )}
                 {friend.id != loggedId && (
                   <Link to={`/profile/${friend.id}`}>View Profile</Link>

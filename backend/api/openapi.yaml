@@ -1004,6 +1004,55 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
 
+  /users/removeFriend:
+    delete: 
+      security:
+        - bearerAuth: []
+      summary: Remove a friend
+      description: Takes user and friend id and removes pair from table
+      parameters:
+        - name: userId
+          in: query
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: friendId
+          in: query
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        200:
+          description: Friend removed
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'Friend removed'
+        400:
+          description: Missing required id
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        404:
+          description: Friend pair not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        500:
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
 components:
   securitySchemes:
     bearerAuth:

@@ -193,3 +193,30 @@ exports.getMessages = async (req, res) => {
     res.status(404).send("No Messages found");
   }
 };
+
+exports.removeFriend = async (req, res) => {
+  try {
+    const { userId, friendId } = req.query;
+    if (!userId || !friendId) {
+      return res.status(400).json({ error: 'Missing required id' });
+    }
+    console.log('user, friend:', userId, friendId);
+    const sorted = [userId, friendId].sort();
+    const deleteQuery = `
+      DELETE FROM member_friends
+      WHERE member_id = $1 AND friend_id = $2
+      RETURNING *
+    `;
+    console.log('sorted:', sorted);
+    const {rows} = await pool.query(deleteQuery, [sorted[0], sorted[1]]);
+    console.log('rows, length:', rows, rows.length);
+    if (rows.length) {
+      return res.status(200).json({ message: 'Friend removed' });
+    } else {
+      return res.status(404).json({ error: 'Friend not found' })
+    }
+  } catch (err) {
+    console.error('Error in removeFriend: ', err);
+    return res.status(500).json({ error: 'Server error' })
+  }
+};

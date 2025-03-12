@@ -133,8 +133,6 @@ const FriendMessager = () => {
   const [inputMessage, setInputMessage] = useState('');
   const [currentUser, setCurrentUser] = useState({ id: '', name: '' });
   const [friendInfo, setFriendInfo] = useState({picURL : placeholder});
-  //const [friendPicObj, setFriendPicObj] = useState({picURL : placeholder});
-  //const [picObj, setPicObj] = useState(null);
   const [userClasses, setUserClasses] = useState([]);
   const [memberPics, setMemberPics] = useState({});
   const [memberNames, setMemberNames] = useState({});
