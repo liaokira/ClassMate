@@ -78,7 +78,7 @@ function Landing() {
           <Left>
             <Head1>
               Want to find study buddies? 
-              Let's make it happen!
+              Let&apos;s make it happen!
             </Head1>
             <Text>
               ClassMate is a networking app 
