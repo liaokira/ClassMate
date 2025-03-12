@@ -173,7 +173,7 @@ function Login({ setIsAuthenticated }) {
           </SubmitButton>
 
           <Link to="/register">
-            <Text>Don't have an account?</Text>
+            <Text>Don&apos;t have an account?</Text>
           </Link>
         </RegisterBox>
       </FadeIn>
