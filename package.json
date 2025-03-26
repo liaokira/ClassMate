@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "firebase": "^11.5.0",
     "react-fade-in": "^2.0.1"
   }
 }
